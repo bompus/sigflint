@@ -1,0 +1,51 @@
+{
+  "name": "sigflint",
+  "version": "0.1.0",
+  "description": "Fast, dependency-free AWS Signature Version 4 request signing for S3 on Node.js, Bun, Deno and Cloudflare Workers.",
+  "keywords": [
+    "aws",
+    "s3",
+    "sigv4",
+    "signature",
+    "signing",
+    "authorization",
+    "bun",
+    "deno",
+    "cloudflare-workers"
+  ],
+  "license": "MIT",
+  "author": "Aaron Queen",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "./src/node.js",
+  "types": "./types/node.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/node.d.ts",
+      "bun": "./src/bun.js",
+      "default": "./src/node.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "types",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test test/",
+    "test:bun": "bun test test/",
+    "types": "tsc && tsc -p test/types",
+    "conformance": "node conformance/build.mjs",
+    "prepack": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}
