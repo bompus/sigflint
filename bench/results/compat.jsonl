@@ -1,0 +1,45 @@
+{"runtime":"node 26.11.1","lib":"sigflint","status":"ok"}
+{"runtime":"node 26.11.1","lib":"sigflint-web","status":"ok"}
+{"runtime":"node 26.11.1","lib":"aws4fetch","status":"ok"}
+{"runtime":"node 26.11.1","lib":"aws4","status":"ok"}
+{"runtime":"node 26.11.1","lib":"smithy","status":"ok"}
+{"runtime":"node 26.11.1","lib":"smithy-web","status":"ok"}
+{"runtime":"node 26.11.1","lib":"aws-sig","status":"ok"}
+{"runtime":"node 26.11.1","lib":"wdl","status":"ok"}
+{"runtime":"node 26.11.1","lib":"minio","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"sigflint","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"sigflint-web","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"aws4fetch","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"aws4","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"smithy","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"smithy-web","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"aws-sig","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"wdl","status":"ok"}
+{"runtime":"bun 1.4.3","lib":"minio","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"sigflint","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"sigflint-web","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"aws4fetch","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"aws4","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"smithy","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"smithy-web","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"aws-sig","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"wdl","status":"ok"}
+{"runtime":"deno 2.9.6","lib":"minio","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"sigflint","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"sigflint-web","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"aws4fetch","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"aws4","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"smithy","status":"error","detail":"Hash.bind is not a function"}
+{"runtime":"workerd (nodejs_compat)","lib":"smithy-web","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"aws-sig","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"wdl","status":"ok"}
+{"runtime":"workerd (nodejs_compat)","lib":"minio","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"sigflint","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"sigflint-web","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"aws4fetch","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"aws4","status":"bundle-or-start-error","detail":"✘ [ERROR] Build failed with 3 errors:"}
+{"runtime":"workerd (no-flag)","lib":"smithy","status":"error","detail":"Hash.bind is not a function"}
+{"runtime":"workerd (no-flag)","lib":"smithy-web","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"aws-sig","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"wdl","status":"ok"}
+{"runtime":"workerd (no-flag)","lib":"minio","status":"bundle-or-start-error","detail":"✘ [ERROR] Build failed with 9 errors:"}

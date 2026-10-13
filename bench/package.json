@@ -1,0 +1,21 @@
+{
+  "name": "sigflint-bench",
+  "private": true,
+  "type": "module",
+  "description": "Benchmarks and comparisons for sigflint. Not published.",
+  "dependencies": {
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "@smithy/hash-node": "^4.5.2",
+    "@smithy/protocol-http": "^5.6.2",
+    "@smithy/signature-v4": "^5.7.4",
+    "@wdl-dev/aws-sigv4": "^3.0.4",
+    "aws-sig": "^2.1.0",
+    "aws4": "^1.13.2",
+    "aws4fetch": "^1.0.20",
+    "minio": "^8.0.7",
+    "sigflint": "file:.."
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}

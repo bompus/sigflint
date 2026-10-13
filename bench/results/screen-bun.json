@@ -1,0 +1,466 @@
+{
+ "tagCounts": {
+  "well-formed": 1211,
+  "unsigned-header": 2,
+  "plus-in-path": 90,
+  "malformed": 1399,
+  "session-token": 316,
+  "empty-query-name": 31
+ },
+ "candidates": {
+  "sigflint": {
+   "label": "sigflint",
+   "version": "0.1.0",
+   "unsupported": 0,
+   "byTag": {
+    "well-formed": {
+     "pass": 1211,
+     "fail": 0,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 2,
+     "fail": 0,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 90,
+     "fail": 0,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 1399,
+     "fail": 0,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 316,
+     "fail": 0,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 31,
+     "fail": 0,
+     "error": 0
+    }
+   },
+   "failIds": [],
+   "errIds": []
+  },
+  "aws4fetch": {
+   "label": "aws4fetch",
+   "version": "1.0.20",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 1208,
+     "fail": 3,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 89,
+     "fail": 1,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 505,
+     "fail": 894,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 0,
+     "fail": 31,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "query-duplicate-names",
+    "fuzz-479",
+    "fuzz-1778"
+   ],
+   "errIds": []
+  },
+  "aws4": {
+   "label": "aws4 (mhart)",
+   "version": "1.13.2",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 1063,
+     "fail": 148,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 75,
+     "fail": 15,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 192,
+     "fail": 123,
+     "error": 1084
+    },
+    "empty-query-name": {
+     "pass": 0,
+     "fail": 31,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "query-duplicate-names",
+    "fuzz-13",
+    "fuzz-16",
+    "fuzz-24",
+    "fuzz-33",
+    "fuzz-89",
+    "fuzz-110",
+    "fuzz-121",
+    "fuzz-142",
+    "fuzz-163",
+    "fuzz-164",
+    "fuzz-176",
+    "fuzz-180",
+    "fuzz-214"
+   ],
+   "errIds": []
+  },
+  "smithy": {
+   "label": "@smithy/signature-v4",
+   "version": "5.7.4",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 596,
+     "fail": 615,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 0,
+     "fail": 90,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 223,
+     "fail": 1176,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 12,
+     "fail": 19,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "path-sub-delims",
+    "path-encoded-slash",
+    "path-lowercase-hex",
+    "bench-encode",
+    "fuzz-2",
+    "fuzz-8",
+    "fuzz-12",
+    "fuzz-13",
+    "fuzz-15",
+    "fuzz-16",
+    "fuzz-18",
+    "fuzz-20",
+    "fuzz-26",
+    "fuzz-30"
+   ],
+   "errIds": []
+  },
+  "smithy-pre": {
+   "label": "@smithy/signature-v4 (pre-encoded input)",
+   "version": "5.7.4",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 1211,
+     "fail": 0,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 90,
+     "fail": 0,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 1062,
+     "fail": 337,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 31,
+     "fail": 0,
+     "error": 0
+    }
+   },
+   "failIds": [],
+   "errIds": []
+  },
+  "smithy-web": {
+   "label": "@smithy/signature-v4 (web SHA-256)",
+   "version": "5.7.4",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 596,
+     "fail": 615,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 0,
+     "fail": 90,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 223,
+     "fail": 1176,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 12,
+     "fail": 19,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "path-sub-delims",
+    "path-encoded-slash",
+    "path-lowercase-hex",
+    "bench-encode",
+    "fuzz-2",
+    "fuzz-8",
+    "fuzz-12",
+    "fuzz-13",
+    "fuzz-15",
+    "fuzz-16",
+    "fuzz-18",
+    "fuzz-20",
+    "fuzz-26",
+    "fuzz-30"
+   ],
+   "errIds": []
+  },
+  "aws-sig": {
+   "label": "aws-sig",
+   "version": "2.1.0",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 78,
+     "fail": 1133,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 0,
+     "fail": 90,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 11,
+     "fail": 1388,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 0,
+     "fail": 31,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "path-sub-delims",
+    "path-encoded-slash",
+    "path-lowercase-hex",
+    "query-star-bang",
+    "headers-extra-spaces",
+    "body-unicode",
+    "body-empty-unsigned",
+    "unsigned-payload",
+    "bench-part-put",
+    "bench-encode",
+    "bench-body-1k",
+    "fuzz-2",
+    "fuzz-4",
+    "fuzz-5"
+   ],
+   "errIds": []
+  },
+  "wdl": {
+   "label": "@wdl-dev/aws-sigv4",
+   "version": "3.0.4",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 358,
+     "fail": 853,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 1,
+     "fail": 1,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 0,
+     "fail": 90,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 32,
+     "fail": 205,
+     "error": 1162
+    },
+    "empty-query-name": {
+     "pass": 11,
+     "fail": 20,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "path-encoded-slash",
+    "path-lowercase-hex",
+    "query-plus-is-space",
+    "headers-extra-spaces",
+    "body-unicode",
+    "bench-body-1k",
+    "fuzz-2",
+    "fuzz-4",
+    "fuzz-5",
+    "fuzz-8",
+    "fuzz-9",
+    "fuzz-15",
+    "fuzz-16",
+    "fuzz-17"
+   ],
+   "errIds": []
+  },
+  "minio": {
+   "label": "minio signV4",
+   "version": "8.0.7",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 255,
+     "fail": 956,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 2,
+     "fail": 0,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 0,
+     "fail": 90,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 0,
+     "fail": 1399,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 1,
+     "fail": 30,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "path-sub-delims",
+    "path-encoded-slash",
+    "path-lowercase-hex",
+    "query-plus-is-space",
+    "query-star-bang",
+    "query-equals-in-value",
+    "headers-extra-spaces",
+    "bench-encode",
+    "fuzz-2",
+    "fuzz-4",
+    "fuzz-5",
+    "fuzz-8",
+    "fuzz-9",
+    "fuzz-12"
+   ],
+   "errIds": []
+  },
+  "minio-pre": {
+   "label": "minio signV4 (pre-encoded input)",
+   "version": "8.0.7",
+   "unsupported": 316,
+   "byTag": {
+    "well-formed": {
+     "pass": 1066,
+     "fail": 145,
+     "error": 0
+    },
+    "unsigned-header": {
+     "pass": 2,
+     "fail": 0,
+     "error": 0
+    },
+    "plus-in-path": {
+     "pass": 81,
+     "fail": 9,
+     "error": 0
+    },
+    "malformed": {
+     "pass": 1189,
+     "fail": 210,
+     "error": 0
+    },
+    "empty-query-name": {
+     "pass": 11,
+     "fail": 20,
+     "error": 0
+    }
+   },
+   "failIds": [
+    "headers-extra-spaces",
+    "fuzz-5",
+    "fuzz-26",
+    "fuzz-50",
+    "fuzz-62",
+    "fuzz-67",
+    "fuzz-76",
+    "fuzz-95",
+    "fuzz-110",
+    "fuzz-138",
+    "fuzz-155",
+    "fuzz-167",
+    "fuzz-180",
+    "fuzz-239"
+   ],
+   "errIds": []
+  }
+ }
+}

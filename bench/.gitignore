@@ -1,0 +1,5 @@
+node_modules
+compat/workers
+compat/*.log
+compat/workerd-results.json
+results/size-out

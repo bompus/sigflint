@@ -1,0 +1,98 @@
+{
+ "sigflint-node": {
+  "bundledBytes": 7060,
+  "minifiedBytes": 3357,
+  "gzipBytes": 1763,
+  "brotliBytes": 1608,
+  "source": {
+   "bytes": 11435,
+   "lines": 272
+  },
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "sigflint-bun": {
+  "bundledBytes": 7202,
+  "minifiedBytes": 3415,
+  "gzipBytes": 1815,
+  "brotliBytes": 1658,
+  "source": {
+   "bytes": 11686,
+   "lines": 284
+  },
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "aws4fetch": {
+  "bundledBytes": 11191,
+  "minifiedBytes": 7428,
+  "gzipBytes": 2915,
+  "brotliBytes": 2626,
+  "unpackedBytes": 65541,
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "aws4": {
+  "bundledBytes": 15541,
+  "minifiedBytes": 9026,
+  "gzipBytes": 3251,
+  "brotliBytes": 2971,
+  "unpackedBytes": 23399,
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "smithy": {
+  "bundledBytes": 301353,
+  "minifiedBytes": 140787,
+  "gzipBytes": 45924,
+  "brotliBytes": 39907,
+  "unpackedBytes": 106103,
+  "directDependencies": 3,
+  "dependencyNames": [
+   "@smithy/core",
+   "@smithy/types",
+   "tslib"
+  ]
+ },
+ "aws-sig": {
+  "bundledBytes": 20959,
+  "minifiedBytes": 9942,
+  "gzipBytes": 4167,
+  "brotliBytes": 3787,
+  "unpackedBytes": 270403,
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "wdl": {
+  "bundledBytes": 31713,
+  "minifiedBytes": 15979,
+  "gzipBytes": 5484,
+  "brotliBytes": 4986,
+  "unpackedBytes": 82832,
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "minio": {
+  "bundledBytes": 598009,
+  "minifiedBytes": 330170,
+  "gzipBytes": 85329,
+  "brotliBytes": 74103,
+  "unpackedBytes": 2092892,
+  "directDependencies": 13,
+  "dependencyNames": [
+   "async",
+   "block-stream2",
+   "browser-or-node",
+   "buffer-crc32",
+   "eventemitter3",
+   "fast-xml-parser",
+   "ipaddr.js",
+   "lodash",
+   "mime-types",
+   "query-string",
+   "stream-json",
+   "through2",
+   "xml2js"
+  ]
+ }
+}

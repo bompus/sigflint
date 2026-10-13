@@ -146,6 +146,86 @@ function amzDatetime(now) {
  */
 
 /**
+ * The payload hash for x-amz-content-sha256. The hash function may return a promise, which is then the result.
+ * @param {SignRequest} request
+ * @param {(data: string) => any} hexHash
+ */
+export function payloadHashOf(request, hexHash) {
+  const body = request.body ?? '';
+  // The x-amz-content-sha256 header is required for all AWS Signature Version 4 requests to S3. Without a payload it
+  // is the hash of an empty string.
+  return request.unsignedPayload ? 'UNSIGNED-PAYLOAD' : body.length === 0 ? emptyBodyHash : hexHash(body);
+}
+
+/**
+ * Everything up to the hashing: the headers to return, the canonical request and the credential scope.
+ * @param {SignRequest} request
+ * @param {Credentials} credentials
+ * @param {string} payloadHash - from payloadHashOf
+ */
+export function prepare(request, credentials, payloadHash) {
+  const { method, url, signHeaders } = request;
+  const region = request.region ?? '';
+  const sessionToken = credentials.sessionToken;
+  const datetime = amzDatetime(request.now ?? Date.now());
+  const date = datetime.slice(0, 8);
+
+  const headers = { 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash }; // as returned
+  let canonicalHeaders;
+  let signedHeaders;
+
+  const extraNames = signHeaders === undefined ? [] : Object.keys(signHeaders);
+  if (extraNames.length === 0 && !sessionToken) {
+    // host, x-amz-content-sha256 and x-amz-date are already in sorted order
+    canonicalHeaders = `host:${url.host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${datetime}\n`;
+    signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
+  } else {
+    const extras = signHeaders ?? {};
+    const signed = { host: url.host, 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash };
+    if (sessionToken) {
+      headers['x-amz-security-token'] = sessionToken;
+      signed['x-amz-security-token'] = sessionToken.trim();
+    }
+    for (const name of extraNames) {
+      const lowerName = name.toLowerCase();
+      headers[lowerName] = extras[name];
+      signed[lowerName] = String(extras[name]).trim().replace(reSpaces, ' ');
+    }
+    const names = Object.keys(signed).sort();
+    canonicalHeaders = '';
+    for (const name of names) canonicalHeaders += `${name}:${signed[name]}\n`;
+    signedHeaders = names.join(';');
+    payloadHash = signed['x-amz-content-sha256']; // a caller-supplied x-amz-content-sha256 replaces the computed one
+  }
+
+  const credentialScope = `${date}/${region}/s3/aws4_request`;
+  const canonicalRequest = `${method}\n${canonicalPath(url.pathname)}\n${canonicalQuery(url.search)}\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
+  return { headers, canonicalRequest, datetime, date, region, credentialScope, signedHeaders };
+}
+
+/** @typedef {ReturnType<typeof prepare>} Prepared */
+
+/**
+ * @param {Prepared} prepared
+ * @param {string} canonicalRequestHash - hex SHA-256 of prepared.canonicalRequest
+ */
+export function stringToSign(prepared, canonicalRequestHash) {
+  return `AWS4-HMAC-SHA256\n${prepared.datetime}\n${prepared.credentialScope}\n${canonicalRequestHash}`;
+}
+
+/**
+ * Adds the authorization header to the headers to return.
+ * @param {Prepared} prepared
+ * @param {string} accessKeyId
+ * @param {string} signature - hex
+ * @returns {AuthHeaders}
+ */
+export function authorize(prepared, accessKeyId, signature) {
+  prepared.headers.authorization = `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${prepared.credentialScope}, SignedHeaders=${prepared.signedHeaders}, Signature=${signature}`;
+  return prepared.headers;
+}
+
+/**
  * @param {Primitives} primitives
  * @returns {(request: SignRequest, credentials: Credentials) => AuthHeaders}
  */
@@ -176,50 +256,8 @@ export function createSigner({ hexHash, hmac, hmacHex }) {
   }
 
   return function getAuthHeaders(request, credentials) {
-    const { method, url, signHeaders } = request;
-    const region = request.region ?? '';
-    const body = request.body ?? '';
-    const sessionToken = credentials.sessionToken;
-    const datetime = amzDatetime(request.now ?? Date.now());
-    const date = datetime.slice(0, 8);
-
-    // The x-amz-content-sha256 header is required for all AWS Signature Version 4 requests to S3. Without a payload
-    // it is the hash of an empty string.
-    let payloadHash = request.unsignedPayload ? 'UNSIGNED-PAYLOAD' : body.length === 0 ? emptyBodyHash : hexHash(body);
-    const headers = { 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash }; // as returned
-    let canonicalHeaders;
-    let signedHeaders;
-
-    const extraNames = signHeaders === undefined ? [] : Object.keys(signHeaders);
-    if (extraNames.length === 0 && !sessionToken) {
-      // host, x-amz-content-sha256 and x-amz-date are already in sorted order
-      canonicalHeaders = `host:${url.host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${datetime}\n`;
-      signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
-    } else {
-      const extras = signHeaders ?? {};
-      const signed = { host: url.host, 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash };
-      if (sessionToken) {
-        headers['x-amz-security-token'] = sessionToken;
-        signed['x-amz-security-token'] = sessionToken.trim();
-      }
-      for (const name of extraNames) {
-        const lowerName = name.toLowerCase();
-        headers[lowerName] = extras[name];
-        signed[lowerName] = String(extras[name]).trim().replace(reSpaces, ' ');
-      }
-      const names = Object.keys(signed).sort();
-      canonicalHeaders = '';
-      for (const name of names) canonicalHeaders += `${name}:${signed[name]}\n`;
-      signedHeaders = names.join(';');
-      payloadHash = signed['x-amz-content-sha256'];
-    }
-
-    const credentialScope = `${date}/${region}/s3/aws4_request`;
-    const canonicalRequest = `${method}\n${canonicalPath(url.pathname)}\n${canonicalQuery(url.search)}\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
-    const stringToSign = `AWS4-HMAC-SHA256\n${datetime}\n${credentialScope}\n${hexHash(canonicalRequest)}`;
-    const signature = hmacHex(getSigningKey(credentials.secretAccessKey, date, region), stringToSign);
-
-    headers.authorization = `AWS4-HMAC-SHA256 Credential=${credentials.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-    return headers;
+    const prepared = prepare(request, credentials, payloadHashOf(request, hexHash));
+    const signature = hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region), stringToSign(prepared, hexHash(prepared.canonicalRequest)));
+    return authorize(prepared, credentials.accessKeyId, signature);
   };
 }

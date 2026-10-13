@@ -1,0 +1,14 @@
+bun 1.4.3
+node v26.11.1
+deno 2.9.6 (compat only)
+wrangler 4.149.0 (compat only)
+aws4fetch 1.0.20
+aws4 1.13.2
+@smithy/signature-v4 5.7.4
+@smithy/protocol-http 5.6.2
+@smithy/hash-node 4.5.2
+@aws-crypto/sha256-js 5.2.0
+aws-sig 2.1.0
+@wdl-dev/aws-sigv4 3.0.4
+minio 8.0.7
+botocore 1.43.112 (reference)

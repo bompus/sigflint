@@ -1,0 +1,1046 @@
+{
+ "rejected": 0,
+ "rejectedRows": [],
+ "cells": {
+  "bun 1.4.3|bench-download": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 1586,
+     "minNs": 1494,
+     "maxNs": 1736,
+     "rangePct": 15.258511979823455,
+     "values": [
+      1586,
+      1494,
+      1551,
+      1736,
+      1660
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 213128,
+     "minNs": 200898,
+     "maxNs": 229756,
+     "rangePct": 13.540219961713149,
+     "values": [
+      213128,
+      200898,
+      211077,
+      229756,
+      218280
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.007441537479824331,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 7650,
+     "minNs": 7063,
+     "maxNs": 8127,
+     "rangePct": 13.908496732026144,
+     "values": [
+      7650,
+      7763,
+      7063,
+      7129,
+      8127
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.2073202614379085,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 9824,
+     "minNs": 8500,
+     "maxNs": 11695,
+     "rangePct": 32.52239413680782,
+     "values": [
+      11695,
+      9824,
+      8500,
+      11071,
+      9623
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.16144136807817588,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 44269,
+     "minNs": 43921,
+     "maxNs": 48111,
+     "rangePct": 9.464862544895977,
+     "values": [
+      48111,
+      43921,
+      44269,
+      44383,
+      43969
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.03582642481194515,
+      "clear": true
+     }
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 584373,
+     "minNs": 559897,
+     "maxNs": 766824,
+     "rangePct": 35.41008910404827,
+     "values": [
+      584373,
+      559897,
+      562139,
+      703802,
+      766824
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.0027140199838117094,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 8209,
+     "minNs": 7826,
+     "maxNs": 10871,
+     "rangePct": 37.09343403581435,
+     "values": [
+      10871,
+      8134,
+      7826,
+      8695,
+      8209
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.19320258253136802,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 1650,
+     "minNs": 1559,
+     "maxNs": 1705,
+     "rangePct": 8.848484848484848,
+     "values": [
+      1688,
+      1650,
+      1705,
+      1559,
+      1595
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9612121212121212,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 30.51702395964691,
+   "aaGapPct": 4.03530895334174
+  },
+  "bun 1.4.3|bench-part-put": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2489,
+     "minNs": 2308,
+     "maxNs": 2709,
+     "rangePct": 16.110887906789877,
+     "values": [
+      2551,
+      2489,
+      2308,
+      2709,
+      2381
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 213461,
+     "minNs": 203242,
+     "maxNs": 228298,
+     "rangePct": 11.737975555253653,
+     "values": [
+      203242,
+      207683,
+      222904,
+      228298,
+      213461
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.011660209593321497,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 8860,
+     "minNs": 8741,
+     "maxNs": 9289,
+     "rangePct": 6.1851015801354405,
+     "values": [
+      8744,
+      9252,
+      8860,
+      8741,
+      9289
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.2809255079006772,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 12268,
+     "minNs": 10929,
+     "maxNs": 12873,
+     "rangePct": 15.846103684382133,
+     "values": [
+      12792,
+      12268,
+      10929,
+      12873,
+      11909
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.20288555591783503,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 603804,
+     "minNs": 551047,
+     "maxNs": 672303,
+     "rangePct": 20.082013368576558,
+     "values": [
+      605744,
+      579844,
+      551047,
+      672303,
+      603804
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.0041221985942458145,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 9699,
+     "minNs": 8801,
+     "maxNs": 10239,
+     "rangePct": 14.826270749561811,
+     "values": [
+      9789,
+      8801,
+      8923,
+      10239,
+      9699
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.25662439426745026,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2666,
+     "minNs": 2374,
+     "maxNs": 2791,
+     "rangePct": 15.641410352588148,
+     "values": [
+      2774,
+      2463,
+      2791,
+      2666,
+      2374
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9336084021005251,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 32.221775813579754,
+   "aaGapPct": 7.111289674568099
+  },
+  "bun 1.4.3|bench-encode": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3950,
+     "minNs": 3453,
+     "maxNs": 4526,
+     "rangePct": 27.164556962025316,
+     "values": [
+      3523,
+      3453,
+      3950,
+      4089,
+      4526
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 221208,
+     "minNs": 211287,
+     "maxNs": 286403,
+     "rangePct": 33.95718057213121,
+     "values": [
+      213815,
+      211287,
+      221602,
+      221208,
+      286403
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.01785649705254783,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 12469,
+     "minNs": 10835,
+     "maxNs": 12808,
+     "rangePct": 15.823241639265378,
+     "values": [
+      12808,
+      10835,
+      12469,
+      12593,
+      11476
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.31678562835832863,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "wrong-result"
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 587121,
+     "minNs": 554436,
+     "maxNs": 625003,
+     "rangePct": 12.019157890792528,
+     "values": [
+      594502,
+      625003,
+      557116,
+      587121,
+      554436
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.006727744366152803,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "wrong-result"
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3928,
+     "minNs": 3567,
+     "maxNs": 4242,
+     "rangePct": 17.184317718940935,
+     "values": [
+      3928,
+      3756,
+      4154,
+      4242,
+      3567
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 1.005600814663951,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 54.32911392405063,
+   "aaGapPct": 0.560081466395112
+  },
+  "bun 1.4.3|bench-body-1k": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3212,
+     "minNs": 3050,
+     "maxNs": 3263,
+     "rangePct": 6.6313823163138235,
+     "values": [
+      3050,
+      3091,
+      3212,
+      3263,
+      3226
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 211753,
+     "minNs": 204814,
+     "maxNs": 230847,
+     "rangePct": 12.294040698360826,
+     "values": [
+      211753,
+      204814,
+      225160,
+      230847,
+      205713
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.01516861626517688,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 9364,
+     "minNs": 8531,
+     "maxNs": 10832,
+     "rangePct": 24.572832123024348,
+     "values": [
+      9470,
+      9364,
+      8821,
+      8531,
+      10832
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.3430158052114481,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 13724,
+     "minNs": 11343,
+     "maxNs": 13776,
+     "rangePct": 17.728067618770037,
+     "values": [
+      13728,
+      13283,
+      11343,
+      13776,
+      13724
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.23404255319148937,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "wrong-result"
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 10331,
+     "minNs": 9666,
+     "maxNs": 13956,
+     "rangePct": 41.52550575936502,
+     "values": [
+      10331,
+      13956,
+      11609,
+      9839,
+      9666
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.31090891491627143,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3231,
+     "minNs": 3121,
+     "maxNs": 3362,
+     "rangePct": 7.4589910244506346,
+     "values": [
+      3231,
+      3121,
+      3286,
+      3362,
+      3173
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9941194676570722,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 14.917982048901269,
+   "aaGapPct": 0.5915317559153176
+  },
+  "node 26.11.1|bench-download": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 1907,
+     "minNs": 1890,
+     "maxNs": 2050,
+     "rangePct": 8.390141583639224,
+     "values": [
+      1890,
+      1907,
+      2050,
+      1890,
+      2034
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 232983,
+     "minNs": 230424,
+     "maxNs": 291224,
+     "rangePct": 26.09632462454342,
+     "values": [
+      231129,
+      291224,
+      232983,
+      230424,
+      238553
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.008185146555757286,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 6029,
+     "minNs": 5975,
+     "maxNs": 6419,
+     "rangePct": 7.3644053740255435,
+     "values": [
+      6029,
+      6329,
+      5975,
+      6026,
+      6419
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.31630452811411514,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 10512,
+     "minNs": 10411,
+     "maxNs": 10676,
+     "rangePct": 2.5209284627092847,
+     "values": [
+      10486,
+      10619,
+      10411,
+      10676,
+      10512
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.1814117199391172,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 59087,
+     "minNs": 56095,
+     "maxNs": 80262,
+     "rangePct": 40.90070573899504,
+     "values": [
+      58393,
+      56095,
+      59087,
+      80262,
+      67570
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.032274442770829456,
+      "clear": true
+     }
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 726239,
+     "minNs": 693430,
+     "maxNs": 779887,
+     "rangePct": 11.904758626292447,
+     "values": [
+      726239,
+      703488,
+      693430,
+      779887,
+      753534
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.0026258573279595286,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 11862,
+     "minNs": 11616,
+     "maxNs": 12206,
+     "rangePct": 4.973866127128646,
+     "values": [
+      12206,
+      11616,
+      11862,
+      11968,
+      11694
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.16076546956668353,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 1935,
+     "minNs": 1873,
+     "maxNs": 1986,
+     "rangePct": 5.839793281653747,
+     "values": [
+      1903,
+      1965,
+      1986,
+      1935,
+      1873
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9855297157622739,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 16.780283167278448,
+   "aaGapPct": 1.4682747771368643
+  },
+  "node 26.11.1|bench-part-put": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2676,
+     "minNs": 2620,
+     "maxNs": 2806,
+     "rangePct": 6.95067264573991,
+     "values": [
+      2670,
+      2620,
+      2705,
+      2676,
+      2806
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 234473,
+     "minNs": 219998,
+     "maxNs": 251239,
+     "rangePct": 13.323922157348607,
+     "values": [
+      219998,
+      236968,
+      234473,
+      227589,
+      251239
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.011412827916220631,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 6903,
+     "minNs": 6771,
+     "maxNs": 7023,
+     "rangePct": 3.650586701434159,
+     "values": [
+      6771,
+      7023,
+      6926,
+      6840,
+      6903
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.3876575401999131,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 10742,
+     "minNs": 10658,
+     "maxNs": 11373,
+     "rangePct": 6.656116179482406,
+     "values": [
+      10658,
+      10722,
+      10742,
+      10781,
+      11373
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.24911562092720163,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 640230,
+     "minNs": 601465,
+     "maxNs": 672842,
+     "rangePct": 11.148649704012621,
+     "values": [
+      643207,
+      612540,
+      601465,
+      640230,
+      672842
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.0041797479030973245,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 11639,
+     "minNs": 11499,
+     "maxNs": 11961,
+     "rangePct": 3.9694131798264456,
+     "values": [
+      11635,
+      11499,
+      11639,
+      11961,
+      11844
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.2299166595068305,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2691,
+     "minNs": 2653,
+     "maxNs": 3374,
+     "rangePct": 26.79301374953549,
+     "values": [
+      2691,
+      2823,
+      2679,
+      3374,
+      2653
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9944258639910813,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 53.58602749907098,
+   "aaGapPct": 0.5605381165919282
+  },
+  "node 26.11.1|bench-encode": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2881,
+     "minNs": 2841,
+     "maxNs": 3098,
+     "rangePct": 8.92051371051718,
+     "values": [
+      2881,
+      2841,
+      2929,
+      2856,
+      3098
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 239509,
+     "minNs": 229981,
+     "maxNs": 261866,
+     "rangePct": 13.312652134157798,
+     "values": [
+      242969,
+      229981,
+      239509,
+      239154,
+      261866
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.012028775536618666,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 8319,
+     "minNs": 8270,
+     "maxNs": 8519,
+     "rangePct": 2.993148214929679,
+     "values": [
+      8465,
+      8270,
+      8319,
+      8519,
+      8272
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.34631566294025723,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "wrong-result"
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 725759,
+     "minNs": 719061,
+     "maxNs": 814058,
+     "rangePct": 13.089331306949001,
+     "values": [
+      725759,
+      814058,
+      739473,
+      719061,
+      719109
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.003969637303843287,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "wrong-result"
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 2999,
+     "minNs": 2840,
+     "maxNs": 3265,
+     "rangePct": 14.17139046348783,
+     "values": [
+      3265,
+      2931,
+      3049,
+      2999,
+      2840
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9606535511837279,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 28.34278092697566,
+   "aaGapPct": 4.09580006942034
+  },
+  "node 26.11.1|bench-body-1k": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3184,
+     "minNs": 3121,
+     "maxNs": 3456,
+     "rangePct": 10.521356783919598,
+     "values": [
+      3184,
+      3178,
+      3204,
+      3121,
+      3456
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 230759,
+     "minNs": 225876,
+     "maxNs": 272001,
+     "rangePct": 19.988386151786063,
+     "values": [
+      230759,
+      225876,
+      238451,
+      228906,
+      272001
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.013797945042230206,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 6306,
+     "minNs": 6179,
+     "maxNs": 6533,
+     "rangePct": 5.613701236917222,
+     "values": [
+      6179,
+      6228,
+      6393,
+      6533,
+      6306
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.5049159530605772,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 11684,
+     "minNs": 11386,
+     "maxNs": 12667,
+     "rangePct": 10.963711057856898,
+     "values": [
+      11672,
+      11386,
+      11760,
+      11684,
+      12667
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.27250941458404654,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "wrong-result"
+    },
+    "minio": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 12710,
+     "minNs": 12348,
+     "maxNs": 13178,
+     "rangePct": 6.5302911093627065,
+     "values": [
+      12780,
+      12348,
+      12710,
+      13178,
+      12589
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.25051140833988983,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 5,
+     "medianNs": 3206,
+     "minNs": 3097,
+     "maxNs": 3716,
+     "rangePct": 19.307548346849657,
+     "values": [
+      3716,
+      3206,
+      3180,
+      3211,
+      3097
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9931378665003119,
+      "clear": false
+     }
+    }
+   },
+   "bandPct": 38.615096693699314,
+   "aaGapPct": 0.6909547738693468
+  }
+ }
+}

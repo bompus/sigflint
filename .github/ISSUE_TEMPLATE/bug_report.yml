@@ -1,0 +1,30 @@
+name: Bug report
+description: A wrong signature, a rejected request or a crash
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: sigflint version
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and version
+      description: For example Node 26.1, Bun 1.4, Deno 2.9, Cloudflare Workers with nodejs_compat
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: The request
+      description: Method, URL, region and body (use fake credentials). Say what the S3 server answered, or what botocore signs for the same request.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual
+    validations:
+      required: true
