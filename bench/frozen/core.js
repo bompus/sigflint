@@ -16,16 +16,17 @@ const emptyBodyHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7
 const reSafePath = /^[A-Za-z0-9\-._~/]*$/;
 const reSafeQuery = /^[A-Za-z0-9\-._~=&]*$/;
 const reSpaces = /[ \t]+/g;
+const reDirty = /\t|  /;
 
-const hexDigits = '0123456789ABCDEF';
-
-// byte (or ASCII code) -> what it is written as in a canonical path / query
+// ASCII code -> what it is written as in a canonical path / query. url.pathname and url.search are always ASCII (the
+// URL parser percent-encodes everything else), and so is anything a %XX escape decodes to once the high bytes are
+// escaped again.
 const pathTable = new Array(256);
 const queryTable = new Array(256);
 for (let b = 0; b < 256; b++) {
   const c = String.fromCharCode(b);
   const unreserved = /[A-Za-z0-9\-._~]/.test(c);
-  const escaped = '%' + hexDigits[b >> 4] + hexDigits[b & 15];
+  const escaped = (b < 16 ? '%0' : '%') + b.toString(16).toUpperCase();
   pathTable[b] = unreserved || c === '/' ? c : escaped;
   queryTable[b] = unreserved ? c : escaped;
 }
@@ -37,34 +38,32 @@ function hexValue(code) {
   return -1;
 }
 
-const utf8Encoder = new TextEncoder();
-
-// Decodes %XX escapes to bytes (a '%' that does not start an escape is the byte 0x25), then encodes each byte with
-// the table. Characters outside ASCII are written as their UTF-8 bytes. '+' is a space.
+// Decodes %XX escapes to bytes (a '%' that does not start an escape is the byte 0x25) and encodes each byte with the
+// table; '+' is a space. Runs of characters that are already canonical are copied as one piece.
 function canonicalEncode(string, table) {
   let out = '';
+  let start = 0;
   for (let i = 0; i < string.length; i++) {
     const code = string.charCodeAt(i);
+    const same = table[code];
+    if (same.length === 1 && code !== 43) continue;
+    out += string.slice(start, i);
+    start = i + 1;
     if (code === 37) {
       const hi = hexValue(string.charCodeAt(i + 1));
       const lo = hexValue(string.charCodeAt(i + 2));
       if (hi >= 0 && lo >= 0) {
         out += table[(hi << 4) | lo];
         i += 2;
+        start = i + 1;
       } else {
         out += '%25';
       }
-    } else if (code === 43) {
-      out += '%20';
-    } else if (code < 128) {
-      out += table[code];
     } else {
-      const codePoint = string.codePointAt(i);
-      if (codePoint > 0xffff) i++;
-      for (const byte of utf8Encoder.encode(String.fromCodePoint(codePoint))) out += table[byte];
+      out += code === 43 ? '%20' : same;
     }
   }
-  return out;
+  return start === 0 ? string : out + string.slice(start);
 }
 
 function canonicalPath(pathname) {
@@ -72,12 +71,8 @@ function canonicalPath(pathname) {
   return canonicalEncode(pathname, pathTable);
 }
 
-function compareStrings(a, b) {
-  return a < b ? -1 : a > b ? 1 : 0;
-}
-
 function comparePairs(a, b) {
-  return compareStrings(a[0], b[0]) || compareStrings(a[1], b[1]);
+  return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
 }
 
 // search is url.search, which is '' or starts with '?'
@@ -85,6 +80,28 @@ function canonicalQuery(search) {
   if (search.length < 2) return '';
   const query = search.slice(1);
   const simple = reSafeQuery.test(query);
+  if (simple) {
+    // Plain characters, one '=' per parameter, in order: the canonical query is the query (a name without a value gets
+    // a '='). Anything else, including two parameters with the same name and value, is left to the general code below.
+    let out = '';
+    let previousName = '';
+    let previousValue = '';
+    let start = 0;
+    for (;;) {
+      let end = query.indexOf('&', start);
+      if (end === -1) end = query.length;
+      let eq = query.indexOf('=', start);
+      if (eq === -1 || eq > end) eq = end;
+      const name = query.slice(start, eq);
+      const value = query.slice(eq + 1, end);
+      if (end === start || eq === start || value.includes('=') || (start > 0 && (name < previousName || (name === previousName && value <= previousValue)))) break;
+      out += (start === 0 ? '' : '&') + name + '=' + value;
+      if (end === query.length) return out;
+      previousName = name;
+      previousValue = value;
+      start = end + 1;
+    }
+  }
   const pairs = [];
   for (const part of query.split('&')) {
     if (part === '') continue;
@@ -98,6 +115,22 @@ function canonicalQuery(search) {
   let out = '';
   for (let i = 0; i < pairs.length; i++) out += (i === 0 ? '' : '&') + pairs[i][0] + '=' + pairs[i][1];
   return out;
+}
+
+// inserts into the name-ordered lists, replacing an entry with the same name
+function insert(names, values, name, value) {
+  let i = names.length;
+  while (i > 0 && names[i - 1] > name) i--;
+  if (i > 0 && names[i - 1] === name) {
+    values[i - 1] = value;
+    return;
+  }
+  for (let j = names.length; j > i; j--) {
+    names[j] = names[j - 1];
+    values[j] = values[j - 1];
+  }
+  names[i] = name;
+  values[i] = value;
 }
 
 // 20130524T000000Z, recomputed only when the second changes
@@ -180,22 +213,42 @@ export function prepare(request, credentials, payloadHash) {
     canonicalHeaders = `host:${url.host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${datetime}\n`;
     signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
   } else {
-    const extras = signHeaders ?? {};
-    const signed = { host: url.host, 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash };
+    // the extra headers (and the session token) in name order, then merged with the three that are always signed;
+    // a header named like one of those, or like an earlier extra, replaces it
+    const names = [];
+    const values = [];
     if (sessionToken) {
       headers['x-amz-security-token'] = sessionToken;
-      signed['x-amz-security-token'] = sessionToken.trim();
+      insert(names, values, 'x-amz-security-token', sessionToken.trim());
     }
     for (const name of extraNames) {
+      const value = /** @type {Record<string, string>} */ (signHeaders)[name];
       const lowerName = name.toLowerCase();
-      headers[lowerName] = extras[name];
-      signed[lowerName] = String(extras[name]).trim().replace(reSpaces, ' ');
+      headers[lowerName] = value;
+      const trimmed = String(value).trim();
+      insert(names, values, lowerName, reDirty.test(trimmed) ? trimmed.replace(reSpaces, ' ') : trimmed);
     }
-    const names = Object.keys(signed).sort();
+    const baseNames = ['host', 'x-amz-content-sha256', 'x-amz-date'];
+    const baseValues = [url.host, payloadHash, datetime];
     canonicalHeaders = '';
-    for (const name of names) canonicalHeaders += `${name}:${signed[name]}\n`;
-    signedHeaders = names.join(';');
-    payloadHash = signed['x-amz-content-sha256']; // a caller-supplied x-amz-content-sha256 replaces the computed one
+    signedHeaders = '';
+    let i = 0;
+    let j = 0;
+    while (i < names.length || j < 3) {
+      let name;
+      let value;
+      if (j === 3 || (i < names.length && names[i] <= baseNames[j])) {
+        name = names[i];
+        value = values[i++];
+        if (j < 3 && name === baseNames[j]) j++;
+      } else {
+        name = baseNames[j];
+        value = baseValues[j++];
+      }
+      if (name === 'x-amz-content-sha256') payloadHash = value; // a caller-supplied one replaces the computed one
+      canonicalHeaders += `${name}:${value}\n`;
+      signedHeaders += signedHeaders === '' ? name : ';' + name;
+    }
   }
 
   const credentialScope = `${date}/${region}/s3/aws4_request`;

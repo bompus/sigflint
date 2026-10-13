@@ -1,6 +1,6 @@
 {
  "tagCounts": {
-  "well-formed": 1211,
+  "well-formed": 1520,
   "unsigned-header": 2,
   "plus-in-path": 90,
   "malformed": 1399,
@@ -14,7 +14,7 @@
    "unsupported": 0,
    "byTag": {
     "well-formed": {
-     "pass": 1211,
+     "pass": 1520,
      "fail": 0,
      "error": 0
     },
@@ -53,8 +53,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 1208,
-     "fail": 3,
+     "pass": 1408,
+     "fail": 112,
      "error": 0
     },
     "unsigned-header": {
@@ -80,8 +80,19 @@
    },
    "failIds": [
     "query-duplicate-names",
+    "query-same-name-sorted",
+    "query-same-name-and-value",
+    "headers-around-the-fixed-three",
     "fuzz-479",
-    "fuzz-1778"
+    "fuzz-1778",
+    "qname-2",
+    "qname-14",
+    "qname-20",
+    "qname-22",
+    "qname-23",
+    "qname-24",
+    "qname-27",
+    "qname-28"
    ],
    "errIds": []
   },
@@ -91,8 +102,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 1063,
-     "fail": 148,
+     "pass": 1264,
+     "fail": 256,
      "error": 0
     },
     "unsigned-header": {
@@ -118,6 +129,8 @@
    },
    "failIds": [
     "query-duplicate-names",
+    "query-same-name-sorted",
+    "query-same-name-and-value",
     "fuzz-13",
     "fuzz-16",
     "fuzz-24",
@@ -128,9 +141,7 @@
     "fuzz-142",
     "fuzz-163",
     "fuzz-164",
-    "fuzz-176",
-    "fuzz-180",
-    "fuzz-214"
+    "fuzz-176"
    ],
    "errIds": []
   },
@@ -140,8 +151,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 596,
-     "fail": 615,
+     "pass": 904,
+     "fail": 616,
      "error": 0
     },
     "unsigned-header": {
@@ -170,6 +181,7 @@
     "path-encoded-slash",
     "path-lowercase-hex",
     "bench-encode",
+    "headers-around-the-fixed-three",
     "fuzz-2",
     "fuzz-8",
     "fuzz-12",
@@ -178,8 +190,7 @@
     "fuzz-16",
     "fuzz-18",
     "fuzz-20",
-    "fuzz-26",
-    "fuzz-30"
+    "fuzz-26"
    ],
    "errIds": []
   },
@@ -189,8 +200,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 1211,
-     "fail": 0,
+     "pass": 1519,
+     "fail": 1,
      "error": 0
     },
     "unsigned-header": {
@@ -214,7 +225,9 @@
      "error": 0
     }
    },
-   "failIds": [],
+   "failIds": [
+    "headers-around-the-fixed-three"
+   ],
    "errIds": []
   },
   "smithy-web": {
@@ -223,8 +236,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 596,
-     "fail": 615,
+     "pass": 904,
+     "fail": 616,
      "error": 0
     },
     "unsigned-header": {
@@ -253,6 +266,7 @@
     "path-encoded-slash",
     "path-lowercase-hex",
     "bench-encode",
+    "headers-around-the-fixed-three",
     "fuzz-2",
     "fuzz-8",
     "fuzz-12",
@@ -261,8 +275,7 @@
     "fuzz-16",
     "fuzz-18",
     "fuzz-20",
-    "fuzz-26",
-    "fuzz-30"
+    "fuzz-26"
    ],
    "errIds": []
   },
@@ -272,8 +285,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 78,
-     "fail": 1133,
+     "pass": 226,
+     "fail": 1294,
      "error": 0
     },
     "unsigned-header": {
@@ -309,9 +322,9 @@
     "bench-part-put",
     "bench-encode",
     "bench-body-1k",
-    "fuzz-2",
-    "fuzz-4",
-    "fuzz-5"
+    "headers-name-prefix",
+    "headers-around-the-fixed-three",
+    "fuzz-2"
    ],
    "errIds": []
   },
@@ -321,8 +334,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 358,
-     "fail": 853,
+     "pass": 666,
+     "fail": 854,
      "error": 0
     },
     "unsigned-header": {
@@ -353,14 +366,14 @@
     "headers-extra-spaces",
     "body-unicode",
     "bench-body-1k",
+    "headers-name-prefix",
     "fuzz-2",
     "fuzz-4",
     "fuzz-5",
     "fuzz-8",
     "fuzz-9",
     "fuzz-15",
-    "fuzz-16",
-    "fuzz-17"
+    "fuzz-16"
    ],
    "errIds": []
   },
@@ -370,8 +383,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 255,
-     "fail": 956,
+     "pass": 526,
+     "fail": 994,
      "error": 0
     },
     "unsigned-header": {
@@ -404,12 +417,12 @@
     "query-equals-in-value",
     "headers-extra-spaces",
     "bench-encode",
+    "query-name-prefix-dash",
+    "query-name-prefix-dash-sorted",
+    "headers-around-the-fixed-three",
     "fuzz-2",
     "fuzz-4",
-    "fuzz-5",
-    "fuzz-8",
-    "fuzz-9",
-    "fuzz-12"
+    "fuzz-5"
    ],
    "errIds": []
   },
@@ -419,8 +432,8 @@
    "unsupported": 316,
    "byTag": {
     "well-formed": {
-     "pass": 1066,
-     "fail": 145,
+     "pass": 1320,
+     "fail": 200,
      "error": 0
     },
     "unsigned-header": {
@@ -446,6 +459,11 @@
    },
    "failIds": [
     "headers-extra-spaces",
+    "query-name-prefix-dash",
+    "query-name-prefix-dash-sorted",
+    "query-name-prefix-digit",
+    "query-name-prefix-dot",
+    "headers-around-the-fixed-three",
     "fuzz-5",
     "fuzz-26",
     "fuzz-50",
@@ -453,12 +471,7 @@
     "fuzz-67",
     "fuzz-76",
     "fuzz-95",
-    "fuzz-110",
-    "fuzz-138",
-    "fuzz-155",
-    "fuzz-167",
-    "fuzz-180",
-    "fuzz-239"
+    "fuzz-110"
    ],
    "errIds": []
   }

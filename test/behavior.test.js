@@ -45,6 +45,14 @@ describe('result', () => {
     assert.equal(header['x-amz-content-sha256'], 'UNSIGNED-PAYLOAD');
   });
 
+  test('header names are matched without regard to case, a later header replaces an earlier one, and order does not matter', () => {
+    const url = new URL('https://bucket.example.com/key');
+    const sign = (signHeaders) => getAuthHeaders({ method: 'PUT', url, region: 'us-east-1', body: 'x', signHeaders, now }, credentials);
+    assert.equal(sign({ 'Content-Type': 'a', 'content-type': 'b' }).authorization, sign({ 'content-type': 'b' }).authorization);
+    assert.notEqual(sign({ 'content-type': 'a' }).authorization, sign({ 'content-type': 'b' }).authorization);
+    assert.equal(sign({ 'x-amz-meta-b': '1', 'x-amz-acl': '2' }).authorization, sign({ 'x-amz-acl': '2', 'x-amz-meta-b': '1' }).authorization);
+  });
+
   test('does not modify the request', () => {
     const url = new URL('https://bucket.example.com/a%20b?z=1&a=2&=x');
     const signHeaders = { 'X-Amz-Acl': ' private ' };

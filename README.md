@@ -13,9 +13,9 @@ const headers = await getAuthHeaders(
 const response = await fetch(url, { headers });
 ```
 
-- **Correct.** It returns the same signature as botocore for all 3,049 requests in its test corpus, including keys with spaces, `+`, `%`, unicode and sorted, repeated and empty query parameters. See [how it is tested](#how-it-is-tested).
-- **Fast.** 1.6 to 4 µs per signature on Node and Bun. The other libraries take 2 to 380 times as long on the requests they sign correctly. See [speed](#speed).
-- **Small.** 3.4 kB minified, 1.8 kB gzipped, nothing to install with it. See [size](#size).
+- **Correct.** It returns the same signature as botocore for all 3,360 requests in its test corpus, including keys with spaces, `+`, `%`, unicode and sorted, repeated and empty query parameters. See [how it is tested](#how-it-is-tested).
+- **Fast.** 1.3 to 3.4 µs per signature on Node and Bun. The other libraries take 2.7 to 550 times as long on the requests they sign correctly. See [speed](#speed).
+- **Small.** 4.5 kB minified, 2.3 kB gzipped, nothing to install with it. See [size](#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
 It signs S3 requests with the `Authorization` header. Presigned URLs, other AWS services and streaming uploads are not in 1.0 ([scope](#scope)).
@@ -59,7 +59,7 @@ Any S3-compatible service works the same way; pass its region name and URL (`htt
 
 On Node.js, Bun and Deno `getAuthHeaders` returns the headers directly. In Cloudflare Workers and browsers it returns a promise, because the only SHA-256 and HMAC there is WebCrypto, which has only promises. The package picks the right one when you import it (the `workerd`, `worker` and `browser` export conditions select the WebCrypto code, with or without `nodejs_compat`), so `await` the result and the same code runs everywhere. The TypeScript type is `headers | Promise<headers>`, so forgetting the `await` is a compile error rather than a request with no signature.
 
-On Node and Bun, the `await` adds about 0.1 µs to a 1.2 to 2 µs call (`bench/await-cost.mjs`). On a Worker the WebCrypto version takes about 7 µs where `node:crypto` takes about 5 µs (a local workerd pilot); `sigflint/web` selects the WebCrypto code on any runtime, and on Node, Bun and Deno it is about 100 times slower than the default (about 160 µs), so import it only where you need it.
+On Node and Bun, the `await` adds 0 to 0.1 µs to a 1.1 to 1.3 µs call (`bench/await-cost.mjs`). `sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it takes about 170 µs per signature, more than 100 times as long as the default, so import it only where you need it.
 
 ## API
 
@@ -131,15 +131,15 @@ Each library signed one S3 GET on each runtime and was checked against botocore'
 
 Requests whose signature equals botocore’s (same key, same clock).
 
-| Library | Version | Ordinary requests (1,211) | Edge cases (1,522) |
+| Library | Version | Ordinary requests (1,520) | Edge cases (1,522) |
 |---|---|--:|--:|
-| **sigflint** | 0.1.0 | 1,211 (100.0%) | 1,522 (100.0%) |
-| aws4fetch | 1.0.20 | 1,208 (99.8%) | 595 (39.1%) |
-| aws4 | 1.13.2 | 1,063 (87.8%) | 268 (17.6%) |
-| @smithy/signature-v4 | 5.7.4 | 596 (49.2%) | 236 (15.5%) |
-| @wdl-dev/aws-sigv4 | 3.0.4 | 358 (29.6%) | 44 (2.9%) |
-| minio | 8.0.7 | 255 (21.1%) | 3 (0.2%) |
-| aws-sig | 2.1.0 | 78 (6.4%) | 12 (0.8%) |
+| **sigflint** | 0.1.0 | 1,520 (100.0%) | 1,522 (100.0%) |
+| aws4fetch | 1.0.20 | 1,408 (92.6%) | 595 (39.1%) |
+| aws4 | 1.13.2 | 1,264 (83.2%) | 268 (17.6%) |
+| @smithy/signature-v4 | 5.7.4 | 904 (59.5%) | 236 (15.5%) |
+| @wdl-dev/aws-sigv4 | 3.0.4 | 666 (43.8%) | 44 (2.9%) |
+| minio | 8.0.7 | 526 (34.6%) | 3 (0.2%) |
+| aws-sig | 2.1.0 | 226 (14.9%) | 12 (0.8%) |
 <!-- END correctness -->
 
 The reference is botocore's S3 signer (`S3SigV4Auth`), run on the same requests with a fixed clock, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those.
@@ -160,27 +160,27 @@ Microseconds per signature, median of 5 processes. “wrong signature” means t
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.91** | **2.68** | **2.88** | **3.18** |
-| aws4fetch | 232.98 | 234.47 | 239.51 | 230.76 |
-| aws4 | 6.03 | 6.90 | 8.32 | 6.31 |
-| @smithy/signature-v4 | 10.51 | 10.74 | wrong signature | 11.68 |
-| aws-sig | 59.09 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 726.24 | 640.23 | 725.76 | wrong signature |
-| minio | 11.86 | 11.64 | wrong signature | 12.71 |
+| **sigflint** | **1.31** | **1.68** | **2.17** | **2.36** |
+| aws4fetch | 235.41 | 237.08 | 254.07 | 230.90 |
+| aws4 | 6.04 | 6.98 | 8.30 | 6.33 |
+| @smithy/signature-v4 | 10.38 | 10.83 | wrong signature | 11.57 |
+| aws-sig | 64.78 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 716.20 | 631.51 | 734.79 | wrong signature |
+| minio | 11.67 | 11.66 | wrong signature | 12.61 |
 
 **Bun 1.4.3**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.59** | **2.49** | **3.95** | **3.21** |
-| aws4fetch | 213.13 | 213.46 | 221.21 | 211.75 |
-| aws4 | 7.65 | 8.86 | 12.47 | 9.36 |
-| @smithy/signature-v4 | 9.82 | 12.27 | wrong signature | 13.72 |
-| aws-sig | 44.27 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 584.37 | 603.80 | 587.12 | wrong signature |
-| minio | 8.21 | 9.70 | wrong signature | 10.33 |
+| **sigflint** | **1.66** | **2.19** | **3.39** | **3.10** |
+| aws4fetch | 221.66 | 221.74 | 229.05 | 228.30 |
+| aws4 | 9.73 | 11.29 | 14.10 | 11.70 |
+| @smithy/signature-v4 | 12.88 | 13.12 | wrong signature | 14.14 |
+| aws-sig | 48.71 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 580.71 | 579.84 | 632.34 | wrong signature |
+| minio | 8.98 | 8.51 | wrong signature | 11.59 |
 
-Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 31%; bun 1.4.3 bench-part-put: 32%; bun 1.4.3 bench-encode: 54%; bun 1.4.3 bench-body-1k: 15%; node 26.11.1 bench-download: 17%; node 26.11.1 bench-part-put: 54%; node 26.11.1 bench-encode: 28%; node 26.11.1 bench-body-1k: 39%. Every gap between sigflint and another library is far outside its band.
+Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 51%; bun 1.4.3 bench-part-put: 65%; bun 1.4.3 bench-encode: 41%; bun 1.4.3 bench-body-1k: 31%; node 26.11.1 bench-download: 34%; node 26.11.1 bench-part-put: 38%; node 26.11.1 bench-encode: 64%; node 26.11.1 bench-body-1k: 32%. Every gap between sigflint and another library is far outside its band.
 
 <!-- END speed -->
 
@@ -194,7 +194,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 | Library | Source (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 11,435 | 3,357 | 1,763 | 1,608 | 0 |  |
+| **sigflint** | 15,248 | 4,499 | 2,324 | 2,155 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -205,7 +205,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 ## How it is tested
 
-`test/corpus.json` holds 3,049 requests and the signature botocore computes for each: the four S3 documentation examples, hand-picked edge cases, and 3,000 seeded random requests. `npm test` signs every one and compares. The corpus is generated by `conformance/` (run `npm run conformance` to rebuild it with the pinned botocore); the generator, the cases and the reference script are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
+`test/corpus.json` holds 3,360 requests and the signature botocore computes for each: the four S3 documentation examples, hand-picked edge cases, and 3,300 seeded random requests. `npm test` signs every one and compares. The corpus is generated by `conformance/` (run `npm run conformance` to rebuild it with the pinned botocore); the generator, the cases and the reference script are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
 
 ## Methodology and limits
 

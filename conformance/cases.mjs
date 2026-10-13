@@ -56,6 +56,15 @@ const fixed = [
   ['bench-part-put', 'PUT', `${B}/2022/05/media/upload/video-1__abc123.mp4?partNumber=7&uploadId=2~m3XvQ9aD-ZkP_0wL`, { 'x-amz-acl': 'public-read' }, '', true],
   ['bench-encode', 'GET', `${B}/folder one/ünï cödé/file (1) [final]!.txt?prefix=a b&delimiter=/&max-keys=100`, {}],
   ['bench-body-1k', 'PUT', `${B}/2022/05/notes.json`, { 'x-amz-meta-note': 'a  b', 'x-amz-acl': 'private' }, 'x'.repeat(1024)],
+  ['query-name-prefix-dash', 'GET', `${B}/?a-b=1&a=2`, {}],
+  ['query-name-prefix-dash-sorted', 'GET', `${B}/?a=2&a-b=1`, {}],
+  ['query-name-prefix-digit', 'GET', `${B}/?a1&a&max-keys`, {}],
+  ['query-name-prefix-dot', 'GET', `${B}/?a.b&a`, {}],
+  ['query-same-name-sorted', 'GET', `${B}/?a=1&a=2`, {}],
+  ['query-same-name-and-value', 'GET', `${B}/?a=1&a=1`, {}],
+  ['query-valueless-mix', 'GET', `${B}/?b&a&c=1`, {}],
+  ['headers-name-prefix', 'PUT', `${B}/k`, { 'x-amz-meta-a_b': '3', 'x-amz-meta-a-b': '2', 'x-amz-meta-a': '1' }, 'x'],
+  ['headers-around-the-fixed-three', 'PUT', `${B}/k`, { 'x-amz-meta-z': 'z', 'content-type': 'text/plain', 'x-amz-acl': 'private', 'cache-control': 'no-cache', 'x-amz-storage-class': 'STANDARD' }, 'x'],
   ['root-no-path', 'GET', 'https://bucket.us-sea-1.linodeobjects.com', {}],
 ];
 
@@ -106,6 +115,13 @@ for (let i = 0; i < 3000; i++) {
   const c = { id: `fuzz-${i}`, kind: 'fuzz', method, href: u.href, headers, body: pick(bodies), unsigned: rnd() < 0.5 };
   if (rndToken() < 0.1) c.token = `token-${i}-${Math.floor(rndToken() * 1e6)}+/=`;
   cases.push(c);
+}
+// queries whose names start with one another, in every order, with and without values
+const qNames = ['a', 'a-b', 'a.b', 'a1', 'a_b', 'ab', 'b', 'B', 'a~b'];
+for (let i = 0; i < 300; i++) {
+  const pairs = Array.from({ length: 1 + ri(5) }, () => { const name = pick(qNames); return rnd() < 0.25 ? name : `${name}=${pick(['', '1', '2', 'x', 'a b', '~'])}`; });
+  const u = new URL(`https://${pick(hosts)}/k?${pairs.join('&')}`);
+  cases.push({ id: `qname-${i}`, kind: 'fuzz', method: 'GET', href: u.href, headers: {}, body: '', unsigned: false });
 }
 writeFileSync(process.argv[2], JSON.stringify(cases));
 console.log(`${cases.length} cases (${cases.filter((c) => c.kind === 'fixed').length} fixed, ${cases.filter((c) => c.kind === 'fuzz').length} fuzz)`);
