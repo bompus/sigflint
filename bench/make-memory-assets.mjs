@@ -90,7 +90,7 @@ const cell = (m, rt, wl) => summary.cells.find((c) => c.metric === m && c.runtim
 const FULL = { aws4: 'aws4', minio: 'minio', aws4fetch: 'aws4fetch', smithy: '@smithy/signature-v4', 'aws-sig': 'aws-sig', wdl: '@wdl-dev/aws-sigv4', 'sigflint-A': '**sigflint**' };
 let md = '';
 for (const rt of ['node', 'bun']) {
-  md += `\n**${rt === 'node' ? 'Node 26.11.1' : 'Bun 1.4.3'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
+  md += `\n**${rt === 'node' ? 'Node 26.12.0' : 'Bun 1.4.3'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
   for (const arm of ORDER) md += `| ${FULL[arm]} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
 }
 // the spread of the allocation ratio over every workload the library signs correctly
