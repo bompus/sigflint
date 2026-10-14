@@ -227,41 +227,49 @@ export function prepare(request, credentials, payloadHash, scheme = symmetric) {
   const headers = withHash ? { 'x-amz-date': datetime, 'x-amz-content-sha256': payloadHash } : { 'x-amz-date': datetime }; // as returned
 
   const extraNames = signHeaders === undefined ? [] : Object.keys(signHeaders);
-  // the extra headers (and the session token) in name order, then merged with the three that are always signed;
-  // a header named like one of those, or like an earlier extra, replaces it
-  const names = [];
-  const values = [];
-  if (sessionToken) {
-    headers['x-amz-security-token'] = sessionToken;
-    insert(names, values, 'x-amz-security-token', sessionToken.trim());
-  }
-  for (const name of extraNames) {
-    const value = /** @type {Record<string, string>} */ (signHeaders)[name];
-    const lowerName = name.toLowerCase();
-    headers[lowerName] = value;
-    insert(names, values, lowerName, headerValue(value));
-  }
-  const baseNames = withHash ? ['host', 'x-amz-content-sha256', 'x-amz-date'] : ['host', 'x-amz-date'];
-  const baseValues = withHash ? [url.host, payloadHash, datetime] : [url.host, datetime];
-  const nBase = baseNames.length;
-  let canonicalHeaders = '';
-  let signedHeaders = '';
-  let i = 0;
-  let j = 0;
-  while (i < names.length || j < nBase) {
-    let name;
-    let value;
-    if (j === nBase || (i < names.length && names[i] <= baseNames[j])) {
-      name = names[i];
-      value = values[i++];
-      if (j < nBase && name === baseNames[j]) j++;
-    } else {
-      name = baseNames[j];
-      value = baseValues[j++];
+  let canonicalHeaders;
+  let signedHeaders;
+  if (extraNames.length === 0 && !sessionToken) {
+    // the usual request: only the headers that are always signed, already in sorted order
+    canonicalHeaders = withHash ? `host:${url.host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${datetime}\n` : `host:${url.host}\nx-amz-date:${datetime}\n`;
+    signedHeaders = withHash ? 'host;x-amz-content-sha256;x-amz-date' : 'host;x-amz-date';
+  } else {
+    // the extra headers (and the session token) in name order, then merged with the ones that are always signed;
+    // a header named like one of those, or like an earlier extra, replaces it
+    const names = [];
+    const values = [];
+    if (sessionToken) {
+      headers['x-amz-security-token'] = sessionToken;
+      insert(names, values, 'x-amz-security-token', sessionToken.trim());
     }
-    if (name === 'x-amz-content-sha256') payloadHash = value; // a caller-supplied one replaces the computed one
-    canonicalHeaders += `${name}:${value}\n`;
-    signedHeaders += signedHeaders === '' ? name : ';' + name;
+    for (const name of extraNames) {
+      const value = /** @type {Record<string, string>} */ (signHeaders)[name];
+      const lowerName = name.toLowerCase();
+      headers[lowerName] = value;
+      insert(names, values, lowerName, headerValue(value));
+    }
+    const baseNames = withHash ? ['host', 'x-amz-content-sha256', 'x-amz-date'] : ['host', 'x-amz-date'];
+    const baseValues = withHash ? [url.host, payloadHash, datetime] : [url.host, datetime];
+    const nBase = baseNames.length;
+    canonicalHeaders = '';
+    signedHeaders = '';
+    let i = 0;
+    let j = 0;
+    while (i < names.length || j < nBase) {
+      let name;
+      let value;
+      if (j === nBase || (i < names.length && names[i] <= baseNames[j])) {
+        name = names[i];
+        value = values[i++];
+        if (j < nBase && name === baseNames[j]) j++;
+      } else {
+        name = baseNames[j];
+        value = baseValues[j++];
+      }
+      if (name === 'x-amz-content-sha256') payloadHash = value; // a caller-supplied one replaces the computed one
+      canonicalHeaders += `${name}:${value}\n`;
+      signedHeaders += signedHeaders === '' ? name : ';' + name;
+    }
   }
 
   const canonicalRequest = `${method}\n${canonicalPath(service, url.pathname)}\n${canonicalQuery(url.search)}\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
