@@ -32,7 +32,7 @@ let lastKey;
 
 async function getSigningKey(secretAccessKey, date, region, service) {
   if (secretAccessKey === lastSecret && date === lastDate && region === lastRegion && service === lastService) return lastKey;
-  const cacheKey = `${date}/${region}/${service}/${secretAccessKey}`;
+  const cacheKey = `${date}\n${region}\n${service}\n${secretAccessKey}`;
   let signingKey = signingKeys.get(cacheKey);
   if (signingKey === undefined) {
     const dateKey = await deriveKey(await importKey(utf8.encode('AWS4' + secretAccessKey)), date);
@@ -147,7 +147,7 @@ export function chunkSigner(authHeaders, credentials) {
   let turn = Promise.resolve();
   const sign = (data) => (turn = turn.then(async () => (previous = await signWith(await keyPromise, chunkStringToSign(seed.datetime, seed.scope, previous, await hexHash(data))))));
   return {
-    chunk: async (data) => frameChunk(await sign(data), data),
+    chunk: async (data) => (data.length === 0 ? data : frameChunk(await sign(data), data)),
     async end(trailers) {
       const signature = await sign(new Uint8Array(0));
       if (trailers === undefined) return frameEnd(signature);

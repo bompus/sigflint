@@ -158,6 +158,17 @@ export function insert(names, values, name, value) {
   values[i] = value;
 }
 
+/**
+ * Refuses a signHeaders entry that cannot be signed as given: x-amz-date and authorization are set by the signer, `__proto__` cannot be a property of the
+ * returned headers, and a line break in a value would start another canonical header line. Returns the lowercase name.
+ */
+export function signHeaderName(name, value) {
+  const lowerName = name.toLowerCase();
+  if (lowerName === 'x-amz-date' || lowerName === 'authorization' || lowerName === '__proto__') throw new TypeError(`signHeaders cannot contain ${lowerName}`);
+  if (/[\r\n]/.test(value)) throw new TypeError(`signHeaders ${lowerName} has a line break in its value`);
+  return lowerName;
+}
+
 /** A header value as it is signed: trimmed, runs of spaces and tabs collapsed. */
 export const headerValue = (value) => {
   const trimmed = String(value).trim();
@@ -205,6 +216,8 @@ export function amzDatetime(now) {
  * @property {(data: string | Uint8Array) => string} hexHash - SHA-256 as lowercase hex
  * @property {(key: string | Uint8Array, data: string) => Uint8Array} hmac - HMAC-SHA-256 as bytes
  * @property {(key: Uint8Array, data: string) => string} hmacHex - HMAC-SHA-256 as lowercase hex
+ * @property {ReturnType<typeof createKeys>} getSigningKey - the entry's one signing-key cache, shared by every symmetric signer
+ * @property {(credentials: Credentials, text: string) => string} signAsymmetric - the entry's one SigV4a signer, shared by both SigV4a functions
  */
 
 /** The payload hash for x-amz-content-sha256. The hash function may return a promise, which is then the result. */
@@ -244,7 +257,7 @@ export function prepare(request, credentials, payloadHash, scheme = symmetric) {
     }
     for (const name of extraNames) {
       const value = /** @type {Record<string, string>} */ (signHeaders)[name];
-      const lowerName = name.toLowerCase();
+      const lowerName = signHeaderName(name, value);
       headers[lowerName] = value;
       insert(names, values, lowerName, headerValue(value));
     }
@@ -299,7 +312,7 @@ export function createKeys(hmac) {
 
   return function getSigningKey(secretAccessKey, date, region, service) {
     if (secretAccessKey === lastSecret && date === lastDate && region === lastRegion && service === lastService) return lastKey;
-    const cacheKey = `${date}/${region}/${service}/${secretAccessKey}`;
+    const cacheKey = `${date}\n${region}\n${service}\n${secretAccessKey}`; // a region or service cannot contain a line break, so two scopes never share a key
     let signingKey = signingKeys.get(cacheKey);
     if (signingKey === undefined) {
       signingKey = hmac(hmac(hmac(hmac('AWS4' + secretAccessKey, date), region), service), 'aws4_request');
@@ -319,8 +332,7 @@ export function createKeys(hmac) {
  * @param {Primitives} primitives
  * @returns {(request: SignRequest, credentials: Credentials) => AuthHeaders}
  */
-export function createSigner({ hexHash, hmac, hmacHex }) {
-  const getSigningKey = createKeys(hmac);
+export function createSigner({ hexHash, hmacHex, getSigningKey }) {
   return function getAuthHeaders(request, credentials) {
     const prepared = prepare(request, credentials, payloadHashOf(request, hexHash));
     return authorize(prepared, credentials.accessKeyId, hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))));

@@ -56,12 +56,11 @@ export function createAsymmetric(hmac, ecdsa) {
 }
 
 /**
- * The synchronous entries' SigV4a header signer: `ecdsa` is `{ key(d) , sign(key, text) }`.
+ * The synchronous entries' SigV4a header signer; `primitives.signAsymmetric` comes from createAsymmetric.
  * @param {import('./base.js').Primitives} primitives
  * @returns {(request: import('./base.js').SignRequest, credentials: import('./base.js').Credentials) => import('./base.js').AuthHeaders}
  */
-export function createSignerV4a({ hexHash, hmac }, ecdsa) {
-  const sign = createAsymmetric(hmac, ecdsa);
+export function createSignerV4a({ hexHash, signAsymmetric: sign }) {
   return function getAuthHeadersV4a(request, credentials) {
     const prepared = prepare(withRegionSet(request), credentials, payloadHashOf(request, hexHash), asymmetric);
     return authorize(prepared, credentials.accessKeyId, sign(credentials, stringToSign(prepared, hexHash(prepared.canonicalRequest))));
@@ -72,8 +71,7 @@ export function createSignerV4a({ hexHash, hmac }, ecdsa) {
  * @param {import('./base.js').Primitives} primitives
  * @returns {(request: import('./base.js').SignRequest, credentials: import('./base.js').Credentials) => string}
  */
-export function createPresignerV4a({ hexHash, hmac }, ecdsa) {
-  const sign = createAsymmetric(hmac, ecdsa);
+export function createPresignerV4a({ hexHash, signAsymmetric: sign }) {
   return function presignV4a(request, credentials) {
     const prepared = preparePresign(request, credentials, payloadHashOf(request, hexHash), asymmetric, regionSetQuery(request));
     return presignedUrl(prepared, sign(credentials, stringToSign(prepared, hexHash(prepared.canonicalRequest))));

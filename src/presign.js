@@ -1,5 +1,5 @@
 // Presigned URLs: the signature goes in the query string instead of the authorization header.
-import { symmetric, canonicalPath, canonicalQuery, insert, headerValue, amzDatetime, payloadHashOf, stringToSign, createKeys } from './base.js';
+import { symmetric, canonicalPath, canonicalQuery, insert, headerValue, signHeaderName, amzDatetime, payloadHashOf, stringToSign } from './base.js';
 
 export const encodeQueryPart = (text) => encodeURIComponent(text).replace(/[!'()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 
@@ -9,6 +9,10 @@ export const encodeQueryPart = (text) => encodeURIComponent(text).replace(/[!'()
  */
 export function preparePresign(request, credentials, payloadHash, scheme = symmetric, extra = '') {
   const { method, url, signHeaders } = request;
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new TypeError('presign needs an http or https URL');
+  if (url.search.length > 1 && (url.search.includes('X-Amz-Signature=') || url.search.includes('X-Amz-Algorithm='))) throw new TypeError('the URL is already presigned');
+  const expires = request.expires ?? 3600;
+  if (!Number.isInteger(expires) || expires < 1 || expires > 604800) throw new RangeError('expires must be a whole number of seconds from 1 to 604800 (7 days)');
   const region = request.region ?? '';
   const service = request.service ?? 's3';
   const datetime = amzDatetime(request.now ?? Date.now());
@@ -16,11 +20,11 @@ export function preparePresign(request, credentials, payloadHash, scheme = symme
   const credentialScope = scheme.scope(date, region, service);
   const names = ['host'];
   const values = [url.host];
-  for (const name in signHeaders) insert(names, values, name.toLowerCase(), headerValue(signHeaders[name]));
+  if (signHeaders !== undefined) for (const name of Object.keys(signHeaders)) insert(names, values, signHeaderName(name, signHeaders[name]), headerValue(signHeaders[name]));
   let canonicalHeaders = '';
   for (let i = 0; i < names.length; i++) canonicalHeaders += `${names[i]}:${values[i]}\n`;
   const signedHeaders = names.join(';');
-  let auth = `X-Amz-Algorithm=${scheme.algorithm}&X-Amz-Credential=${encodeQueryPart(`${credentials.accessKeyId}/${credentialScope}`)}&X-Amz-Date=${datetime}&X-Amz-Expires=${request.expires ?? 3600}&X-Amz-SignedHeaders=${encodeQueryPart(signedHeaders)}`;
+  let auth = `X-Amz-Algorithm=${scheme.algorithm}&X-Amz-Credential=${encodeQueryPart(`${credentials.accessKeyId}/${credentialScope}`)}&X-Amz-Date=${datetime}&X-Amz-Expires=${expires}&X-Amz-SignedHeaders=${encodeQueryPart(signedHeaders)}`;
   if (credentials.sessionToken) auth += `&X-Amz-Security-Token=${encodeQueryPart(credentials.sessionToken)}`;
   auth += extra;
   const query = url.search.length > 1 ? url.search + '&' + auth : '?' + auth;
@@ -36,8 +40,7 @@ export const presignedUrl = (prepared, signature) => `${prepared.base}${prepared
  * @param {import('./base.js').Primitives} primitives
  * @returns {(request: import('./base.js').SignRequest, credentials: import('./base.js').Credentials) => string}
  */
-export function createPresigner({ hexHash, hmac, hmacHex }) {
-  const getSigningKey = createKeys(hmac);
+export function createPresigner({ hexHash, hmacHex, getSigningKey }) {
   return function presign(request, credentials) {
     const prepared = preparePresign(request, credentials, payloadHashOf(request, hexHash));
     return presignedUrl(prepared, hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))));

@@ -1,6 +1,6 @@
 // Event streams (Transcribe, Lex, Bedrock, Kinesis, ...): each message is wrapped in an outer message that carries a :date and a :chunk-signature header.
-import { createKeys, amzDatetime } from './base.js';
-import { seedOf, utf8, emptyHash } from './chunks.js';
+import { amzDatetime } from './base.js';
+import { seedOf, utf8 } from './chunks.js';
 
 let crcTable;
 function crc32(bytes, start, end) {
@@ -23,7 +23,7 @@ export function dateHeader(ms) {
   out[0] = 5;
   out.set(utf8.encode(':date'), 1);
   out[6] = 8;
-  new DataView(out.buffer).setBigInt64(7, BigInt(ms));
+  new DataView(out.buffer).setBigInt64(7, BigInt(Math.floor(ms)));
   return out;
 }
 
@@ -65,8 +65,7 @@ export const eventScope = (ms, region, service) => {
  * @param {import('./base.js').Primitives} primitives
  * @returns {(authHeaders: import('./base.js').AuthHeaders, credentials: import('./base.js').Credentials) => EventSigner}
  */
-export function createEventSigner({ hexHash, hmac, hmacHex }) {
-  const getSigningKey = createKeys(hmac);
+export function createEventSigner({ hexHash, hmacHex, getSigningKey }) {
   return function eventSigner(authHeaders, credentials) {
     const seed = seedOf(authHeaders);
     let previous = seed.signature;

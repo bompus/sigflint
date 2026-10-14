@@ -2,6 +2,9 @@ import type { SignRequest, Credentials, AuthHeaders } from './types/base.js';
 
 export type { SignRequest, Credentials, AuthHeaders };
 
+/** A SigV4a request: a SignRequest whose `regionSet` is required, for example 'us-east-1,us-west-2' or '*'. */
+export type SignRequestV4a = SignRequest & { regionSet: string };
+
 /** A value that is a promise on Cloudflare Workers and in browsers (WebCrypto has only promises) and the value itself on Node.js, Bun and Deno. Always `await` it. */
 export type MaybePromise<T> = T | Promise<T>;
 
@@ -29,10 +32,10 @@ export function getAuthHeaders(request: SignRequest, credentials: Credentials): 
 export function presign(request: SignRequest, credentials: Credentials): MaybePromise<string>;
 
 /** SigV4a (multi-region) headers; `request.regionSet` is required, for example 'us-east-1,us-west-2' or '*'. */
-export function getAuthHeadersV4a(request: SignRequest, credentials: Credentials): MaybePromise<AuthHeaders>;
+export function getAuthHeadersV4a(request: SignRequestV4a, credentials: Credentials): MaybePromise<AuthHeaders>;
 
 /** A SigV4a presigned URL; `request.regionSet` is required. */
-export function presignV4a(request: SignRequest, credentials: Credentials): MaybePromise<string>;
+export function presignV4a(request: SignRequestV4a, credentials: Credentials): MaybePromise<string>;
 
 /** Chunk signer for an upload sent with `x-amz-content-sha256: STREAMING-AWS4-HMAC-SHA256-PAYLOAD`; `authHeaders` are the headers getAuthHeaders returned for it. */
 export function chunkSigner(authHeaders: AuthHeaders, credentials: Credentials): ChunkSigner;

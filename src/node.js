@@ -1,8 +1,8 @@
 // Node.js, Deno and Cloudflare Workers with the nodejs_compat flag: node:crypto.
 import crypto from 'node:crypto';
-import { createSigner } from './base.js';
+import { createSigner, createKeys } from './base.js';
 import { createPresigner } from './presign.js';
-import { createSignerV4a, createPresignerV4a } from './v4a.js';
+import { createSignerV4a, createPresignerV4a, createAsymmetric } from './v4a.js';
 import { createChunkSigner } from './chunks.js';
 import { createEventSigner } from './events.js';
 
@@ -60,11 +60,13 @@ const ecdsa = {
   sign: (key, text) => crypto.sign('sha256', text, { key, dsaEncoding: 'der' }).toString('hex'),
 };
 
-const primitives = { hexHash: (text) => crypto.hash('sha256', text, 'hex'), hmac, hmacHex };
+const getSigningKey = /* @__PURE__ */ createKeys(hmac);
+const signAsymmetric = /* @__PURE__ */ createAsymmetric(hmac, ecdsa);
+const primitives = { hexHash: (text) => crypto.hash('sha256', text, 'hex'), hmac, hmacHex, getSigningKey, signAsymmetric };
 
 export const getAuthHeaders = /* @__PURE__ */ createSigner(primitives);
 export const presign = /* @__PURE__ */ createPresigner(primitives);
-export const getAuthHeadersV4a = /* @__PURE__ */ createSignerV4a(primitives, ecdsa);
-export const presignV4a = /* @__PURE__ */ createPresignerV4a(primitives, ecdsa);
+export const getAuthHeadersV4a = /* @__PURE__ */ createSignerV4a(primitives);
+export const presignV4a = /* @__PURE__ */ createPresignerV4a(primitives);
 export const chunkSigner = /* @__PURE__ */ createChunkSigner(primitives);
 export const eventSigner = /* @__PURE__ */ createEventSigner(primitives);

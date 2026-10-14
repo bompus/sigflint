@@ -1,13 +1,13 @@
 // aws-chunked uploads (x-amz-content-sha256: STREAMING-AWS4-HMAC-SHA256-PAYLOAD[-TRAILER]): every chunk is signed with the previous signature, starting from the
 // one in the request's authorization header. The pure helpers are shared by the synchronous entries (createChunkSigner) and the WebCrypto one.
-import { createKeys } from './base.js';
+import { emptyBodyHash as emptyHash } from './base.js';
 
-export const emptyHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 export const utf8 = /* @__PURE__ */ new TextEncoder();
 
 /** The seed signature, timestamp and scope of a signed request, from the headers getAuthHeaders returned. */
 export function seedOf(authHeaders) {
   const auth = authHeaders.authorization;
+  if (typeof auth !== 'string' || !auth.startsWith('AWS4-HMAC-SHA256 ')) throw new TypeError('authHeaders must be the headers getAuthHeaders returned (a SigV4a signature cannot start a chunk or event stream)');
   const scope = auth.slice(auth.indexOf('Credential=') + 11, auth.indexOf(',')).split('/'); // access key, date, region, service, aws4_request
   return { signature: auth.slice(auth.lastIndexOf('Signature=') + 10), datetime: authHeaders['x-amz-date'], date: scope[1], region: scope[2], service: scope[3], scope: scope.slice(1).join('/') };
 }
@@ -17,7 +17,11 @@ export const trailerStringToSign = (datetime, scope, previous, trailerHash) => `
 
 /** Trailing headers in canonical form: lowercase names in name order, each line ending in a newline. */
 export function canonicalTrailers(trailers) {
-  return Object.keys(trailers).map((name) => name.toLowerCase()).sort().map((name) => `${name}:${String(trailers[name]).trim()}\n`).join('');
+  return Object.keys(trailers)
+    .map((name) => [name.toLowerCase(), String(trailers[name]).trim()])
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+    .map(([name, value]) => `${name}:${value}\n`)
+    .join('');
 }
 
 /** The bytes of one chunk on the wire: size in hex, signature, the data. */
@@ -46,15 +50,14 @@ export function frameEnd(signature, trailers, trailerSignature) {
  * @param {import('./base.js').Primitives} primitives
  * @returns {(authHeaders: import('./base.js').AuthHeaders, credentials: import('./base.js').Credentials) => ChunkSigner}
  */
-export function createChunkSigner({ hexHash, hmac, hmacHex }) {
-  const getSigningKey = createKeys(hmac);
+export function createChunkSigner({ hexHash, hmacHex, getSigningKey }) {
   return function chunkSigner(authHeaders, credentials) {
     const seed = seedOf(authHeaders);
     const key = getSigningKey(credentials.secretAccessKey, seed.date, seed.region, seed.service);
     let previous = seed.signature;
     const sign = (data) => (previous = hmacHex(key, chunkStringToSign(seed.datetime, seed.scope, previous, hexHash(data))));
     return {
-      chunk: (data) => frameChunk(sign(data), data),
+      chunk: (data) => (data.length === 0 ? data : frameChunk(sign(data), data)), // a zero-length chunk would end the upload; it is not sent
       end(trailers) {
         const signature = sign(new Uint8Array(0));
         if (trailers === undefined) return frameEnd(signature);
