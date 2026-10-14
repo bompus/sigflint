@@ -1,12 +1,16 @@
 // Node.js, Deno and Cloudflare Workers with the nodejs_compat flag: node:crypto.
 import crypto from 'node:crypto';
-import { createSigner } from './core.js';
+import { createSigner } from './base.js';
+import { createPresigner } from './presign.js';
+import { createSignerV4a, createPresignerV4a } from './v4a.js';
+import { createChunkSigner } from './chunks.js';
+import { createEventSigner } from './events.js';
 
-const utf8 = new TextEncoder();
+const utf8 = /* @__PURE__ */ new TextEncoder();
 const maxData = 1024;
-const inner = new Uint8Array(64 + maxData); // the ipad block, then the data
-const outer = new Uint8Array(64 + 32); // the opad block, then the inner digest
-const data = inner.subarray(64);
+const inner = /* @__PURE__ */ new Uint8Array(64 + maxData); // the ipad block, then the data
+const outer = /* @__PURE__ */ new Uint8Array(64 + 32); // the opad block, then the inner digest
+const data = /* @__PURE__ */ inner.subarray(64);
 const innerViews = [];
 let blockKey;
 const nibble = (c) => (c > 96 ? c - 87 : c - 48);
@@ -33,15 +37,34 @@ const hmacHexStreaming = (key, text) => crypto.createHmac('sha256', key).update(
 
 const hmac = (key, text) => crypto.createHmac('sha256', key).update(text).digest();
 
-// The one-shot form is used only when it agrees with the streaming one on a sample, and only for short data.
-const probeKey = hmac('probe', 'key');
-const oneShotWorks = hmacHexOneShot(probeKey, 'AWS4-HMAC-SHA256\n20130524T000000Z') === hmacHexStreaming(probeKey, 'AWS4-HMAC-SHA256\n20130524T000000Z');
-blockKey = undefined;
+// The one-shot form is used only when it agrees with the streaming one on a sample, and only for short data. The sample is checked on first use.
+let oneShotWorks;
+function probe() {
+  const key = hmac('probe', 'key');
+  const text = 'AWS4-HMAC-SHA256\n20130524T000000Z';
+  const works = hmacHexOneShot(key, text) === hmacHexStreaming(key, text);
+  blockKey = undefined;
+  return works;
+}
+const hmacHex = (key, text) => ((oneShotWorks ??= probe()) && text.length * 3 <= maxData && key.length <= 64 ? hmacHexOneShot(key, text) : hmacHexStreaming(key, text));
 
-export const getAuthHeaders = createSigner({
-  hexHash: (text) => crypto.hash('sha256', text, 'hex'),
-  hmac,
-  hmacHex: oneShotWorks
-    ? (key, text) => (text.length * 3 > maxData || key.length > 64 ? hmacHexStreaming(key, text) : hmacHexOneShot(key, text))
-    : hmacHexStreaming,
-});
+// SigV4a: ECDSA P-256. The key is rebuilt from the derived scalar; ECDH supplies the public point that a JWK needs.
+const b64url = (bytes) => Buffer.from(bytes).toString('base64url');
+const ecdsa = {
+  key(d) {
+    const ecdh = crypto.createECDH('prime256v1');
+    ecdh.setPrivateKey(d);
+    const point = ecdh.getPublicKey();
+    return crypto.createPrivateKey({ key: { kty: 'EC', crv: 'P-256', d: b64url(d), x: b64url(point.subarray(1, 33)), y: b64url(point.subarray(33)) }, format: 'jwk' });
+  },
+  sign: (key, text) => crypto.sign('sha256', text, { key, dsaEncoding: 'der' }).toString('hex'),
+};
+
+const primitives = { hexHash: (text) => crypto.hash('sha256', text, 'hex'), hmac, hmacHex };
+
+export const getAuthHeaders = /* @__PURE__ */ createSigner(primitives);
+export const presign = /* @__PURE__ */ createPresigner(primitives);
+export const getAuthHeadersV4a = /* @__PURE__ */ createSignerV4a(primitives, ecdsa);
+export const presignV4a = /* @__PURE__ */ createPresignerV4a(primitives, ecdsa);
+export const chunkSigner = /* @__PURE__ */ createChunkSigner(primitives);
+export const eventSigner = /* @__PURE__ */ createEventSigner(primitives);

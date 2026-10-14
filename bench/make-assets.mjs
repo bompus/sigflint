@@ -153,7 +153,7 @@ out.size = (t) => {
   const g = logBars(t, rows, { x0: 190, plotW: 400, top: 66, lo: 0.1, hi: 100, unit: 'kilobytes, bundled and minified, then gzip (log scale)' });
   return doc(t, 760, g.height, 'Size of the code you ship', sizeRows.map(([id, lib]) => `${lib} ${sizes[id].gzipBytes} B`).join(', '), header(t, 'Size once bundled (lower is better)', 'The signer and everything it imports, minified, then gzip. Node and Bun built-ins are not counted.') + g.body);
 };
-tables.push('### Size\n\n| Library | Source (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |\n|---|--:|--:|--:|--:|--:|--:|\n' +
+tables.push('### Size\n\n| Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |\n|---|--:|--:|--:|--:|--:|--:|\n' +
   sizeRows.map(([id, lib]) => { const s = sizes[id]; return `| ${lib === 'sigflint' ? '**sigflint**' : name(lib)} | ${s.source ? fmtInt(s.source.bytes) : ''} | ${fmtInt(s.minifiedBytes)} | ${fmtInt(s.gzipBytes)} | ${fmtInt(s.brotliBytes)} | ${s.directDependencies} | ${s.unpackedBytes ? fmtInt(s.unpackedBytes) : ''} |`; }).join('\n'));
 
 // ---- runtimes -----------------------------------------------------------------------------------------------------

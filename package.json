@@ -1,11 +1,13 @@
 {
   "name": "sigflint",
   "version": "0.1.0",
-  "description": "Fast, dependency-free AWS Signature Version 4 request signing for S3 on Node.js, Bun, Deno and Cloudflare Workers.",
+  "description": "Fast, dependency-free AWS Signature Version 4 signing for every AWS service: headers, presigned URLs, SigV4a, chunked uploads and event streams. Node.js, Bun, Deno, Cloudflare Workers and browsers.",
   "keywords": [
     "aws",
     "s3",
     "sigv4",
+    "sigv4a",
+    "presigned-url",
     "signature",
     "signing",
     "authorization",
@@ -49,7 +51,7 @@
     "test": "node --test test/",
     "test:bun": "bun test test/",
     "types": "tsc && tsc -p test/types",
-    "conformance": "node conformance/build.mjs",
+    "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
     "prepack": "tsc",
     "check:package": "publint && attw --pack . --profile esm-only"
   },

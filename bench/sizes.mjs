@@ -45,8 +45,10 @@ for (const [id, e] of Object.entries(entries)) {
 }
 // source files of sigflint
 const src = (f) => { const t = readFileSync(join(here, f), 'utf8'); return { bytes: Buffer.byteLength(t), lines: t.split('\n').length - 1 }; };
-const srcTotal = ['../src/core.js', '../src/node.js'].map(src).reduce((a, b) => ({ bytes: a.bytes + b.bytes, lines: a.lines + b.lines }));
-out['sigflint-node'].source = srcTotal; out['sigflint-node'].directDependencies = 0; out['sigflint-node'].dependencyNames = [];
-out['sigflint-bun'].source = ['../src/core.js', '../src/bun.js'].map(src).reduce((a, b) => ({ bytes: a.bytes + b.bytes, lines: a.lines + b.lines }));
+// (every module the entry imports; the bundles above hold only the header signer)
+const modules = ['base', 'presign', 'v4a', 'chunks', 'events'].map((m) => `../src/${m}.js`);
+out['sigflint-node'].source = [...modules, '../src/node.js'].map(src).reduce((a, b) => ({ bytes: a.bytes + b.bytes, lines: a.lines + b.lines }));
+out['sigflint-node'].directDependencies = 0; out['sigflint-node'].dependencyNames = [];
+out['sigflint-bun'].source = [...modules, '../src/bun.js'].map(src).reduce((a, b) => ({ bytes: a.bytes + b.bytes, lines: a.lines + b.lines }));
 out['sigflint-bun'].directDependencies = 0; out['sigflint-bun'].dependencyNames = [];
 writeFileSync(join(here, 'results/sizes.json'), JSON.stringify(out, null, 1));

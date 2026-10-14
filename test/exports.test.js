@@ -17,3 +17,11 @@ test('the default import is synchronous', { skip }, () => assert.equal(resolves(
 for (const condition of ['workerd', 'worker', 'browser']) {
   test(`the ${condition} condition selects the WebCrypto entry`, { skip }, () => assert.equal(resolves(condition), 'promise'));
 }
+
+test('every signer is exported by the node, bun and web entries', async () => {
+  const names = ['getAuthHeaders', 'presign', 'getAuthHeadersV4a', 'presignV4a', 'chunkSigner', 'eventSigner'];
+  for (const entry of ['node', 'bun', 'web']) {
+    const exported = Object.keys(await import(`../src/${entry}.js`)).sort();
+    assert.deepEqual(exported, [...names].sort(), entry);
+  }
+});

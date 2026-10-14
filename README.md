@@ -1,6 +1,6 @@
 # sigflint
 
-Fast AWS Signature Version 4 request signing for S3, with no dependencies. It runs on Node.js, Bun, Deno and Cloudflare Workers.
+Fast AWS Signature Version 4 request signing for every AWS service, with no dependencies. It runs on Node.js, Bun, Deno, Cloudflare Workers and browsers.
 
 ```js
 import { getAuthHeaders } from 'sigflint';
@@ -13,12 +13,12 @@ const headers = await getAuthHeaders(
 const response = await fetch(url, { headers });
 ```
 
-- **Correct.** It returns the same signature as botocore for all 3,360 requests in its test corpus, including keys with spaces, `+`, `%`, unicode and sorted, repeated and empty query parameters. See [how it is tested](#how-it-is-tested).
-- **Fast.** 1.3 to 3.4 µs per signature on Node and Bun. The other libraries take 2.7 to 550 times as long on the requests they sign correctly. See [speed](#speed).
-- **Small.** 4.5 kB minified, 2.3 kB gzipped, nothing to install with it. See [size](#size).
-- **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
+It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
-It signs S3 requests with the `Authorization` header. Presigned URLs, other AWS services and streaming uploads are not in 1.0 ([scope](#scope)).
+- **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](#how-it-is-tested).
+- **Fast.** 1.4 to 3.7 µs per signature on Node and Bun. The other libraries take 2.5 to 500 times as long on the requests they sign correctly. See [speed](#speed).
+- **Small, and you pay only for what you import.** Signing headers is 5.2 kB minified, 2.6 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
+- **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
 ## Install
 
@@ -55,9 +55,70 @@ const headers = await getAuthHeaders({ method: 'PUT', url, region, unsignedPaylo
 
 Any S3-compatible service works the same way; pass its region name and URL (`https://us-sea-1.linodeobjects.com/bucket/key`, `http://127.0.0.1:9000/bucket/key`).
 
+### Other services
+
+Pass `service` (the default is `s3`). Other services send `x-amz-content-sha256` only when you ask for an unsigned payload, and normalise the path the way their canonical request requires.
+
+```js
+const url = new URL('https://dynamodb.us-west-2.amazonaws.com/');
+const body = JSON.stringify({ TableName: 'cats', Key: { id: { S: '1' } } });
+const headers = await getAuthHeaders(
+  { method: 'POST', url, service: 'dynamodb', region: 'us-west-2', body, signHeaders: { 'content-type': 'application/x-amz-json-1.0', 'x-amz-target': 'DynamoDB_20120810.GetItem' } },
+  credentials,
+);
+await fetch(url, { method: 'POST', headers, body });
+```
+
+### Presigned URLs
+
+```js
+import { presign } from 'sigflint';
+
+const link = await presign(
+  { method: 'GET', url: new URL('https://my-bucket.s3.us-east-1.amazonaws.com/photos/cat.jpg'), region: 'us-east-1', expires: 900 },
+  credentials,
+);
+```
+
+`expires` is the lifetime in seconds (default 3600). Only the host and `signHeaders` are signed. S3 links use `UNSIGNED-PAYLOAD`; other services sign the body hash. The URL's own query parameters are kept.
+
+### SigV4a (multi-region)
+
+```js
+import { getAuthHeadersV4a, presignV4a } from 'sigflint';
+
+const headers = await getAuthHeadersV4a({ method: 'GET', url, region: 'us-east-1', regionSet: '*' }, credentials); // or 'us-east-1,us-west-2'
+const link = await presignV4a({ method: 'GET', url, regionSet: 'us-east-1,us-west-2' }, credentials);
+```
+
+The signature is ECDSA P-256 and the credential scope has no region; `regionSet` is signed as `x-amz-region-set` (a query parameter in a presigned URL) and is required. It is a separate export so a bundle that does not import it does not contain it.
+
+### Chunked uploads
+
+Send an upload with `x-amz-content-sha256: STREAMING-AWS4-HMAC-SHA256-PAYLOAD` (or `...-PAYLOAD-TRAILER`) in `signHeaders`, then sign the body piece by piece. Every chunk is signed with the signature before it, so sign them in order.
+
+```js
+import { getAuthHeaders, chunkSigner } from 'sigflint';
+
+const headers = await getAuthHeaders({ method: 'PUT', url, region, signHeaders: { 'x-amz-content-sha256': 'STREAMING-AWS4-HMAC-SHA256-PAYLOAD', 'content-encoding': 'aws-chunked', 'x-amz-decoded-content-length': String(total) } }, credentials);
+const signer = chunkSigner(headers, credentials);
+const frames = [await signer.chunk(part1), await signer.chunk(part2), await signer.end()]; // the bytes to send, in order
+```
+
+`end(trailers)` takes trailing headers such as `{ 'x-amz-checksum-crc32c': '...' }` and signs them (use the `-PAYLOAD-TRAILER` form).
+
+### Event streams
+
+```js
+import { eventSigner } from 'sigflint';
+
+const signer = eventSigner(headers, credentials); // headers from the request that opened the stream
+const frame = await signer.sign(encodedMessage);  // the signed event to send
+```
+
 ### Always `await`
 
-On Node.js, Bun and Deno `getAuthHeaders` returns the headers directly. In Cloudflare Workers and browsers it returns a promise, because the only SHA-256 and HMAC there is WebCrypto, which has only promises. The package picks the right one when you import it (the `workerd`, `worker` and `browser` export conditions select the WebCrypto code, with or without `nodejs_compat`), so `await` the result and the same code runs everywhere. The TypeScript type is `headers | Promise<headers>`, so forgetting the `await` is a compile error rather than a request with no signature.
+On Node.js, Bun and Deno `getAuthHeaders` and `presign` return their result directly, and the chunk and event signers' methods return bytes. In Cloudflare Workers and browsers they return promises, because the only SHA-256 and HMAC there is WebCrypto, which has only promises. The package picks the right one when you import it (the `workerd`, `worker` and `browser` export conditions select the WebCrypto code, with or without `nodejs_compat`), so `await` the result and the same code runs everywhere. The TypeScript type is `headers | Promise<headers>` (and likewise for the others), so forgetting the `await` is a compile error rather than a request with no signature.
 
 On Node and Bun, the `await` adds 0 to 0.1 µs to a 1.1 to 1.3 µs call (`bench/await-cost.mjs`). `sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it takes about 170 µs per signature, more than 100 times as long as the default, so import it only where you need it.
 
@@ -65,7 +126,7 @@ On Node and Bun, the `await` adds 0 to 0.1 µs to a 1.1 to 1.3 µs call (`bench/
 
 ### `getAuthHeaders(request, credentials)`
 
-Returns an object of headers to send with the request (or, in Workers and browsers, a promise of it): `authorization`, `x-amz-date`, `x-amz-content-sha256`, `x-amz-security-token` when you passed a session token, and any extra headers you asked it to sign (names lowercased). The request, including the `URL`, is not modified.
+Returns an object of headers to send with the request (or, in Workers and browsers, a promise of it): `authorization`, `x-amz-date`, `x-amz-content-sha256` (S3, or when `unsignedPayload` is set), `x-amz-security-token` when you passed a session token, and any extra headers you asked it to sign (names lowercased). The request, including the `URL`, is not modified.
 
 `request`
 
@@ -73,11 +134,14 @@ Returns an object of headers to send with the request (or, in Workers and browse
 |---|---|---|
 | `method` | `string` | `GET`, `HEAD`, `PUT`, `POST`, `DELETE` |
 | `url` | `URL` | the full request URL, host included |
-| `region` | `string` | for example `us-west-2`. Pass it: the default is an empty string, which no S3 region matches |
+| `service` | `string` | for example `s3` (the default), `dynamodb`, `sqs`, `execute-api` |
+| `region` | `string` | for example `us-west-2`. Pass it: the default is an empty string, which no region matches |
 | `body` | `string` | hashed into `x-amz-content-sha256`. Missing or empty means the hash of an empty body |
 | `unsignedPayload` | `boolean` | send `UNSIGNED-PAYLOAD` instead of hashing the body |
 | `signHeaders` | `Record<string, string>` | extra headers to sign and return, such as `x-amz-acl` or `content-type` |
 | `now` | `number` | signing time in milliseconds since the epoch. Default: the current time |
+| `expires` | `number` | `presign` and `presignV4a` only: lifetime in seconds. Default 3600 |
+| `regionSet` | `string` | `getAuthHeadersV4a` and `presignV4a` only, required: `us-east-1,us-west-2` or `*` |
 
 `credentials`
 
@@ -87,11 +151,21 @@ Returns an object of headers to send with the request (or, in Workers and browse
 | `secretAccessKey` | `string` | |
 | `sessionToken` | `string` (optional) | temporary credentials; signed and returned as `x-amz-security-token` |
 
+### The other exports
+
+| Export | Returns |
+|---|---|
+| `presign(request, credentials)` | the presigned URL, as a string |
+| `getAuthHeadersV4a(request, credentials)` | the headers, signed with SigV4a |
+| `presignV4a(request, credentials)` | the SigV4a presigned URL |
+| `chunkSigner(authHeaders, credentials)` | `{ chunk(data), end(trailers?) }`: the bytes to send for each chunk, then the last chunk. `authHeaders` is what `getAuthHeaders` returned for the upload |
+| `eventSigner(authHeaders, credentials)` | `{ sign(message, now?) }`: the signed event for each encoded message, in order |
+
 Types are included (`.d.ts`, generated from the source).
 
 ### How it reads the URL
 
-- **Paths.** Percent-escapes are decoded and every byte except `A-Z a-z 0-9 - . _ ~ /` is encoded again, once. A raw `+` in the path is a space, which is how S3 reads it; `%2B` is a plus. An escape that is not valid (`%zz`, a lone `%`) is signed as a literal `%`.
+- **Paths.** For S3, percent-escapes are decoded and every byte except `A-Z a-z 0-9 - . _ ~ /` is encoded again, once. A raw `+` in the path is a space, which is how S3 reads it; `%2B` is a plus. An escape that is not valid (`%zz`, a lone `%`) is signed as a literal `%`. For every other service the path is normalised (empty segments dropped, `.` and `..` resolved) and encoded a second time, as the specification says.
 - **Queries.** Names and values are decoded and encoded the same way, sorted by name and then value, and a name with no value is written as `name=`. Repeated names keep every value.
 - **Headers.** Names are lowercased, values trimmed with runs of spaces collapsed, and the list sorted.
 
@@ -146,6 +220,22 @@ The reference is botocore's S3 signer (`S3SigV4Auth`), run on the same requests 
 
 Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches on all 1,211 ordinary requests; `minio` matches on 1,066 of them. The table above is what each library produces when given the URL as an application has it.
 
+### Other services and presigned URLs
+
+Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each library called through its normal public API; same fixed clock):
+
+| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |
+|---|--:|--:|--:|
+| **sigflint** | 1,622 (100%) | 696 (100%) | 777 (100%) |
+| @smithy/signature-v4 | 1,622 (100%) | 696 (100%) | 777 (100%) |
+| aws4fetch | 1,371 (84.5%), 251 it cannot express | 696 (100%) | 777 (100%) |
+| aws4 | 930 (57.3%) | 696 (100%) | 777 (100%) |
+| aws-sig | 776 (47.8%) | 183 (26.3%) | 0 |
+| @wdl-dev/aws-sigv4 | 826 (50.9%), 223 it cannot express | cannot presign | cannot presign |
+| minio | S3 only | S3 only | 598 (77%) |
+
+Read the `aws4` row with care: all 692 differences are headers that `aws4` itself adds and signs (`content-length`, a default `content-type`), which is its documented behaviour, so its signature is valid for the request it sends. The reference does not add them. Presigned URLs where the caller opts out of payload signing (127 cases) are not shown: every library differed from botocore there, which points at the comparison rather than at the libraries. `aws-sig` differs on special characters, session tokens and unsigned payloads; the cause was not investigated. SigV4a, chunked uploads and event streams have no counterpart in these libraries (except `@smithy/signature-v4` for chunks and events, against which they are tested).
+
 ## Speed
 
 <!-- BEGIN speed -->
@@ -183,6 +273,49 @@ Microseconds per signature, median of 5 processes. “wrong signature” means t
 Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 51%; bun 1.4.3 bench-part-put: 65%; bun 1.4.3 bench-encode: 41%; bun 1.4.3 bench-body-1k: 31%; node 26.11.1 bench-download: 34%; node 26.11.1 bench-part-put: 38%; node 26.11.1 bench-encode: 64%; node 26.11.1 bench-body-1k: 32%. Every gap between sigflint and another library is far outside its band.
 
 <!-- END speed -->
+
+### Other services, presigned URLs, and the 1.0 layout
+
+These were measured on the final code under [`bench/protocol-more.md`](bench/protocol-more.md): the same fresh-process method as above, 5 rounds, a second copy of sigflint as the noise control. The tables above were measured on the S3 header code before it was split into modules, so part A re-times that code against the final one.
+
+**S3 header signing, before and after the split** (nanoseconds per call; positive change is slower):
+
+| Runtime | Workload | Before | After | Change | Reporting band | |
+|---|---|--:|--:|--:|--:|---|
+| node 26.12.0 | bench-download | 1,271 | 1,396 | +9.8% | 7.9% | slower |
+| node 26.12.0 | bench-part-put | 1,610 | 1,668 | +3.6% | 7.4% | no clear change |
+| node 26.12.0 | bench-encode | 2,137 | 2,262 | +5.8% | 11.1% | no clear change |
+| node 26.12.0 | bench-body-1k | 2,261 | 2,339 | +3.4% | 11.8% | no clear change |
+| bun 1.4.3 | bench-download | 1,672 | 1,882 | +12.6% | 43.4% | no clear change |
+| bun 1.4.3 | bench-part-put | 2,146 | 2,186 | +1.9% | 27.3% | no clear change |
+| bun 1.4.3 | bench-encode | 3,412 | 3,714 | +8.9% | 29.0% | no clear change |
+| bun 1.4.3 | bench-body-1k | 3,050 | 3,074 | +0.8% | 19.3% | no clear change |
+
+On Node, `bench-download` is 9.8% slower, outside its band, and the other seven workloads moved by 0.8% to 12.6% with the sign always the same (slower) but inside their bands. Read it as S3 header signing costing up to about 10% more than before (0.1 to 0.2 µs on Node) in exchange for the other signers; the split was not free for the code that already existed. Single-process Bun bands are wide (19% to 43%).
+
+**node 26.12.0**, microseconds per call (times as long as sigflint in brackets):
+
+| Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| DynamoDB POST, JSON body | **1.74** | wrong signature | 314.07 (180.8×) | 11.84 (6.8×) | 57.44 (33.1×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.59** | 5.27 (3.3×) | 305.88 (192.3×) | 10.00 (6.3×) | wrong signature | 710.42 (446.5×) | wrong signature |
+| SQS, query parameters | **1.94** | 6.82 (3.5×) | 299.14 (153.9×) | 11.19 (5.8×) | 57.84 (29.8×) | 704.56 (362.4×) | wrong signature |
+| presigned URL, API Gateway | **3.45** | 11.28 (3.3×) | 326.11 (94.6×) | 12.29 (3.6×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **3.71** | 11.55 (3.1×) | 245.58 (66.1×) | 13.04 (3.5×) | wrong signature | wrong signature | 13.98 (3.8×) |
+
+**bun 1.4.3**, microseconds per call (times as long as sigflint in brackets):
+
+| Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| DynamoDB POST, JSON body | **2.09** | wrong signature | 220.25 (105.5×) | 14.18 (6.8×) | 50.94 (24.4×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.90** | 6.19 (3.3×) | 212.08 (111.9×) | 12.36 (6.5×) | wrong signature | 568.24 (299.7×) | wrong signature |
+| SQS, query parameters | **2.73** | 8.09 (3×) | 218.33 (80.1×) | 15.33 (5.6×) | 50.07 (18.4×) | 573.66 (210.4×) | wrong signature |
+| presigned URL, API Gateway | **5.93** | 17.11 (2.9×) | 236.50 (39.9×) | 16.15 (2.7×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **6.54** | 18.02 (2.8×) | 234.22 (35.8×) | 20.35 (3.1×) | wrong signature | wrong signature | 11.77 (1.8×) |
+
+“Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 5% to 9%, Bun 38% to 70%, so the Bun ratios are less precise than the Node ones; every gap shown is far outside its band.
+
+Only sigflint offers these (microseconds per call, Node / Bun): SigV4a headers 15.6 / 14.7, SigV4a presigned URL 17.5 / 18.1, one 64 KiB chunk 33.9 / 33.3, the last chunk with a trailer 3.1 / 2.2, a 4 KiB event 12.0 / 12.9. SigV4a is dominated by the ECDSA signature.
 
 ## Memory
 
@@ -226,7 +359,7 @@ Median of 5 processes, one fresh process per library, runtime and round. “(×)
 
 What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone is not clearly faster than `aws4fetch` or `aws4` on either runtime; the gap is inside the noise band. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 355 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
 
-The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
+These figures were measured on the S3 header code before it was split into modules; they were not repeated on the final code. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
 
 ## Size
 
@@ -236,9 +369,9 @@ The numbers for the other three workloads, the per-round values and the calibrat
   <img alt="Bar chart: bundled, minified and gzipped size of each library" src="docs/size-light.svg">
 </picture>
 
-| Library | Source (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
+| Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 15,248 | 4,499 | 2,324 | 2,155 | 0 |  |
+| **sigflint** | 31,980 | 5,194 | 2,584 | 2,392 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -247,9 +380,33 @@ The numbers for the other three workloads, the per-round values and the calibrat
 | minio |  | 330,170 | 85,329 | 74,103 | 13 | 2,092,892 |
 <!-- END size -->
 
+What a bundle contains depends on what it imports. Minified size of the `node` entry with only the named signers imported (`bench/tiers.mjs`, `bun build --minify`; the other libraries' rows above are the header signer only):
+
+| Imports | Minified | gzip |
+|---|--:|--:|
+| `getAuthHeaders` | 5,194 | 2,584 |
+| `getAuthHeaders`, `presign` | 6,393 | 2,992 |
+| `getAuthHeadersV4a` | 6,251 | 3,052 |
+| `presignV4a` | 6,051 | 2,973 |
+| `chunkSigner` | 2,489 | 1,298 |
+| `eventSigner` | 2,888 | 1,490 |
+| all six | 10,762 | 4,577 |
+
+The Bun and web entries are 4,555 / 2,347 and 4,785 / 2,431 bytes for `getAuthHeaders`. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+
 ## How it is tested
 
-`test/corpus.json` holds 3,360 requests and the signature botocore computes for each: the four S3 documentation examples, hand-picked edge cases, and 3,300 seeded random requests. `npm test` signs every one and compares. The corpus is generated by `conformance/` (run `npm run conformance` to rebuild it with the pinned botocore); the generator, the cases and the reference script are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
+`npm test` signs every request in these files and compares:
+
+| File | Cases | Reference |
+|---|--:|---|
+| `test/corpus.json` | 3,360 | botocore's S3 signer: the four S3 documentation examples, hand-picked edge cases and 3,300 seeded random requests |
+| `test/corpus-general.json` | 1,622 | botocore's `SigV4Auth` for 15 other services: hand-written request shapes and 1,500 seeded random requests |
+| `test/corpus-presign.json` | 1,600 | botocore's `SigV4QueryAuth` and `S3SigV4QueryAuth`, half of them S3 |
+| `test/corpus-v4a.json` | 662 | the AWS CRT's SigV4a signers (headers and presigned URLs). ECDSA signatures differ on every run, so the test verifies the reference's signature under the public key derived here and checks that ours verifies too and that the other parameters are equal |
+| `test/corpus-stream.json` | 60 chunk chains, 60 event chains | the AWS SDK's smithy signer; the two chunked-upload examples in the S3 documentation; event frames are also checked for lengths and checksums |
+
+Each runs against the synchronous entry and the WebCrypto entry. The corpora are generated by `conformance/` (`npm run conformance` rebuilds them with the pinned botocore and awscrt; `node conformance/build.mjs` is the S3 one alone). The generators, the cases and the reference scripts are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
 
 ## Methodology and limits
 
@@ -257,18 +414,18 @@ The numbers for the other three workloads, the per-round values and the calibrat
 - Memory: 5 rounds, 810 processes, each under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
 - Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`.
-- Not timed: `Bun.S3Client.presign` (query-string signing, a different request) and `@aws-lite/client` (wraps `aws4`).
-- Not tested: real Cloudflare, real AWS S3 (the signatures are checked against botocore, not against a live server).
+- Other services, presigned URLs and the check against the pre-split build: a second protocol, written before the runs ([`bench/protocol-more.md`](bench/protocol-more.md)), run on the final code; raw results in `bench/results/speed-regression.jsonl` and `speed-more.jsonl`.
+- Not timed: `Bun.S3Client.presign` (a different request) and `@aws-lite/client` (wraps `aws4`).
+- Not tested: real Cloudflare, real AWS (the signatures are checked against botocore, the AWS CRT and the AWS SDK's signer, not against a live server). SigV4a, chunked uploads and event streams have not been sent to a service.
 - Reproduce: `cd bench && npm ci && node screen.mjs ../src/node.js && ./run-matrix.sh "$PWD/frozen" "$PWD/results/speed-raw.jsonl" && node analyze.mjs && node sizes.mjs && node make-assets.mjs`.
 
 ## Scope
 
-1.0 signs S3 requests in header form. It is not a general AWS signer. Not included, and not promised:
+1.0 signs requests for every AWS service in header form and as presigned URLs, plus SigV4a, chunked uploads and event streams. Not included, and not promised:
 
-- presigned URLs (query-string signing)
-- other AWS services (they canonicalize the path differently)
-- chunked or streaming payloads and SigV4a
-- binary bodies hashed for you; hash them yourself, or use `unsignedPayload`
+- hashing binary request bodies for you: hash them yourself, or use `unsignedPayload`
+- an HTTP client, retries, credential providers or region lookup
+- anything that is not SigV4 or SigV4a
 
 Open an issue describing the use case if you need one of them.
 

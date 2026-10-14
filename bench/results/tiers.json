@@ -1,0 +1,113 @@
+{
+ "node": {
+  "headers": {
+   "minifiedBytes": 5194,
+   "gzipBytes": 2584,
+   "brotliBytes": 2392
+  },
+  "headers + presign": {
+   "minifiedBytes": 6393,
+   "gzipBytes": 2992,
+   "brotliBytes": 2734
+  },
+  "SigV4a headers": {
+   "minifiedBytes": 6251,
+   "gzipBytes": 3052,
+   "brotliBytes": 2825
+  },
+  "SigV4a presign": {
+   "minifiedBytes": 6051,
+   "gzipBytes": 2973,
+   "brotliBytes": 2734
+  },
+  "chunked uploads": {
+   "minifiedBytes": 2489,
+   "gzipBytes": 1298,
+   "brotliBytes": 1185
+  },
+  "event streams": {
+   "minifiedBytes": 2888,
+   "gzipBytes": 1490,
+   "brotliBytes": 1364
+  },
+  "everything": {
+   "minifiedBytes": 10762,
+   "gzipBytes": 4577,
+   "brotliBytes": 4179
+  }
+ },
+ "bun": {
+  "headers": {
+   "minifiedBytes": 4555,
+   "gzipBytes": 2347,
+   "brotliBytes": 2157
+  },
+  "headers + presign": {
+   "minifiedBytes": 5750,
+   "gzipBytes": 2749,
+   "brotliBytes": 2520
+  },
+  "SigV4a headers": {
+   "minifiedBytes": 5612,
+   "gzipBytes": 2817,
+   "brotliBytes": 2591
+  },
+  "SigV4a presign": {
+   "minifiedBytes": 5412,
+   "gzipBytes": 2743,
+   "brotliBytes": 2498
+  },
+  "chunked uploads": {
+   "minifiedBytes": 1872,
+   "gzipBytes": 1046,
+   "brotliBytes": 929
+  },
+  "event streams": {
+   "minifiedBytes": 2271,
+   "gzipBytes": 1249,
+   "brotliBytes": 1133
+  },
+  "everything": {
+   "minifiedBytes": 10118,
+   "gzipBytes": 4347,
+   "brotliBytes": 3957
+  }
+ },
+ "web": {
+  "headers": {
+   "minifiedBytes": 4785,
+   "gzipBytes": 2431,
+   "brotliBytes": 2242
+  },
+  "headers + presign": {
+   "minifiedBytes": 5902,
+   "gzipBytes": 2836,
+   "brotliBytes": 2578
+  },
+  "SigV4a headers": {
+   "minifiedBytes": 5937,
+   "gzipBytes": 2900,
+   "brotliBytes": 2672
+  },
+  "SigV4a presign": {
+   "minifiedBytes": 5737,
+   "gzipBytes": 2823,
+   "brotliBytes": 2585
+  },
+  "chunked uploads": {
+   "minifiedBytes": 2140,
+   "gzipBytes": 1147,
+   "brotliBytes": 1032
+  },
+  "event streams": {
+   "minifiedBytes": 2511,
+   "gzipBytes": 1344,
+   "brotliBytes": 1217
+  },
+  "everything": {
+   "minifiedBytes": 10539,
+   "gzipBytes": 4490,
+   "brotliBytes": 4094
+  }
+ }
+}
