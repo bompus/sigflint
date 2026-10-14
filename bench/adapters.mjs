@@ -28,13 +28,17 @@ export function freezeClock() {
   return () => { globalThis.Date = RealDate; };
 }
 
-export async function loadAdapters(oursPath, expected) {
+// `only` (optional array of section ids: sigflint, aws4fetch, aws4, smithy, smithy-web, aws-sig, wdl, minio) loads just those libraries,
+// so a memory or import-time measurement does not carry the other libraries; without it every library is loaded.
+export async function loadAdapters(oursPath, expected, only) {
+  const want = (k) => !only || only.includes(k);
   const adapters = [];
   const add = (a) => adapters.push(a);
 
   const ver = (p) => JSON.parse(readFileSync(new URL(`./node_modules/${p}/package.json`, import.meta.url))).version;
 
   // --- sigflint (the entry for the runtime this process runs on, from the frozen copy)
+  if (want('sigflint')) {
   const { getAuthHeaders } = await import(oursPath);
   add({
     id: 'sigflint', label: 'sigflint', kind: 'sync', version: JSON.parse(readFileSync(new URL('../package.json', import.meta.url))).version,
@@ -45,7 +49,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- aws4fetch
+  if (want('aws4fetch')) {
   const { AwsClient } = await import('aws4fetch');
   const aws4fetch = new AwsClient({ ...CREDS, service: 's3', region: REGION });
   add({
@@ -57,7 +63,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- aws4 (mhart)
+  if (want('aws4')) {
   const aws4 = (await import('aws4')).default;
   add({
     id: 'aws4', label: 'aws4 (mhart)', kind: 'sync', version: ver('aws4'),
@@ -69,7 +77,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- @smithy/signature-v4 (what the AWS SDK for JavaScript v3 uses)
+  if (want('smithy')) {
   const { SignatureV4 } = await import('@smithy/signature-v4');
   const { HttpRequest } = await import('@smithy/protocol-http');
   const { Hash } = await import('@smithy/hash-node');
@@ -104,7 +114,11 @@ export async function loadAdapters(oursPath, expected) {
     });
   }
 
+  }
   // --- @smithy/signature-v4 with the web SHA-256 helper (what the AWS SDK uses off Node)
+  if (want('smithy-web')) {
+  const { SignatureV4 } = await import('@smithy/signature-v4');
+  const { HttpRequest } = await import('@smithy/protocol-http');
   const { Sha256 } = await import('@aws-crypto/sha256-js');
   const smithyWeb = new SignatureV4({ credentials: CREDS, region: REGION, service: 's3', sha256: Sha256, uriEscapePath: false });
   add({
@@ -119,7 +133,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- aws-sig
+  if (want('aws-sig')) {
   const { signedHeaders } = await import('aws-sig');
   add({
     id: 'aws-sig', label: 'aws-sig', kind: 'sync', version: ver('aws-sig'),
@@ -131,7 +147,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- @wdl-dev/aws-sigv4
+  if (want('wdl')) {
   const { signAwsRequest } = await import('@wdl-dev/aws-sigv4');
   add({
     id: 'wdl', label: '@wdl-dev/aws-sigv4', kind: 'async', version: ver('@wdl-dev/aws-sigv4'),
@@ -142,7 +160,9 @@ export async function loadAdapters(oursPath, expected) {
     },
   });
 
+  }
   // --- minio (signV4 only; the caller supplies path and query already encoded)
+  if (want('minio')) {
   const { signV4 } = require('minio/dist/main/signing.js');
   add({
     id: 'minio', label: 'minio signV4', kind: 'sync', version: ver('minio'),
@@ -167,6 +187,7 @@ export async function loadAdapters(oursPath, expected) {
         return sigOf(signV4({ method: c.method, path: path + (query ? '?' + query : ''), headers }, CREDS.accessKeyId, CREDS.secretAccessKey, REGION, FIXED, payload));
       },
     });
+  }
   }
   return adapters;
 }
