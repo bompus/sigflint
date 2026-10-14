@@ -8,7 +8,7 @@ First version: AWS Signature Version 4 signing for every AWS service.
 - `presign(request, credentials)` returns a presigned URL.
 - `getAuthHeadersV4a` and `presignV4a` sign with SigV4a (ECDSA P-256) for the regions in `request.regionSet`.
 - `chunkSigner(authHeaders, credentials)` signs aws-chunked uploads, with signed trailing headers; `eventSigner(authHeaders, credentials)` signs event-stream messages.
-- Each signer is its own module and export, so a bundle holds only what it imports: headers alone are 5.2 kB minified, 2.6 kB gzipped; all six are 10.8 kB, 4.6 kB.
+- Each signer is its own module and export, so a bundle holds only what it imports: headers alone are 5.4 kB minified, 2.7 kB gzipped; all six are 11.0 kB, 4.6 kB.
 - Path and query encoding, query sorting and header trimming follow the specification; a raw `+` in an S3 path is a space, as S3 reads it. Other services normalise the path and encode it twice.
 - Session tokens (`credentials.sessionToken`) and unsigned payloads (`request.unsignedPayload`).
 - Memory use is documented and measured against the other libraries: heap allocated per call, garbage-collection time, peak memory, import time and the size of the signing-key cache (README, `bench/memory-protocol.md`).

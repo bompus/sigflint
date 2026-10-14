@@ -47,7 +47,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 31,980 | 5,194 | 2,584 | 2,392 | 0 |  |
+| **sigflint** | 32,499 | 5,391 | 2,654 | 2,458 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |

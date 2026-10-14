@@ -3,73 +3,73 @@
   {
    "runtime": "node",
    "workload": "bench-download",
-   "frozenNs": 1271,
-   "finalNs": 1396,
-   "changePct": 9.8,
-   "bandPct": 7.9,
-   "verdict": "slower"
+   "frozenNs": 1308,
+   "finalNs": 1335,
+   "changePct": 2.1,
+   "bandPct": 8.8,
+   "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-part-put",
-   "frozenNs": 1610,
-   "finalNs": 1668,
-   "changePct": 3.6,
-   "bandPct": 7.4,
+   "frozenNs": 1618,
+   "finalNs": 1652,
+   "changePct": 2.1,
+   "bandPct": 6.8,
    "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-encode",
    "frozenNs": 2137,
-   "finalNs": 2262,
-   "changePct": 5.8,
-   "bandPct": 11.1,
+   "finalNs": 2220,
+   "changePct": 3.9,
+   "bandPct": 8,
    "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-body-1k",
-   "frozenNs": 2261,
-   "finalNs": 2339,
-   "changePct": 3.4,
-   "bandPct": 11.8,
+   "frozenNs": 2304,
+   "finalNs": 2361,
+   "changePct": 2.5,
+   "bandPct": 11.2,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-download",
-   "frozenNs": 1672,
-   "finalNs": 1882,
-   "changePct": 12.6,
-   "bandPct": 43.4,
+   "frozenNs": 1691,
+   "finalNs": 1709,
+   "changePct": 1.1,
+   "bandPct": 53.5,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-part-put",
-   "frozenNs": 2146,
-   "finalNs": 2186,
-   "changePct": 1.9,
-   "bandPct": 27.3,
+   "frozenNs": 2182,
+   "finalNs": 2226,
+   "changePct": 2,
+   "bandPct": 30.7,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-encode",
-   "frozenNs": 3412,
-   "finalNs": 3714,
-   "changePct": 8.9,
+   "frozenNs": 3469,
+   "finalNs": 3511,
+   "changePct": 1.2,
    "bandPct": 29,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-body-1k",
-   "frozenNs": 3050,
-   "finalNs": 3074,
-   "changePct": 0.8,
-   "bandPct": 19.3,
+   "frozenNs": 3092,
+   "finalNs": 3136,
+   "changePct": 1.4,
+   "bandPct": 14.9,
    "verdict": "no clear change"
   }
  ],
@@ -77,21 +77,21 @@
   {
    "runtime": "node",
    "workload": "any-post-json",
-   "sigflintNs": 1737,
-   "bandPct": 8.6,
+   "sigflintNs": 1753,
+   "bandPct": 4.8,
    "libraries": {
     "aws4": "wrong-result",
     "aws4fetch": {
-     "ns": 314066,
-     "times": 180.8
+     "ns": 313133,
+     "times": 178.6
     },
     "smithy": {
-     "ns": 11841,
-     "times": 6.8
+     "ns": 11702,
+     "times": 6.7
     },
     "aws-sig": {
-     "ns": 57441,
-     "times": 33.1
+     "ns": 58668,
+     "times": 33.5
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -100,25 +100,25 @@
   {
    "runtime": "node",
    "workload": "any-token",
-   "sigflintNs": 1591,
-   "bandPct": 9.1,
+   "sigflintNs": 1593,
+   "bandPct": 9,
    "libraries": {
     "aws4": {
-     "ns": 5267,
+     "ns": 5274,
      "times": 3.3
     },
     "aws4fetch": {
-     "ns": 305883,
-     "times": 192.3
+     "ns": 300197,
+     "times": 188.4
     },
     "smithy": {
-     "ns": 10002,
-     "times": 6.3
+     "ns": 9857,
+     "times": 6.2
     },
     "aws-sig": "wrong-result",
     "wdl": {
-     "ns": 710421,
-     "times": 446.5
+     "ns": 706614,
+     "times": 443.6
     },
     "minio": "wrong-result"
    }
@@ -126,28 +126,28 @@
   {
    "runtime": "node",
    "workload": "any-query",
-   "sigflintNs": 1944,
-   "bandPct": 5.2,
+   "sigflintNs": 1877,
+   "bandPct": 9.9,
    "libraries": {
     "aws4": {
-     "ns": 6819,
-     "times": 3.5
+     "ns": 6712,
+     "times": 3.6
     },
     "aws4fetch": {
-     "ns": 299145,
-     "times": 153.9
+     "ns": 301207,
+     "times": 160.5
     },
     "smithy": {
-     "ns": 11188,
-     "times": 5.8
+     "ns": 11217,
+     "times": 6
     },
     "aws-sig": {
-     "ns": 57835,
-     "times": 29.8
+     "ns": 57167,
+     "times": 30.5
     },
     "wdl": {
-     "ns": 704558,
-     "times": 362.4
+     "ns": 701298,
+     "times": 373.6
     },
     "minio": "wrong-result"
    }
@@ -155,19 +155,19 @@
   {
    "runtime": "node",
    "workload": "presign-any",
-   "sigflintNs": 3448,
-   "bandPct": 9.1,
+   "sigflintNs": 3428,
+   "bandPct": 8.9,
    "libraries": {
     "aws4": {
-     "ns": 11278,
-     "times": 3.3
+     "ns": 11508,
+     "times": 3.4
     },
     "aws4fetch": {
-     "ns": 326113,
-     "times": 94.6
+     "ns": 321248,
+     "times": 93.7
     },
     "smithy": {
-     "ns": 12288,
+     "ns": 12292,
      "times": 3.6
     },
     "aws-sig": "wrong-result",
@@ -178,25 +178,25 @@
   {
    "runtime": "node",
    "workload": "presign-s3",
-   "sigflintNs": 3715,
-   "bandPct": 8.1,
+   "sigflintNs": 3716,
+   "bandPct": 9.4,
    "libraries": {
     "aws4": {
-     "ns": 11549,
+     "ns": 11523,
      "times": 3.1
     },
     "aws4fetch": {
-     "ns": 245583,
-     "times": 66.1
+     "ns": 242409,
+     "times": 65.2
     },
     "smithy": {
-     "ns": 13035,
+     "ns": 13034,
      "times": 3.5
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
-     "ns": 13985,
+     "ns": 14068,
      "times": 3.8
     }
    }
@@ -204,21 +204,21 @@
   {
    "runtime": "bun",
    "workload": "any-post-json",
-   "sigflintNs": 2088,
-   "bandPct": 38.1,
+   "sigflintNs": 1912,
+   "bandPct": 34.5,
    "libraries": {
     "aws4": "wrong-result",
     "aws4fetch": {
-     "ns": 220253,
-     "times": 105.5
+     "ns": 214561,
+     "times": 112.2
     },
     "smithy": {
-     "ns": 14181,
-     "times": 6.8
+     "ns": 12729,
+     "times": 6.7
     },
     "aws-sig": {
-     "ns": 50939,
-     "times": 24.4
+     "ns": 49261,
+     "times": 25.8
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -227,25 +227,25 @@
   {
    "runtime": "bun",
    "workload": "any-token",
-   "sigflintNs": 1896,
-   "bandPct": 46.4,
+   "sigflintNs": 1927,
+   "bandPct": 49.4,
    "libraries": {
     "aws4": {
-     "ns": 6189,
-     "times": 3.3
+     "ns": 5764,
+     "times": 3
     },
     "aws4fetch": {
-     "ns": 212076,
-     "times": 111.9
+     "ns": 211315,
+     "times": 109.7
     },
     "smithy": {
-     "ns": 12355,
-     "times": 6.5
+     "ns": 10917,
+     "times": 5.7
     },
     "aws-sig": "wrong-result",
     "wdl": {
-     "ns": 568237,
-     "times": 299.7
+     "ns": 571415,
+     "times": 296.5
     },
     "minio": "wrong-result"
    }
@@ -253,28 +253,28 @@
   {
    "runtime": "bun",
    "workload": "any-query",
-   "sigflintNs": 2726,
-   "bandPct": 70.2,
+   "sigflintNs": 2581,
+   "bandPct": 33.8,
    "libraries": {
     "aws4": {
-     "ns": 8094,
-     "times": 3
+     "ns": 8146,
+     "times": 3.2
     },
     "aws4fetch": {
-     "ns": 218329,
-     "times": 80.1
+     "ns": 213643,
+     "times": 82.8
     },
     "smithy": {
-     "ns": 15334,
-     "times": 5.6
+     "ns": 13878,
+     "times": 5.4
     },
     "aws-sig": {
-     "ns": 50067,
-     "times": 18.4
+     "ns": 48161,
+     "times": 18.7
     },
     "wdl": {
-     "ns": 573663,
-     "times": 210.4
+     "ns": 571003,
+     "times": 221.2
     },
     "minio": "wrong-result"
    }
@@ -282,20 +282,20 @@
   {
    "runtime": "bun",
    "workload": "presign-any",
-   "sigflintNs": 5926,
-   "bandPct": 59.8,
+   "sigflintNs": 5859,
+   "bandPct": 68.3,
    "libraries": {
     "aws4": {
-     "ns": 17106,
+     "ns": 17167,
      "times": 2.9
     },
     "aws4fetch": {
-     "ns": 236498,
-     "times": 39.9
+     "ns": 227622,
+     "times": 38.8
     },
     "smithy": {
-     "ns": 16152,
-     "times": 2.7
+     "ns": 16858,
+     "times": 2.9
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
@@ -305,25 +305,25 @@
   {
    "runtime": "bun",
    "workload": "presign-s3",
-   "sigflintNs": 6537,
-   "bandPct": 58.5,
+   "sigflintNs": 6370,
+   "bandPct": 40,
    "libraries": {
     "aws4": {
-     "ns": 18023,
-     "times": 2.8
+     "ns": 16992,
+     "times": 2.7
     },
     "aws4fetch": {
-     "ns": 234222,
-     "times": 35.8
+     "ns": 230227,
+     "times": 36.1
     },
     "smithy": {
-     "ns": 20350,
-     "times": 3.1
+     "ns": 16352,
+     "times": 2.6
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
-     "ns": 11765,
+     "ns": 11306,
      "times": 1.8
     }
    }
@@ -335,27 +335,27 @@
  },
  "rejected": 0,
  "errors": 0,
- "maxBusy": 20,
+ "maxBusy": 18,
  "alone": {
   "sigv4a-header": {
-   "nodeNs": 15647,
-   "bunNs": 14675
+   "nodeNs": 15621,
+   "bunNs": 14560
   },
   "sigv4a-presign": {
-   "nodeNs": 17480,
-   "bunNs": 18106
+   "nodeNs": 17504,
+   "bunNs": 18172
   },
   "chunk-64k": {
-   "nodeNs": 33903,
-   "bunNs": 33301
+   "nodeNs": 33606,
+   "bunNs": 33028
   },
   "chunk-end-trailer": {
-   "nodeNs": 3121,
-   "bunNs": 2244
+   "nodeNs": 3039,
+   "bunNs": 2267
   },
   "event-4k": {
-   "nodeNs": 11952,
-   "bunNs": 12909
+   "nodeNs": 12068,
+   "bunNs": 13061
   }
  }
 }

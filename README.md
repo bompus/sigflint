@@ -16,8 +16,8 @@ const response = await fetch(url, { headers });
 It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
 - **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](#how-it-is-tested).
-- **Fast.** 1.4 to 3.7 µs per signature on Node and Bun. The other libraries take 2.5 to 500 times as long on the requests they sign correctly. See [speed](#speed).
-- **Small, and you pay only for what you import.** Signing headers is 5.2 kB minified, 2.6 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
+- **Fast.** 1.3 to 3.7 µs per signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 450 times as long on the requests they sign correctly. See [speed](#speed).
+- **Small, and you pay only for what you import.** Signing headers is 5.4 kB minified, 2.7 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
 ## Install
@@ -282,40 +282,40 @@ These were measured on the final code under [`bench/protocol-more.md`](bench/pro
 
 | Runtime | Workload | Before | After | Change | Reporting band | |
 |---|---|--:|--:|--:|--:|---|
-| node 26.12.0 | bench-download | 1,271 | 1,396 | +9.8% | 7.9% | slower |
-| node 26.12.0 | bench-part-put | 1,610 | 1,668 | +3.6% | 7.4% | no clear change |
-| node 26.12.0 | bench-encode | 2,137 | 2,262 | +5.8% | 11.1% | no clear change |
-| node 26.12.0 | bench-body-1k | 2,261 | 2,339 | +3.4% | 11.8% | no clear change |
-| bun 1.4.3 | bench-download | 1,672 | 1,882 | +12.6% | 43.4% | no clear change |
-| bun 1.4.3 | bench-part-put | 2,146 | 2,186 | +1.9% | 27.3% | no clear change |
-| bun 1.4.3 | bench-encode | 3,412 | 3,714 | +8.9% | 29.0% | no clear change |
-| bun 1.4.3 | bench-body-1k | 3,050 | 3,074 | +0.8% | 19.3% | no clear change |
+| node 26.12.0 | bench-download | 1,308 | 1,335 | +2.1% | 8.8% | no clear change |
+| node 26.12.0 | bench-part-put | 1,618 | 1,652 | +2.1% | 6.8% | no clear change |
+| node 26.12.0 | bench-encode | 2,137 | 2,220 | +3.9% | 8% | no clear change |
+| node 26.12.0 | bench-body-1k | 2,304 | 2,361 | +2.5% | 11.2% | no clear change |
+| bun 1.4.3 | bench-download | 1,691 | 1,709 | +1.1% | 53.5% | no clear change |
+| bun 1.4.3 | bench-part-put | 2,182 | 2,226 | +2% | 30.7% | no clear change |
+| bun 1.4.3 | bench-encode | 3,469 | 3,511 | +1.2% | 29% | no clear change |
+| bun 1.4.3 | bench-body-1k | 3,092 | 3,136 | +1.4% | 14.9% | no clear change |
 
-On Node, `bench-download` is 9.8% slower, outside its band, and the other seven workloads moved by 0.8% to 12.6% with the sign always the same (slower) but inside their bands. Read it as S3 header signing costing up to about 10% more than before (0.1 to 0.2 µs on Node) in exchange for the other signers; the split was not free for the code that already existed. Single-process Bun bands are wide (19% to 43%).
+No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower than before the split, with Node bands of 7% to 11% and Bun bands of 15% to 54%. A first version of the split was up to 9.8% slower on Node; restoring the fixed-string path for a request with no extra signed headers and no session token (the usual request) removed that, at a cost of about 60 bytes gzipped.
 
 **node 26.12.0**, microseconds per call (times as long as sigflint in brackets):
 
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| DynamoDB POST, JSON body | **1.74** | wrong signature | 314.07 (180.8×) | 11.84 (6.8×) | 57.44 (33.1×) | wrong signature | wrong signature |
-| API Gateway GET, session token | **1.59** | 5.27 (3.3×) | 305.88 (192.3×) | 10.00 (6.3×) | wrong signature | 710.42 (446.5×) | wrong signature |
-| SQS, query parameters | **1.94** | 6.82 (3.5×) | 299.14 (153.9×) | 11.19 (5.8×) | 57.84 (29.8×) | 704.56 (362.4×) | wrong signature |
-| presigned URL, API Gateway | **3.45** | 11.28 (3.3×) | 326.11 (94.6×) | 12.29 (3.6×) | wrong signature | wrong signature | wrong signature |
-| presigned URL, S3 | **3.71** | 11.55 (3.1×) | 245.58 (66.1×) | 13.04 (3.5×) | wrong signature | wrong signature | 13.98 (3.8×) |
+| DynamoDB POST, JSON body | **1.75** | wrong signature | 313.13 (178.6×) | 11.70 (6.7×) | 58.67 (33.5×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.59** | 5.27 (3.3×) | 300.20 (188.4×) | 9.86 (6.2×) | wrong signature | 706.61 (443.6×) | wrong signature |
+| SQS, query parameters | **1.88** | 6.71 (3.6×) | 301.21 (160.5×) | 11.22 (6×) | 57.17 (30.5×) | 701.30 (373.6×) | wrong signature |
+| presigned URL, API Gateway | **3.43** | 11.51 (3.4×) | 321.25 (93.7×) | 12.29 (3.6×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **3.72** | 11.52 (3.1×) | 242.41 (65.2×) | 13.03 (3.5×) | wrong signature | wrong signature | 14.07 (3.8×) |
 
 **bun 1.4.3**, microseconds per call (times as long as sigflint in brackets):
 
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| DynamoDB POST, JSON body | **2.09** | wrong signature | 220.25 (105.5×) | 14.18 (6.8×) | 50.94 (24.4×) | wrong signature | wrong signature |
-| API Gateway GET, session token | **1.90** | 6.19 (3.3×) | 212.08 (111.9×) | 12.36 (6.5×) | wrong signature | 568.24 (299.7×) | wrong signature |
-| SQS, query parameters | **2.73** | 8.09 (3×) | 218.33 (80.1×) | 15.33 (5.6×) | 50.07 (18.4×) | 573.66 (210.4×) | wrong signature |
-| presigned URL, API Gateway | **5.93** | 17.11 (2.9×) | 236.50 (39.9×) | 16.15 (2.7×) | wrong signature | wrong signature | wrong signature |
-| presigned URL, S3 | **6.54** | 18.02 (2.8×) | 234.22 (35.8×) | 20.35 (3.1×) | wrong signature | wrong signature | 11.77 (1.8×) |
+| DynamoDB POST, JSON body | **1.91** | wrong signature | 214.56 (112.2×) | 12.73 (6.7×) | 49.26 (25.8×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.93** | 5.76 (3×) | 211.31 (109.7×) | 10.92 (5.7×) | wrong signature | 571.41 (296.5×) | wrong signature |
+| SQS, query parameters | **2.58** | 8.15 (3.2×) | 213.64 (82.8×) | 13.88 (5.4×) | 48.16 (18.7×) | 571.00 (221.2×) | wrong signature |
+| presigned URL, API Gateway | **5.86** | 17.17 (2.9×) | 227.62 (38.8×) | 16.86 (2.9×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **6.37** | 16.99 (2.7×) | 230.23 (36.1×) | 16.35 (2.6×) | wrong signature | wrong signature | 11.31 (1.8×) |
 
-“Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 5% to 9%, Bun 38% to 70%, so the Bun ratios are less precise than the Node ones; every gap shown is far outside its band.
+“Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 5% to 10%, Bun 34% to 68%, so the Bun ratios are less precise than the Node ones; every gap shown is far outside its band.
 
-Only sigflint offers these (microseconds per call, Node / Bun): SigV4a headers 15.6 / 14.7, SigV4a presigned URL 17.5 / 18.1, one 64 KiB chunk 33.9 / 33.3, the last chunk with a trailer 3.1 / 2.2, a 4 KiB event 12.0 / 12.9. SigV4a is dominated by the ECDSA signature.
+Only sigflint offers these (microseconds per call, Node / Bun): SigV4a headers 15.6 / 14.6, SigV4a presigned URL 17.5 / 18.2, one 64 KiB chunk 33.6 / 33.0, the last chunk with a trailer 3.0 / 2.3, a 4 KiB event 12.1 / 13.1. SigV4a is dominated by the ECDSA signature.
 
 ## Memory
 
@@ -371,7 +371,7 @@ These figures were measured on the S3 header code before it was split into modul
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 31,980 | 5,194 | 2,584 | 2,392 | 0 |  |
+| **sigflint** | 32,499 | 5,391 | 2,654 | 2,458 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -384,15 +384,15 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 
 | Imports | Minified | gzip |
 |---|--:|--:|
-| `getAuthHeaders` | 5,194 | 2,584 |
-| `getAuthHeaders`, `presign` | 6,393 | 2,992 |
-| `getAuthHeadersV4a` | 6,251 | 3,052 |
+| `getAuthHeaders` | 5,391 | 2,654 |
+| `getAuthHeaders`, `presign` | 6,591 | 3,053 |
+| `getAuthHeadersV4a` | 6,448 | 3,120 |
 | `presignV4a` | 6,051 | 2,973 |
-| `chunkSigner` | 2,489 | 1,298 |
-| `eventSigner` | 2,888 | 1,490 |
-| all six | 10,762 | 4,577 |
+| `chunkSigner` | 2,489 | 1,299 |
+| `eventSigner` | 2,888 | 1,491 |
+| all six | 10,961 | 4,634 |
 
-The Bun and web entries are 4,555 / 2,347 and 4,785 / 2,431 bytes for `getAuthHeaders`. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 
