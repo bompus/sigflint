@@ -7,9 +7,17 @@ export const utf8 = /* @__PURE__ */ new TextEncoder();
 /** The seed signature, timestamp and scope of a signed request, from the headers getAuthHeaders returned. */
 export function seedOf(authHeaders) {
   const auth = authHeaders.authorization;
-  if (typeof auth !== 'string' || !auth.startsWith('AWS4-HMAC-SHA256 ')) throw new TypeError('authHeaders must be the headers getAuthHeaders returned (a SigV4a signature cannot start a chunk or event stream)');
+  if (typeof auth !== 'string' || !auth.startsWith('AWS4-HMAC-SHA256 '))
+    throw new TypeError('authHeaders must be the headers getAuthHeaders returned (a SigV4a signature cannot start a chunk or event stream)');
   const scope = auth.slice(auth.indexOf('Credential=') + 11, auth.indexOf(',')).split('/'); // access key, date, region, service, aws4_request
-  return { signature: auth.slice(auth.lastIndexOf('Signature=') + 10), datetime: authHeaders['x-amz-date'], date: scope[1], region: scope[2], service: scope[3], scope: scope.slice(1).join('/') };
+  return {
+    signature: auth.slice(auth.lastIndexOf('Signature=') + 10),
+    datetime: authHeaders['x-amz-date'],
+    date: scope[1],
+    region: scope[2],
+    service: scope[3],
+    scope: scope.slice(1).join('/'),
+  };
 }
 
 export const chunkStringToSign = (datetime, scope, previous, payloadHash) => `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${emptyHash}\n${payloadHash}`;
@@ -37,7 +45,11 @@ export function frameChunk(signature, data) {
 
 /** The last chunk (no data), with the signed trailing headers when there are any. */
 export function frameEnd(signature, trailers, trailerSignature) {
-  return utf8.encode(trailers === undefined ? `0;chunk-signature=${signature}\r\n\r\n` : `0;chunk-signature=${signature}\r\n${trailers.replace(/\n/g, '\r\n')}x-amz-trailer-signature:${trailerSignature}\r\n\r\n`);
+  return utf8.encode(
+    trailers === undefined
+      ? `0;chunk-signature=${signature}\r\n\r\n`
+      : `0;chunk-signature=${signature}\r\n${trailers.replace(/\n/g, '\r\n')}x-amz-trailer-signature:${trailerSignature}\r\n\r\n`,
+  );
 }
 
 /**

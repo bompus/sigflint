@@ -48,10 +48,14 @@ async function getSigningKey(secretAccessKey, date, region, service) {
   return signingKey;
 }
 
-const signSymmetric = async (credentials, prepared, text) => toHex(await subtle.sign('HMAC', await getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), utf8.encode(text)));
+const signSymmetric = async (credentials, prepared, text) =>
+  toHex(await subtle.sign('HMAC', await getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), utf8.encode(text)));
 
 // SigV4a: the derived scalar goes in as a PKCS#8 private key without the public point, which WebCrypto computes itself
-const pkcs8 = /* @__PURE__ */ Uint8Array.from([0x30, 0x41, 0x02, 0x01, 0x00, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x04, 0x27, 0x30, 0x25, 0x02, 0x01, 0x01, 0x04, 0x20]);
+const pkcs8 = /* @__PURE__ */ Uint8Array.from([
+  0x30, 0x41, 0x02, 0x01, 0x00, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x04, 0x27, 0x30,
+  0x25, 0x02, 0x01, 0x01, 0x04, 0x20,
+]);
 const asymmetricKeys = new Map();
 async function getAsymmetricKey({ accessKeyId, secretAccessKey }) {
   const id = `${accessKeyId}/${secretAccessKey}`;
@@ -169,11 +173,15 @@ export function eventSigner(authHeaders, credentials) {
   /** @type {Promise<any>} */
   let turn = Promise.resolve();
   return {
-    sign: (message, now = Date.now()) => (turn = turn.then(async () => {
-      const { datetime, scope, date } = eventScope(now, seed.region, seed.service);
-      const header = dateHeader(now);
-      previous = await signWith(await getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service), eventStringToSign(datetime, scope, previous, await hexHash(header), await hexHash(message)));
-      return frameEvent(header, previous, message);
-    })),
+    sign: (message, now = Date.now()) =>
+      (turn = turn.then(async () => {
+        const { datetime, scope, date } = eventScope(now, seed.region, seed.service);
+        const header = dateHeader(now);
+        previous = await signWith(
+          await getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service),
+          eventStringToSign(datetime, scope, previous, await hexHash(header), await hexHash(message)),
+        );
+        return frameEvent(header, previous, message);
+      })),
   };
 }

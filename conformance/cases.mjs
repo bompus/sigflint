@@ -64,13 +64,20 @@ const fixed = [
   ['query-same-name-and-value', 'GET', `${B}/?a=1&a=1`, {}],
   ['query-valueless-mix', 'GET', `${B}/?b&a&c=1`, {}],
   ['headers-name-prefix', 'PUT', `${B}/k`, { 'x-amz-meta-a_b': '3', 'x-amz-meta-a-b': '2', 'x-amz-meta-a': '1' }, 'x'],
-  ['headers-around-the-fixed-three', 'PUT', `${B}/k`, { 'x-amz-meta-z': 'z', 'content-type': 'text/plain', 'x-amz-acl': 'private', 'cache-control': 'no-cache', 'x-amz-storage-class': 'STANDARD' }, 'x'],
+  [
+    'headers-around-the-fixed-three',
+    'PUT',
+    `${B}/k`,
+    { 'x-amz-meta-z': 'z', 'content-type': 'text/plain', 'x-amz-acl': 'private', 'cache-control': 'no-cache', 'x-amz-storage-class': 'STANDARD' },
+    'x',
+  ],
   ['root-no-path', 'GET', 'https://bucket.us-sea-1.linodeobjects.com', {}],
 ];
 
 function mulberry32(a) {
   return () => {
-    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -81,10 +88,100 @@ const rndToken = mulberry32(7);
 const pick = (a) => a[Math.floor(rnd() * a.length)];
 const ri = (n) => Math.floor(rnd() * n);
 
-const pathAtoms = ['a', 'B', 'z9', '0', '-', '_', '.', '~', '!', '$', '&', "'", '(', ')', '*', '+', ',', ';', '=', ':', '@',
-  '%41', '%2F', '%2B', '%7E', '%20', '%zz', '%', '%f', ' ', '"', '<', '>', '^', '`', '{', '}', '|', 'é', '日本', '😀', '/', '//', '%C3%A9', '%c3%a9', '%ff'];
-const qAtoms = ['a', 'B', 'z9', '0', '-', '_', '.', '~', '!', '$', "'", '(', ')', '*', '+', ',', ';', ':', '@', '/', '?',
-  '%41', '%2F', '%2B', '%7E', '%20', '%zz', '%', '%f', ' ', '"', '<', '>', '^', '`', '{', '}', '|', 'é', '日本', '😀', '%C3%A9', '%ff', '='];
+const pathAtoms = [
+  'a',
+  'B',
+  'z9',
+  '0',
+  '-',
+  '_',
+  '.',
+  '~',
+  '!',
+  '$',
+  '&',
+  "'",
+  '(',
+  ')',
+  '*',
+  '+',
+  ',',
+  ';',
+  '=',
+  ':',
+  '@',
+  '%41',
+  '%2F',
+  '%2B',
+  '%7E',
+  '%20',
+  '%zz',
+  '%',
+  '%f',
+  ' ',
+  '"',
+  '<',
+  '>',
+  '^',
+  '`',
+  '{',
+  '}',
+  '|',
+  'é',
+  '日本',
+  '😀',
+  '/',
+  '//',
+  '%C3%A9',
+  '%c3%a9',
+  '%ff',
+];
+const qAtoms = [
+  'a',
+  'B',
+  'z9',
+  '0',
+  '-',
+  '_',
+  '.',
+  '~',
+  '!',
+  '$',
+  "'",
+  '(',
+  ')',
+  '*',
+  '+',
+  ',',
+  ';',
+  ':',
+  '@',
+  '/',
+  '?',
+  '%41',
+  '%2F',
+  '%2B',
+  '%7E',
+  '%20',
+  '%zz',
+  '%',
+  '%f',
+  ' ',
+  '"',
+  '<',
+  '>',
+  '^',
+  '`',
+  '{',
+  '}',
+  '|',
+  'é',
+  '日本',
+  '😀',
+  '%C3%A9',
+  '%ff',
+  '=',
+];
 const word = (atoms, max) => Array.from({ length: 1 + ri(max) }, () => pick(atoms)).join('');
 const hosts = ['examplebucket.s3.amazonaws.com', 'bucket.us-sea-1.linodeobjects.com', 'us-lax-1.linodeobjects.com', '127.0.0.1:9000'];
 const bodies = ['', 'hello', 'héllo 日本', 'x'.repeat(100)];
@@ -92,7 +189,10 @@ const metaVals = ['a', '  a  b ', 'x   y   z', ' lead', 'trail '];
 
 const cases = [];
 // the AWS GET Object example at another date and in another region (for the signing-key cache test only)
-for (const [id, extra] of [['extra-next-day', { stamp: '20130525T000000Z' }], ['extra-other-region', { region: 'us-west-2' }]]) {
+for (const [id, extra] of [
+  ['extra-next-day', { stamp: '20130525T000000Z' }],
+  ['extra-other-region', { region: 'us-west-2' }],
+]) {
   cases.push({ id, kind: 'extra', method: 'GET', href: `${B}/test.txt`, headers: { range: 'bytes=0-9' }, body: '', unsigned: false, ...extra });
 }
 for (const [id, method, href, headers, body = '', unsigned = false, token] of fixed) {
@@ -107,7 +207,11 @@ for (let i = 0; i < 3000; i++) {
   let raw = `https://${pick(hosts)}${path}`;
   if (pairs.length) raw += '?' + pairs.join('&');
   let u;
-  try { u = new URL(raw); } catch { continue; }
+  try {
+    u = new URL(raw);
+  } catch {
+    continue;
+  }
   const headers = {};
   if (rnd() < 0.3) headers['x-amz-acl'] = pick(['private', 'public-read']);
   if (rnd() < 0.2) headers['x-amz-meta-note'] = pick(metaVals);
@@ -119,7 +223,10 @@ for (let i = 0; i < 3000; i++) {
 // queries whose names start with one another, in every order, with and without values
 const qNames = ['a', 'a-b', 'a.b', 'a1', 'a_b', 'ab', 'b', 'B', 'a~b'];
 for (let i = 0; i < 300; i++) {
-  const pairs = Array.from({ length: 1 + ri(5) }, () => { const name = pick(qNames); return rnd() < 0.25 ? name : `${name}=${pick(['', '1', '2', 'x', 'a b', '~'])}`; });
+  const pairs = Array.from({ length: 1 + ri(5) }, () => {
+    const name = pick(qNames);
+    return rnd() < 0.25 ? name : `${name}=${pick(['', '1', '2', 'x', 'a b', '~'])}`;
+  });
   const u = new URL(`https://${pick(hosts)}/k?${pairs.join('&')}`);
   cases.push({ id: `qname-${i}`, kind: 'fuzz', method: 'GET', href: u.href, headers: {}, body: '', unsigned: false });
 }

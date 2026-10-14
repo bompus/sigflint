@@ -16,8 +16,16 @@ const datetimeOf = (ms) => new Date(ms).toISOString().replace(/[-:]|\.\d{3}/g, '
 const data = new Uint8Array(65 * 1024).fill(97); // 65 KiB of 'a': a 64 KiB chunk and a 1 KiB chunk
 
 // the table-driven CRC-32 that event frames carry
-const crcTable = Int32Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c; });
-const crc32 = (bytes) => { let crc = -1; for (const b of bytes) crc = crcTable[(crc ^ b) & 255] ^ (crc >>> 8); return ~crc >>> 0; };
+const crcTable = Int32Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c;
+});
+const crc32 = (bytes) => {
+  let crc = -1;
+  for (const b of bytes) crc = crcTable[(crc ^ b) & 255] ^ (crc >>> 8);
+  return ~crc >>> 0;
+};
 
 for (const [name, { chunkSigner, eventSigner }] of entries) {
   test(`${name}: the AWS documentation example for a chunked upload`, async () => {
@@ -39,7 +47,10 @@ for (const [name, { chunkSigner, eventSigner }] of entries) {
     const last = await signer.end({ 'x-amz-checksum-crc32c': 'sOO8/Q==' });
     assert.ok(text(first.subarray(0, 100)).startsWith('10000;chunk-signature=b474d8862b1487a5145d686f57f013e54db672cee1c953b3010fb58501ef5aa2\r\n'));
     assert.ok(text(second.subarray(0, 100)).startsWith('400;chunk-signature=1c1344b170168f8e65b41376b44b20fe354e373826ccbbe2c1d40a8cae51e5c7\r\n'));
-    assert.equal(text(last), '0;chunk-signature=2ca2aba2005185cf7159c6277faf83795951dd77a3a99e6e65d5c9f85863f992\r\nx-amz-checksum-crc32c:sOO8/Q==\r\nx-amz-trailer-signature:d81f82fc3505edab99d459891051a732e8730629a2e4a59689829ca17fe2e435\r\n\r\n');
+    assert.equal(
+      text(last),
+      '0;chunk-signature=2ca2aba2005185cf7159c6277faf83795951dd77a3a99e6e65d5c9f85863f992\r\nx-amz-checksum-crc32c:sOO8/Q==\r\nx-amz-trailer-signature:d81f82fc3505edab99d459891051a732e8730629a2e4a59689829ca17fe2e435\r\n\r\n',
+    );
   });
 
   test(`${name}: the first chunk of every smithy chain has the same signature`, async () => {

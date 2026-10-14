@@ -50,7 +50,8 @@ export function frameEvent(dateBytes, signatureHex, inner) {
   return out;
 }
 
-export const eventStringToSign = (datetime, scope, previous, headersHash, payloadHash) => `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${headersHash}\n${payloadHash}`;
+export const eventStringToSign = (datetime, scope, previous, headersHash, payloadHash) =>
+  `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${headersHash}\n${payloadHash}`;
 export const eventScope = (ms, region, service) => {
   const datetime = amzDatetime(ms);
   return { datetime, scope: `${datetime.slice(0, 8)}/${region}/${service}/aws4_request`, date: datetime.slice(0, 8) };
@@ -73,7 +74,10 @@ export function createEventSigner({ hexHash, hmacHex, getSigningKey }) {
       sign(message, now = Date.now()) {
         const { datetime, scope, date } = eventScope(now, seed.region, seed.service);
         const header = dateHeader(now);
-        previous = hmacHex(getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service), eventStringToSign(datetime, scope, previous, hexHash(header), hexHash(message)));
+        previous = hmacHex(
+          getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service),
+          eventStringToSign(datetime, scope, previous, hexHash(header), hexHash(message)),
+        );
         return frameEvent(header, previous, message);
       },
     };

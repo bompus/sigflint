@@ -288,7 +288,6 @@ export function prepare(request, credentials, payloadHash, scheme = symmetric) {
   return { headers, canonicalRequest, datetime, date, region, service, credentialScope: scheme.scope(date, region, service), signedHeaders, algorithm: scheme.algorithm };
 }
 
-
 export const stringToSign = (prepared, canonicalRequestHash) => `${prepared.algorithm}\n${prepared.datetime}\n${prepared.credentialScope}\n${canonicalRequestHash}`;
 
 /** Adds the authorization header to the headers to return. */
@@ -333,6 +332,10 @@ export function createKeys(hmac) {
 export function createSigner({ hexHash, hmacHex, getSigningKey }) {
   return function getAuthHeaders(request, credentials) {
     const prepared = prepare(request, credentials, payloadHashOf(request, hexHash));
-    return authorize(prepared, credentials.accessKeyId, hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))));
+    return authorize(
+      prepared,
+      credentials.accessKeyId,
+      hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))),
+    );
   };
 }

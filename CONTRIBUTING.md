@@ -10,6 +10,7 @@ npm test            # builds dist/ first, then the corpus test and the behavior 
 npm run build       # dist/node.js and dist/bun.js, the one-file builds Node and Bun load (esbuild)
 npm run types       # generated .d.ts and the consumer type test
 npm run check:package
+npm run check       # all of the above plus lint and format (oxlint, oxfmt; npm run format fixes the format)
 ```
 
 The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.
@@ -32,3 +33,11 @@ A change to the signing code must keep every case passing. A bug fix needs a cas
 sigflint signs requests for every AWS service with SigV4, as headers or presigned URLs, plus SigV4a, chunked uploads and event streams. Anything else is not in 1.0; an issue describing the use case is the place to start.
 
 The package has no dependencies and uses only what the runtime provides. A change that adds a dependency, or that makes any workload slower, needs a measurement (`bench/`) that shows why it is worth it. Each signer stays in its own module and export, with no work at import time, so a bundle holds only what it imports.
+
+## Releases
+
+Before every version bump, re-run the speed, memory, import and size measurements on the code being released (`bench/`; the protocols say how), regenerate the charts and tables, and correct every README and CHANGELOG number. Then run `node bench/check-benchmarked.mjs --record`. The publish workflow runs `npm run check:benchmarked` and stops when the recorded version or the `src/` tree differs from the tag. [AGENTS.md](AGENTS.md) has the rest of the release steps.
+
+## Conduct
+
+Participation is covered by the [Code of Conduct](CODE_OF_CONDUCT.md).

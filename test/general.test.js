@@ -13,7 +13,16 @@ for (const [name, { getAuthHeaders }] of entries) {
     const failures = [];
     for (const c of corpus) {
       const headers = await getAuthHeaders(
-        { method: c.method, url: new URL(c.href), service: c.service, region: c.region, body: c.body ?? undefined, unsignedPayload: c.unsigned, signHeaders: { ...c.headers }, now: toMs(c.stamp) },
+        {
+          method: c.method,
+          url: new URL(c.href),
+          service: c.service,
+          region: c.region,
+          body: c.body ?? undefined,
+          unsignedPayload: c.unsigned,
+          signHeaders: { ...c.headers },
+          now: toMs(c.stamp),
+        },
         c.token ? { ...credentials, sessionToken: c.token } : credentials,
       );
       if (headers.authorization !== c.authorization) failures.push({ id: c.id, href: c.href, expected: c.authorization, got: headers.authorization });

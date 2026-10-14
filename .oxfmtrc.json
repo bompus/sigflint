@@ -1,0 +1,6 @@
+{
+  "printWidth": 180,
+  "singleQuote": true,
+  "ignorePatterns": ["bench/**", "**/*.md", "docs/**", "test/corpus*.json", "package-lock.json", "conformance/streams/**", "types/**", "dist/**"],
+  "sortPackageJson": false
+}

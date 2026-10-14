@@ -10,7 +10,11 @@ const request = { method: 'GET', url, region: 'us-east-1', now };
 const text = (bytes) => new TextDecoder().decode(bytes);
 
 for (const [name, { getAuthHeaders, presign, getAuthHeadersV4a, chunkSigner, eventSigner }] of entries) {
-  const rejects = async (fn, type, pattern) => assert.rejects(async () => fn(), (error) => error instanceof type && pattern.test(error.message));
+  const rejects = async (fn, type, pattern) =>
+    assert.rejects(
+      async () => fn(),
+      (error) => error instanceof type && pattern.test(error.message),
+    );
   const chunkedHeaders = () => getAuthHeaders({ method: 'PUT', url, region: 'us-east-1', now, body: 'x', signHeaders: { 'content-encoding': 'aws-chunked' } }, credentials);
 
   test(`${name}: a trailer name in capitals is signed with its value`, async () => {

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+## Unreleased
 
 First version: AWS Signature Version 4 signing for every AWS service.
 

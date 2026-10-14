@@ -43,6 +43,9 @@ export const presignedUrl = (prepared, signature) => `${prepared.base}${prepared
 export function createPresigner({ hexHash, hmacHex, getSigningKey }) {
   return function presign(request, credentials) {
     const prepared = preparePresign(request, credentials, payloadHashOf(request, hexHash));
-    return presignedUrl(prepared, hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))));
+    return presignedUrl(
+      prepared,
+      hmacHex(getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), stringToSign(prepared, hexHash(prepared.canonicalRequest))),
+    );
   };
 }

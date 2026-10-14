@@ -28,7 +28,10 @@ describe('result', () => {
     const url = new URL('https://bucket.example.com/key');
     assert.equal(getAuthHeaders({ method: 'GET', url, now }, credentials)['x-amz-content-sha256'], 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
     assert.equal(getAuthHeaders({ method: 'GET', url, body: '', now }, credentials)['x-amz-content-sha256'], 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
-    assert.equal(getAuthHeaders({ method: 'PUT', url, body: 'Welcome to Amazon S3.', now }, credentials)['x-amz-content-sha256'], '44ce7dd67c959e0d3524ffac1771dfbba87d2b6b4b4e99e42034a8b803f8b072');
+    assert.equal(
+      getAuthHeaders({ method: 'PUT', url, body: 'Welcome to Amazon S3.', now }, credentials)['x-amz-content-sha256'],
+      '44ce7dd67c959e0d3524ffac1771dfbba87d2b6b4b4e99e42034a8b803f8b072',
+    );
   });
 
   test('a session token is signed and returned as x-amz-security-token', () => {

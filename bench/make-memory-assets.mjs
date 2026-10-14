@@ -111,18 +111,18 @@ const ratios = summary.cells.filter((c) => c.metric === 'allocBytes').flatMap((c
 const bandOf = (m) => { const b = summary.cells.filter((c) => c.metric === m).map((c) => Math.round(c.bandPct)); return Math.min(...b) === Math.max(...b) ? `${b[0]}%` : `${Math.min(...b)}% to ${Math.max(...b)}%`; };
 const bands = [['heap per call', 'allocBytes'], ['GC pause', 'gcMs'], ['peak memory', 'maxRss'], ['import + first signature', 'firstMs']].map(([n, m]) => `${n} ${bandOf(m)}`).join('; ');
 const block = `<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-alloc-dark.svg">
-  <img alt="Bar chart: heap allocated per signature on Node.js and Bun" src="docs/memory-alloc-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="memory-alloc-dark.svg">
+  <img alt="Bar chart: heap allocated per signature on Node.js and Bun" src="memory-alloc-light.svg">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-gc-dark.svg">
-  <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="docs/memory-gc-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="memory-gc-dark.svg">
+  <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="memory-gc-light.svg">
 </picture>
 ${md}
 Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
-const readmePath = `${here}../README.md`;
+const readmePath = `${here}../docs/benchmarks.md`;
 const readme = readFileSync(readmePath, 'utf8');
-if (!readme.includes('<!-- BEGIN memory -->')) throw new Error('README has no memory block');
+if (!readme.includes('<!-- BEGIN memory -->')) throw new Error('docs/benchmarks.md has no memory block');
 writeFileSync(readmePath, readme.replace(/(<!-- BEGIN memory -->)[\s\S]*?(<!-- END memory -->)/, (_, a, b) => `${a}\n${block}\n${b}`));
-console.log(`README memory block written; allocation ratios ${Math.min(...ratios).toFixed(2)} to ${Math.max(...ratios).toFixed(2)}`);
+console.log(`benchmarks.md memory block written; allocation ratios ${Math.min(...ratios).toFixed(2)} to ${Math.max(...ratios).toFixed(2)}`);

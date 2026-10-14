@@ -34,7 +34,10 @@ const awsExamples = [
 ];
 for (const [name, id, signedHeaders, signature] of awsExamples) {
   test(`AWS documentation example: ${name}`, async () => {
-    const headers = await signCase(entries[0][1].getAuthHeaders, corpus.find((c) => c.id === id));
+    const headers = await signCase(
+      entries[0][1].getAuthHeaders,
+      corpus.find((c) => c.id === id),
+    );
     assert.equal(
       headers.authorization,
       `AWS4-HMAC-SHA256 Credential=${credentials.accessKeyId}/20130524/us-east-1/s3/aws4_request, SignedHeaders=${signedHeaders}, Signature=${signature}`,

@@ -310,9 +310,9 @@ writeFileSync(`${docs}tables.md`, tables.join('\n\n') + '\n');
 
 // fill the marked blocks in the README: the chart (dark and light) and the table under it
 const sections = [['correctness', 'Bar chart: how many requests each library signs the same as botocore'], ['speed', 'Bar chart: time to sign one request on Node.js and Bun'], ['size', 'Bar chart: bundled, minified and gzipped size of each library'], ['runtimes', 'Grid: which runtimes each library runs on']];
-let readme = readFileSync(`${here}../README.md`, 'utf8');
+let readme = readFileSync(`${here}../docs/benchmarks.md`, 'utf8');
 sections.forEach(([key, alt], i) => {
-  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="docs/${key}-dark.svg">\n  <img alt="${alt}" src="docs/${key}-light.svg">\n</picture>`;
+  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${key}-dark.svg">\n  <img alt="${alt}" src="${key}-light.svg">\n</picture>`;
   const body = tables[i].replace(/^### [^\n]*\n\n/, '');
   readme = readme.replace(new RegExp(`(<!-- BEGIN ${key} -->)[\\s\\S]*?(<!-- END ${key} -->)`), (_, a, b) => `${a}\n${picture}\n\n${body}\n${b}`);
 });
@@ -323,10 +323,10 @@ for (const [key, alt] of [
   ['speed-more-bun', 'Bar chart: time to sign other-service and presigned-URL requests on Bun'],
   ['size-tiers', 'Bar chart: gzipped and minified size of sigflint for each combination of signers'],
 ]) {
-  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="docs/${key}-dark.svg">\n  <img alt="${alt}" src="docs/${key}-light.svg">\n</picture>`;
+  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${key}-dark.svg">\n  <img alt="${alt}" src="${key}-light.svg">\n</picture>`;
   const block = new RegExp(`(<!-- BEGIN pic-${key} -->)[\\s\\S]*?(<!-- END pic-${key} -->)`);
-  if (!block.test(readme)) throw new Error(`README has no pic-${key} block`);
+  if (!block.test(readme)) throw new Error(`docs/benchmarks.md has no pic-${key} block`);
   readme = readme.replace(block, (_, a, b) => `${a}\n${picture}\n${b}`);
 }
-writeFileSync(`${here}../README.md`, readme);
+writeFileSync(`${here}../docs/benchmarks.md`, readme);
 console.log('wrote', Object.keys(out).map((id) => `${id}-{dark,light}.svg`).join(', '), 'and tables.md');

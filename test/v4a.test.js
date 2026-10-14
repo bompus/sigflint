@@ -19,7 +19,10 @@ const d = deriveP256(hmac, credentials.accessKeyId, credentials.secretAccessKey)
 const ecdh = crypto.createECDH('prime256v1');
 ecdh.setPrivateKey(d);
 const point = ecdh.getPublicKey();
-const publicKey = crypto.createPublicKey({ key: { kty: 'EC', crv: 'P-256', x: point.subarray(1, 33).toString('base64url'), y: point.subarray(33).toString('base64url') }, format: 'jwk' });
+const publicKey = crypto.createPublicKey({
+  key: { kty: 'EC', crv: 'P-256', x: point.subarray(1, 33).toString('base64url'), y: point.subarray(33).toString('base64url') },
+  format: 'jwk',
+});
 const verifies = (text, signatureHex) => crypto.verify('sha256', Buffer.from(text), { key: publicKey, dsaEncoding: 'der' }, Buffer.from(signatureHex, 'hex'));
 
 for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
@@ -28,7 +31,18 @@ for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
     for (const c of corpus) {
       const creds = c.token ? { ...credentials, sessionToken: c.token } : credentials;
       const url = new URL(c.href);
-      const request = { method: c.method, url, service: c.service, region: c.regionSet, regionSet: c.regionSet, body: c.body ?? undefined, unsignedPayload: c.unsigned && url.protocol === 'https:', signHeaders: { ...c.headers }, expires: c.expires, now: toMs(c.stamp) };
+      const request = {
+        method: c.method,
+        url,
+        service: c.service,
+        region: c.regionSet,
+        regionSet: c.regionSet,
+        body: c.body ?? undefined,
+        unsignedPayload: c.unsigned && url.protocol === 'https:',
+        signHeaders: { ...c.headers },
+        expires: c.expires,
+        now: toMs(c.stamp),
+      };
       if (c.mode === 'header') {
         const prepared = prepare(withRegionSet(request), creds, payloadHashOf(request, hexHash), asymmetric);
         const text = stringToSign(prepared, hexHash(prepared.canonicalRequest));
@@ -57,7 +71,10 @@ test('the scope has no region, and the region set is signed (header) or a query 
   const [, { getAuthHeadersV4a, presignV4a }] = entries[0];
   const request = { method: 'GET', url: new URL('https://bucket.s3.amazonaws.com/key'), regionSet: 'us-east-1,us-west-2', now };
   const headers = await getAuthHeadersV4a(request, credentials);
-  assert.match(headers.authorization, /^AWS4-ECDSA-P256-SHA256 Credential=AKIAIOSFODNN7EXAMPLE\/20130524\/s3\/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-region-set, Signature=[0-9a-f]+$/);
+  assert.match(
+    headers.authorization,
+    /^AWS4-ECDSA-P256-SHA256 Credential=AKIAIOSFODNN7EXAMPLE\/20130524\/s3\/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-region-set, Signature=[0-9a-f]+$/,
+  );
   assert.equal(headers['x-amz-region-set'], 'us-east-1,us-west-2');
   const link = new URL(await presignV4a(request, credentials));
   assert.equal(link.searchParams.get('X-Amz-Region-Set'), 'us-east-1,us-west-2');

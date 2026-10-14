@@ -2,7 +2,15 @@
 import { getAuthHeaders } from 'sigflint';
 
 const headers: Record<string, string> = await getAuthHeaders(
-  { method: 'PUT', url: new URL('https://bucket.s3.us-east-1.amazonaws.com/key'), region: 'us-east-1', body: 'x', signHeaders: { 'x-amz-acl': 'private' }, unsignedPayload: false, now: Date.now() },
+  {
+    method: 'PUT',
+    url: new URL('https://bucket.s3.us-east-1.amazonaws.com/key'),
+    region: 'us-east-1',
+    body: 'x',
+    signHeaders: { 'x-amz-acl': 'private' },
+    unsignedPayload: false,
+    now: Date.now(),
+  },
   { accessKeyId: 'id', secretAccessKey: 'secret', sessionToken: 'token' },
 );
 const auth: string = headers.authorization;

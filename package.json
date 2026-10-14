@@ -58,6 +58,11 @@
     "types": "tsc && tsc -p test/types",
     "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
     "prepack": "tsc && npm run build",
+    "lint": "npx --yes oxlint@1.85.0 --deny-warnings src test conformance index.d.ts",
+    "format": "npx --yes oxfmt@0.70.0 .",
+    "check:style": "npm run lint && npx --yes oxfmt@0.70.0 --check .",
+    "check": "npm test && npm run types && npm run check:package && npm run check:style",
+    "check:benchmarked": "node bench/check-benchmarked.mjs",
     "check:package": "tsc && npm run build && publint && attw --pack . --profile esm-only"
   },
   "devDependencies": {

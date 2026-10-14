@@ -11,13 +11,25 @@ for (const [name, { presign }] of entries) {
   test(`${name}: matches the botocore reference signature and parameters for every case`, async () => {
     const failures = [];
     for (const c of corpus) {
-      const out = new URL(await presign(
-        { method: c.method, url: new URL(c.href), service: c.service, region: c.region, signHeaders: { ...c.headers }, unsignedPayload: c.unsigned, expires: c.expires, now: toMs(c.stamp) },
-        c.token ? { ...credentials, sessionToken: c.token } : credentials,
-      ));
+      const out = new URL(
+        await presign(
+          {
+            method: c.method,
+            url: new URL(c.href),
+            service: c.service,
+            region: c.region,
+            signHeaders: { ...c.headers },
+            unsignedPayload: c.unsigned,
+            expires: c.expires,
+            now: toMs(c.stamp),
+          },
+          c.token ? { ...credentials, sessionToken: c.token } : credentials,
+        ),
+      );
       const params = Object.entries(Object.fromEntries([...out.searchParams].filter(([k]) => k.startsWith('X-Amz-') && k !== 'X-Amz-Signature'))).sort();
       const kept = [...new URL(c.href).searchParams].every(([k, v]) => out.searchParams.get(k) === v);
-      if (out.searchParams.get('X-Amz-Signature') !== c.sig || JSON.stringify(params) !== JSON.stringify(Object.entries(c.authParams).sort()) || !kept) failures.push({ id: c.id, href: c.href, expected: c.sig });
+      if (out.searchParams.get('X-Amz-Signature') !== c.sig || JSON.stringify(params) !== JSON.stringify(Object.entries(c.authParams).sort()) || !kept)
+        failures.push({ id: c.id, href: c.href, expected: c.sig });
     }
     assert.ok(corpus.length >= 1600, `only ${corpus.length} cases`);
     assert.deepEqual(failures.slice(0, 5), [], `${failures.length} of ${corpus.length} cases differ`);
