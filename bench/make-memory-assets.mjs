@@ -69,3 +69,47 @@ for (const ch of CHARTS) {
   }
 }
 console.log(`wrote ${CHARTS.length * 2} charts to ${outDir}`);
+
+// ---- README: fill the marked memory block (charts, one table per runtime) -------------------------------------------------
+const fmtCell = (c, arm, unit) => {
+  const a = c?.arms[arm];
+  if (!a) return '';
+  const v = unitFmt[unit](a.median);
+  if (arm === 'sigflint-A') return `**${v}**`;
+  const r = a.ratio >= 10 ? a.ratio.toFixed(0) : a.ratio?.toFixed(1);
+  return a.verdict === 'no clear change' ? `${v} (no clear change)` : `${v} (${r}×)`;
+};
+const COLS = [
+  ['Heap allocated per call', 'allocBytes', 'bench-download'],
+  ['Collections per 10,000 calls', 'gcCount', 'bench-download'],
+  ['GC pause per 10,000 calls', 'gcMs', 'bench-download'],
+  ['Peak memory of the process', 'maxRss', '-'],
+  ['Import + first signature', 'firstMs', '-'],
+];
+const cell = (m, rt, wl) => summary.cells.find((c) => c.metric === m && c.runtime === rt && c.workload === wl);
+const FULL = { aws4: 'aws4', minio: 'minio', aws4fetch: 'aws4fetch', smithy: '@smithy/signature-v4', 'aws-sig': 'aws-sig', wdl: '@wdl-dev/aws-sigv4', 'sigflint-A': '**sigflint**' };
+let md = '';
+for (const rt of ['node', 'bun']) {
+  md += `\n**${rt === 'node' ? 'Node 26.11.1' : 'Bun 1.4.3'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
+  for (const arm of ORDER) md += `| ${FULL[arm]} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
+}
+// the spread of the allocation ratio over every workload the library signs correctly
+const ratios = summary.cells.filter((c) => c.metric === 'allocBytes').flatMap((c) => Object.entries(c.arms).filter(([a, x]) => a !== 'sigflint-A' && a !== 'sigflint-B' && x.verdict === 'more than sigflint').map(([, x]) => x.ratio));
+const bandOf = (m) => { const b = summary.cells.filter((c) => c.metric === m).map((c) => Math.round(c.bandPct)); return Math.min(...b) === Math.max(...b) ? `${b[0]}%` : `${Math.min(...b)}% to ${Math.max(...b)}%`; };
+const bands = [['heap per call', 'allocBytes'], ['GC pause', 'gcMs'], ['peak memory', 'maxRss'], ['import + first signature', 'firstMs']].map(([n, m]) => `${n} ${bandOf(m)}`).join('; ');
+const block = `<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-alloc-dark.svg">
+  <img alt="Bar chart: heap allocated per signature on Node.js and Bun" src="docs/memory-alloc-light.svg">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-gc-dark.svg">
+  <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="docs/memory-gc-light.svg">
+</picture>
+${md}
+Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
+const readmePath = `${here}../README.md`;
+const readme = readFileSync(readmePath, 'utf8');
+if (!readme.includes('<!-- BEGIN memory -->')) throw new Error('README has no memory block');
+writeFileSync(readmePath, readme.replace(/(<!-- BEGIN memory -->)[\s\S]*?(<!-- END memory -->)/, (_, a, b) => `${a}\n${block}\n${b}`));
+console.log(`README memory block written; allocation ratios ${Math.min(...ratios).toFixed(2)} to ${Math.max(...ratios).toFixed(2)}`);

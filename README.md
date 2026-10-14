@@ -184,6 +184,50 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 <!-- END speed -->
 
+## Memory
+
+<!-- BEGIN memory -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-alloc-dark.svg">
+  <img alt="Bar chart: heap allocated per signature on Node.js and Bun" src="docs/memory-alloc-light.svg">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/memory-gc-dark.svg">
+  <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="docs/memory-gc-light.svg">
+</picture>
+
+**Node 26.11.1**, plain GET of one key:
+
+| Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
+|---|--:|--:|--:|--:|--:|
+| **sigflint** | **2.4 KiB** | **6** | **1.2 ms** | **112.0 MiB** | **2.8 ms** |
+| aws4 | 9.8 KiB (4.0×) | 24 (4.0×) | 7.6 ms (6.2×) | 113.5 MiB (no clear change) | 3.7 ms (no clear change) |
+| minio | 8.3 KiB (3.4×) | 19 (3.2×) | 24.1 ms (20×) | 114.4 MiB (no clear change) | 17.5 ms (6.4×) |
+| aws4fetch | 29.3 KiB (12×) | 90 (15×) | 45.6 ms (37×) | 124.5 MiB (1.1×) | 18.3 ms (6.6×) |
+| @smithy/signature-v4 | 17.8 KiB (7.4×) | 44 (7.3×) | 21.4 ms (18×) | 112.2 MiB (no clear change) | 13.5 ms (4.9×) |
+| aws-sig | 69.4 KiB (29×) | 46 (7.7×) | 42.7 ms (35×) | 165.6 MiB (1.5×) | 8.8 ms (3.2×) |
+| @wdl-dev/aws-sigv4 | 58.0 KiB (24×) | 174 (29×) | 106 ms (87×) | 125.2 MiB (1.1×) | 18.8 ms (6.8×) |
+
+**Bun 1.4.3**, plain GET of one key:
+
+| Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
+|---|--:|--:|--:|--:|--:|
+| **sigflint** | **1.4 KiB** | **3** | **6.0 ms** | **62.3 MiB** | **2.2 ms** |
+| aws4 | 6.4 KiB (4.7×) | 14 (4.7×) | 27.9 ms (4.6×) | 70.7 MiB (1.1×) | 3.3 ms (1.5×) |
+| minio | 7.0 KiB (5.2×) | 16 (5.3×) | 35.1 ms (5.8×) | 71.3 MiB (1.1×) | 22.0 ms (9.8×) |
+| aws4fetch | 15.1 KiB (11×) | 28 (9.3×) | 65.8 ms (11×) | 69.6 MiB (1.1×) | 3.1 ms (no clear change) |
+| @smithy/signature-v4 | 13.2 KiB (9.7×) | 24 (8.0×) | 50.1 ms (8.3×) | 73.7 MiB (1.2×) | 12.0 ms (5.3×) |
+| aws-sig | 47.8 KiB (35×) | 80 (27×) | 153 ms (25×) | 79.9 MiB (1.3×) | 4.7 ms (2.1×) |
+| @wdl-dev/aws-sigv4 | 29.9 KiB (22×) | 50 (17×) | 144 ms (24×) | 75.2 MiB (1.2×) | 5.1 ms (2.3×) |
+
+Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate 2.0 to 35 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 50% to 86%; peak memory 5% to 6%; import + first signature 40% to 95%. Every gap shown with a multiplier is outside its band.
+<!-- END memory -->
+
+What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone is not clearly faster than `aws4fetch` or `aws4` on either runtime; the gap is inside the noise band. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 355 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
+
+The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
+
 ## Size
 
 <!-- BEGIN size -->
@@ -210,6 +254,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 ## Methodology and limits
 
 - Speed: one process per library, runtime and round; 5 rounds with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it. The protocol was written before the runs ([`bench/protocol.md`](bench/protocol.md)) and the raw results are in `bench/results/`.
+- Memory: 5 rounds, 810 processes, each under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
 - Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`.
 - Not timed: `Bun.S3Client.presign` (query-string signing, a different request) and `@aws-lite/client` (wraps `aws4`).
