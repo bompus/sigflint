@@ -69,10 +69,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/sigflint.git"
+    "url": "git+https://github.com/bompus/sigflint.git"
   },
   "bugs": {
-    "url": "https://github.com/OWNER/sigflint/issues"
+    "url": "https://github.com/bompus/sigflint/issues"
   },
-  "homepage": "https://github.com/OWNER/sigflint#readme"
+  "homepage": "https://github.com/bompus/sigflint#readme"
 }

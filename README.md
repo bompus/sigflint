@@ -16,7 +16,7 @@ const response = await fetch(url, { headers });
 It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
 - **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](#how-it-is-tested).
-- **Fast.** 1.3 to 3.7 µs per signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 450 times as long on the requests they sign correctly. See [speed](#speed).
+- **Fast.** 1.3 to 3.7 µs per signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 550 times as long on the requests they sign correctly. See [speed](#speed).
 - **Small, and you pay only for what you import.** Signing headers is 5.4 kB minified, 2.7 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
@@ -224,6 +224,13 @@ Some of the other libraries expect the caller to canonicalize the path and query
 
 Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each library called through its normal public API; same fixed clock):
 
+<!-- BEGIN pic-compat-more -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/compat-more-dark.svg">
+  <img alt="Bar chart: how many header and presigned-URL requests for other services each library signs the same as botocore" src="docs/compat-more-light.svg">
+</picture>
+<!-- END pic-compat-more -->
+
 | Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |
 |---|--:|--:|--:|
 | **sigflint** | 1,622 (100%) | 696 (100%) | 777 (100%) |
@@ -295,6 +302,13 @@ No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower t
 
 **node 26.12.0**, microseconds per call (times as long as sigflint in brackets):
 
+<!-- BEGIN pic-speed-more-node -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/speed-more-node-dark.svg">
+  <img alt="Bar chart: time to sign other-service and presigned-URL requests on Node.js" src="docs/speed-more-node-light.svg">
+</picture>
+<!-- END pic-speed-more-node -->
+
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
 | DynamoDB POST, JSON body | **1.75** | wrong signature | 313.13 (178.6×) | 11.70 (6.7×) | 58.67 (33.5×) | wrong signature | wrong signature |
@@ -304,6 +318,13 @@ No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower t
 | presigned URL, S3 | **3.72** | 11.52 (3.1×) | 242.41 (65.2×) | 13.03 (3.5×) | wrong signature | wrong signature | 14.07 (3.8×) |
 
 **bun 1.4.3**, microseconds per call (times as long as sigflint in brackets):
+
+<!-- BEGIN pic-speed-more-bun -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/speed-more-bun-dark.svg">
+  <img alt="Bar chart: time to sign other-service and presigned-URL requests on Bun" src="docs/speed-more-bun-light.svg">
+</picture>
+<!-- END pic-speed-more-bun -->
 
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
@@ -382,6 +403,13 @@ The allocation, collection, GC, CPU and peak-memory figures were measured on the
 
 What a bundle contains depends on what it imports. Minified size of the `node` entry with only the named signers imported (`bench/tiers.mjs`, `bun build --minify`; the other libraries' rows above are the header signer only):
 
+<!-- BEGIN pic-size-tiers -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/size-tiers-dark.svg">
+  <img alt="Bar chart: gzipped and minified size of sigflint for each combination of signers" src="docs/size-tiers-light.svg">
+</picture>
+<!-- END pic-size-tiers -->
+
 | Imports | Minified | gzip |
 |---|--:|--:|
 | `getAuthHeaders` | 5,391 | 2,654 |
@@ -392,7 +420,7 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 | `eventSigner` | 2,888 | 1,491 |
 | all six | 10,961 | 4,634 |
 
-The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in 1.1 ms instead of 3.4 ms (`bench/` import runs, 420 processes, 0 rejected). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well (the sizes above change by at most 6 bytes). The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in 1.1 ms instead of 3.4 ms (a paired run of 420 processes, 0 rejected; the separate run behind the memory table measured 1.3 ms for the same file, so read both as about 1 ms). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well (the sizes above change by at most 6 bytes). The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 

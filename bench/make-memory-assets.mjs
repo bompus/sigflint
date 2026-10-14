@@ -31,13 +31,26 @@ const CHARTS = [
   { file: 'memory-start', metric: 'firstMs', workload: '-', title: 'Start-up: import and first signature', sub: 'Fresh process, runtime start-up excluded, lower is better' },
 ];
 
+// Round tick positions: a step of 1, 2 or 5 times a power of ten in the unit shown on the axis (KiB and MiB for bytes).
+function axis(max, unit) {
+  const div = unit === 'B' ? (max >= 1048576 ? 1048576 : max >= 1024 ? 1024 : 1) : 1;
+  const raw = (max * 1.08) / div / 4, pow = 10 ** Math.floor(Math.log10(raw));
+  const step = ([1, 2, 5, 10].find((m) => m * pow >= raw) * pow) * div;
+  const ticks = [];
+  for (let v = 0; v < max * 1.08 + step; v += step) { ticks.push(v); if (v >= max * 1.08) break; }
+  const suffix = unit === 'B' ? { 1: 'B', 1024: 'KiB', 1048576: 'MiB' }[div] : unit;
+  const label = (v) => `${+(v / div).toFixed(2)}${unit === 'B' || unit === 'ms' || unit === 'µs' ? ' ' + suffix : ''}`;
+  return { ticks, top: ticks[ticks.length - 1], label };
+}
+
 function panel(t, rt, cells, { x0, plotW, top, unit, linear }) {
   const rows = ORDER.filter((a) => cells.arms[a]).map((a) => ({ arm: a, ...cells.arms[a] }));
   const max = Math.max(...rows.map((r) => r.max));
   const rowH = 26;
-  const gx = (v) => x0 + (plotW * v) / (max * 1.12);
+  const ax = axis(max, unit);
+  const gx = (v) => x0 + (plotW * v) / ax.top;
   let out = text(x0 - 10, top - 14, rt === 'node' ? `Node.js` : `Bun`, { size: 13, fill: t.text, weight: 700, anchor: 'end' });
-  for (let i = 0; i <= 4; i++) { const v = (max * 1.12 * i) / 4; out += `<line x1="${gx(v)}" y1="${top - 6}" x2="${gx(v)}" y2="${top + rows.length * rowH - 4}" stroke="${t.grid}"/>` + text(gx(v), top + rows.length * rowH + 10, unitFmt[unit](v), { size: 10, fill: t.muted, anchor: 'middle' }); }
+  for (const v of ax.ticks) out += `<line x1="${gx(v)}" y1="${top - 6}" x2="${gx(v)}" y2="${top + rows.length * rowH - 4}" stroke="${t.grid}"/>` + text(gx(v), top + rows.length * rowH + 10, ax.label(v), { size: 10, fill: t.muted, anchor: 'middle' });
   let y = top;
   for (const r of rows) {
     const ours = r.arm === 'sigflint-A';
@@ -45,7 +58,7 @@ function panel(t, rt, cells, { x0, plotW, top, unit, linear }) {
     out += `<rect x="${x0}" y="${y}" width="${Math.max(2, gx(r.median) - x0)}" height="18" rx="3" fill="${ours ? t.ours : t.other}"/>`;
     out += `<line x1="${gx(r.min)}" y1="${y + 9}" x2="${gx(r.max)}" y2="${y + 9}" stroke="${t.text}" stroke-width="1.5"/><line x1="${gx(r.min)}" y1="${y + 4}" x2="${gx(r.min)}" y2="${y + 14}" stroke="${t.text}"/><line x1="${gx(r.max)}" y1="${y + 4}" x2="${gx(r.max)}" y2="${y + 14}" stroke="${t.text}"/>`;
     const ratio = r.ratio >= 10 ? r.ratio.toFixed(0) : r.ratio?.toFixed(1);
-    const note = ours ? '' : r.verdict === 'no clear change' ? `  (${ratio}x, no clear change)` : r.ratio > 0 && cells.baseMedian > 0 ? `  (${ratio}x)` : '';
+    const note = ours ? '' : r.verdict === 'no clear change' ? `  (${ratio}×, no clear change)` : r.ratio > 0 && cells.baseMedian > 0 ? `  (${ratio}×)` : '';
     out += text(gx(r.max) + 6, y + 13, `${unitFmt[unit](r.median)}${note}`, { fill: t.text, weight: ours ? 700 : 400 });
     y += rowH;
   }
@@ -63,7 +76,7 @@ for (const ch of CHARTS) {
       const p = panel(t, rt, cells, { x0: 190, plotW: 430, top: y, unit: cells.unit });
       body += p.body; y = p.height + 36;
     }
-    body += text(20, y, 'Bars: median of 5 rounds; whisker: lowest to highest round; (Nx): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.', { size: 11, fill: t.muted });
+    body += text(20, y, 'Bars: median of 5 rounds; whisker: lowest to highest round; (N×): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.', { size: 11, fill: t.muted });
     y += 20;
     writeFileSync(`${outDir}${ch.file}-${name}.svg`, `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${y}" viewBox="0 0 ${w} ${y}" role="img" aria-labelledby="t" ${FONT}>\n<title id="t">${esc(ch.title)}</title>\n<rect width="${w}" height="${y}" rx="8" fill="${t.bg}"/>\n${body}\n</svg>\n`);
   }
