@@ -52,13 +52,13 @@
   "scripts": {
     "build": "esbuild src/node.js src/bun.js --bundle --format=esm --platform=node --target=es2022 --outdir=dist --log-level=warning",
     "pretest": "npm run build",
-    "test": "node --test test/",
+    "test": "node --test \"test/*.test.js\"",
     "pretest:bun": "npm run build",
     "test:bun": "bun test test/",
     "types": "tsc && tsc -p test/types",
     "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
     "prepack": "tsc && npm run build",
-    "check:package": "npm run build && publint && attw --pack . --profile esm-only"
+    "check:package": "tsc && npm run build && publint && attw --pack . --profile esm-only"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
