@@ -6,12 +6,13 @@ Bug reports and pull requests are welcome. For a larger change, open an issue fi
 
 ```sh
 npm ci
-npm test            # Node: the corpus test and the behavior tests
+npm test            # builds dist/ first, then the corpus test and the behavior tests (src/ and dist/)
+npm run build       # dist/node.js and dist/bun.js, the one-file builds Node and Bun load (esbuild)
 npm run types       # generated .d.ts and the consumer type test
 npm run check:package
 ```
 
-The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`). Please run the runtimes you have.
+The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.
 
 ## The conformance corpus
 

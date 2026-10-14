@@ -334,32 +334,32 @@ Only sigflint offers these (microseconds per call, Node / Bun): SigV4a headers 1
 
 | Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
 |---|--:|--:|--:|--:|--:|
-| **sigflint** | **2.6 KiB** | **6** | **1.2 ms** | **116.9 MiB** | **4.9 ms** |
-| aws4 | 9.8 KiB (3.8×) | 24 (4.0×) | 7.1 ms (5.9×) | 116.6 MiB (no clear change) | 3.6 ms (0.7×) |
-| minio | 8.2 KiB (3.2×) | 19 (3.2×) | 23.3 ms (19×) | 118.2 MiB (no clear change) | 17.1 ms (3.5×) |
-| aws4fetch | 29.3 KiB (11×) | 90 (15×) | 42.3 ms (35×) | 128.4 MiB (1.1×) | 18.0 ms (3.7×) |
-| @smithy/signature-v4 | 17.8 KiB (7.0×) | 44 (7.3×) | 21.5 ms (18×) | 115.7 MiB (no clear change) | 13.2 ms (2.7×) |
-| aws-sig | 69.4 KiB (27×) | 46 (7.7×) | 41.4 ms (34×) | 170.1 MiB (1.5×) | 8.3 ms (1.7×) |
-| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 174 (29×) | 96.1 ms (80×) | 125.9 MiB (1.1×) | 17.4 ms (3.6×) |
+| **sigflint** | **2.6 KiB** | **6** | **1.2 ms** | **116.9 MiB** | **2.7 ms** |
+| aws4 | 9.8 KiB (3.8×) | 24 (4.0×) | 7.1 ms (5.9×) | 116.6 MiB (no clear change) | 3.9 ms (1.5×) |
+| minio | 8.2 KiB (3.2×) | 19 (3.2×) | 23.3 ms (19×) | 118.2 MiB (no clear change) | 17.1 ms (6.4×) |
+| aws4fetch | 29.3 KiB (11×) | 90 (15×) | 42.3 ms (35×) | 128.4 MiB (1.1×) | 18.4 ms (6.9×) |
+| @smithy/signature-v4 | 17.8 KiB (7.0×) | 44 (7.3×) | 21.5 ms (18×) | 115.7 MiB (no clear change) | 13.2 ms (5.0×) |
+| aws-sig | 69.4 KiB (27×) | 46 (7.7×) | 41.4 ms (34×) | 170.1 MiB (1.5×) | 8.8 ms (3.3×) |
+| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 174 (29×) | 96.1 ms (80×) | 125.9 MiB (1.1×) | 18.6 ms (7.0×) |
 
 **Bun 1.4.3**, plain GET of one key:
 
 | Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
 |---|--:|--:|--:|--:|--:|
-| **sigflint** | **1.4 KiB** | **3** | **5.2 ms** | **65.9 MiB** | **3.0 ms** |
-| aws4 | 6.4 KiB (4.5×) | 14 (4.7×) | 27.1 ms (5.2×) | 71.1 MiB (1.1×) | 3.2 ms (no clear change) |
-| minio | 7.0 KiB (5.0×) | 16 (5.3×) | 31.0 ms (5.9×) | 70.7 MiB (1.1×) | 20.3 ms (6.8×) |
-| aws4fetch | 15.1 KiB (11×) | 28 (9.3×) | 58.9 ms (11×) | 69.4 MiB (1.1×) | 3.3 ms (no clear change) |
-| @smithy/signature-v4 | 13.2 KiB (9.3×) | 24 (8.0×) | 50.4 ms (9.7×) | 73.3 MiB (1.1×) | 11.0 ms (3.7×) |
-| aws-sig | 47.9 KiB (34×) | 80 (27×) | 150 ms (29×) | 79.8 MiB (1.2×) | 4.4 ms (1.5×) |
-| @wdl-dev/aws-sigv4 | 29.9 KiB (21×) | 49 (16×) | 119 ms (23×) | 74.6 MiB (1.1×) | 4.7 ms (1.6×) |
+| **sigflint** | **1.4 KiB** | **3** | **5.2 ms** | **65.9 MiB** | **2.5 ms** |
+| aws4 | 6.4 KiB (4.5×) | 14 (4.7×) | 27.1 ms (5.2×) | 71.1 MiB (1.1×) | 3.4 ms (no clear change) |
+| minio | 7.0 KiB (5.0×) | 16 (5.3×) | 31.0 ms (5.9×) | 70.7 MiB (1.1×) | 20.2 ms (8.3×) |
+| aws4fetch | 15.1 KiB (11×) | 28 (9.3×) | 58.9 ms (11×) | 69.4 MiB (1.1×) | 3.2 ms (no clear change) |
+| @smithy/signature-v4 | 13.2 KiB (9.3×) | 24 (8.0×) | 50.4 ms (9.7×) | 73.3 MiB (1.1×) | 11.2 ms (4.6×) |
+| aws-sig | 47.9 KiB (34×) | 80 (27×) | 150 ms (29×) | 79.8 MiB (1.2×) | 4.7 ms (1.9×) |
+| @wdl-dev/aws-sigv4 | 29.9 KiB (21×) | 49 (16×) | 119 ms (23×) | 74.6 MiB (1.1×) | 4.8 ms (2.0×) |
 
-Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate 2.0 to 34 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 30% to 77%; peak memory 3% to 5%; import + first signature 18% to 26%. Every gap shown with a multiplier is outside its band.
+Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate 2.0 to 34 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 30% to 77%; peak memory 3% to 5%; import + first signature 19% to 22%. Every gap shown with a multiplier is outside its band.
 <!-- END memory -->
 
-What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing is where sigflint is not the lightest. On Node, importing alone takes 3.6 ms, against 1.6 to 2.0 ms for `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4`, and importing plus the first signature takes 4.9 ms, against 3.6 ms for `aws4`; Node loads all six signer modules when the package is imported without a bundler (a bundler leaves out the ones you do not use). On Bun, import plus first signature is inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
+What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone takes 1.3 ms on Node and 1.9 ms on Bun, with no clear difference from `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4`. Importing plus the first signature takes 2.7 ms on Node, faster than every other library (1.5 to 7 times as fast), and on Bun it is inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
 
-These figures were measured on the final code (all eight libraries in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). Importing plus the first signature was 2.8 ms on Node and 2.2 ms on Bun before the code was split into modules. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
+The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight libraries in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
 
 ## Size
 
@@ -392,7 +392,7 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 | `eventSigner` | 2,888 | 1,491 |
 | all six | 10,961 | 4,634 |
 
-The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in 1.1 ms instead of 3.4 ms (`bench/` import runs, 420 processes, 0 rejected). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well (the sizes above change by at most 6 bytes). The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 

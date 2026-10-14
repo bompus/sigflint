@@ -120,13 +120,13 @@ node: median over rounds (n per cell in the JSON); verdict vs sigflint-A, band =
 
 | workload | sigflint-A | aws4fetch | aws4 | smithy | aws-sig | wdl | minio | sigflint-B |
 |---|---|---|---|---|---|---|---|---|
-| - (band 34.9%) | 3.60 ms | 1.55 ms (0.43x; less) | 1.95 ms (0.54x; less) | 11.62 ms (3.22x; more) | 2.91 ms (0.81x; ncc) | 1.95 ms (0.54x; less) | 15.93 ms (4.42x; more) | 3.58 ms (0.99x; ncc) |
+| - (band 37.1%) | 1.32 ms | 1.63 ms (1.23x; ncc) | 2.00 ms (1.51x; ncc) | 11.66 ms (8.80x; more) | 3.02 ms (2.28x; more) | 2.09 ms (1.58x; ncc) | 15.96 ms (12.05x; more) | 1.29 ms (0.98x; ncc) |
 
 bun: median over rounds (n per cell in the JSON); verdict vs sigflint-A, band = max(3%, 2 x A/A range), absolute floor 1.00 ms
 
 | workload | sigflint-A | aws4fetch | aws4 | smithy | aws-sig | wdl | minio | sigflint-B |
 |---|---|---|---|---|---|---|---|---|
-| - (band 15.6%) | 2.39 ms | 1.34 ms (0.56x; less) | 2.36 ms (0.98x; ncc) | 9.79 ms (4.09x; more) | 2.53 ms (1.06x; ncc) | 1.74 ms (0.73x; ncc) | 19.84 ms (8.30x; more) | 2.58 ms (1.08x; ncc) |
+| - (band 21.3%) | 1.89 ms | 1.32 ms (0.70x; ncc) | 2.44 ms (1.29x; ncc) | 9.85 ms (5.22x; more) | 2.70 ms (1.43x; ncc) | 1.82 ms (0.97x; ncc) | 19.70 ms (10.43x; more) | 1.82 ms (0.96x; ncc) |
 
 ### import + first signature
 
@@ -134,13 +134,13 @@ node: median over rounds (n per cell in the JSON); verdict vs sigflint-A, band =
 
 | workload | sigflint-A | aws4fetch | aws4 | smithy | aws-sig | wdl | minio | sigflint-B |
 |---|---|---|---|---|---|---|---|---|
-| - (band 26.3%) | 4.90 ms | 17.98 ms (3.67x; more) | 3.59 ms (0.73x; less) | 13.17 ms (2.69x; more) | 8.29 ms (1.69x; more) | 17.43 ms (3.56x; more) | 17.09 ms (3.49x; more) | 4.87 ms (0.99x; ncc) |
+| - (band 22.2%) | 2.67 ms | 18.37 ms (6.89x; more) | 3.90 ms (1.46x; more) | 13.23 ms (4.96x; more) | 8.78 ms (3.29x; more) | 18.59 ms (6.97x; more) | 17.14 ms (6.43x; more) | 2.65 ms (0.99x; ncc) |
 
 bun: median over rounds (n per cell in the JSON); verdict vs sigflint-A, band = max(3%, 2 x A/A range), absolute floor 1.00 ms
 
 | workload | sigflint-A | aws4fetch | aws4 | smithy | aws-sig | wdl | minio | sigflint-B |
 |---|---|---|---|---|---|---|---|---|
-| - (band 17.5%) | 2.99 ms | 3.34 ms (1.12x; ncc) | 3.21 ms (1.07x; ncc) | 11.01 ms (3.68x; more) | 4.43 ms (1.48x; more) | 4.72 ms (1.58x; more) | 20.34 ms (6.80x; more) | 3.13 ms (1.05x; ncc) |
+| - (band 18.9%) | 2.45 ms | 3.23 ms (1.32x; ncc) | 3.37 ms (1.37x; ncc) | 11.20 ms (4.57x; more) | 4.69 ms (1.91x; more) | 4.80 ms (1.96x; more) | 20.22 ms (8.25x; more) | 2.41 ms (0.99x; ncc) |
 
 ### heap per cached signing key (slope 0 to 1,000 entries)
 

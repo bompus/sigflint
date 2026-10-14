@@ -1,12 +1,15 @@
 #!/bin/bash
 # Memory matrix (see memory-protocol.md): allocation, GC / CPU / growth, import time and key-cache retention.
 # One process per (round, runtime, arm, kind); arm order reversed on even rounds; every process under a cgroup memory cap.
-# Linux only (/proc). Usage: [BENCH_LOCK=/path/to/lockfile] [REPS=7] run-memory.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=5]
+# Linux only (/proc). Usage: [BENCH_LOCK=/path/to/lockfile] [REPS=7] [KINDS="alloc run cache import"] run-memory.sh <dir with node.js and bun.js, SHA256SUMS> <out.jsonl> [rounds=5]
+# KINDS limits the run to some of the process kinds (default all four).
 set -u
 NEW=$1; OUT=$2; ROUNDS=${3:-5}; REPS=${REPS:-7}
 HERE=$(cd "$(dirname "$0")" && pwd)
 LOGDIR="$(dirname "$OUT")/memory-logs"; mkdir -p "$LOGDIR"
 CAP=${CAP:-2G}
+KINDS=${KINDS:-alloc run cache import}
+want() { [[ " $KINDS " == *" $1 "* ]]; }
 if [ -n "${BENCH_LOCK:-}" ]; then
   exec 9>"$BENCH_LOCK"
   echo "waiting for lock $BENCH_LOCK $(date -u +%FT%TZ)"
@@ -76,12 +79,12 @@ shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
 for round in $(seq 1 "$ROUNDS"); do
   ORDER=("${ARMS[@]}"); if (( round % 2 == 0 )); then ORDER=($(printf '%s\n' "${ARMS[@]}" | tac)); fi
   for rt in bun node; do
-    for arm in "${ORDER[@]}"; do memproc alloc "$arm" "$rt" "$round"; memproc run "$arm" "$rt" "$round"; done
+    for arm in "${ORDER[@]}"; do want alloc && memproc alloc "$arm" "$rt" "$round"; want run && memproc run "$arm" "$rt" "$round"; done
     # cache retention: sigflint only, A and B in this round's order
-    for arm in "${ORDER[@]}"; do case "$arm" in sigflint-*) PRE=-1; LOAD=-1; gate "\"round\":$round,\"kind\":\"cache\",\"armTag\":\"$arm\",\"rt\":\"$rt\"" && shortproc cache "$arm" "$rt" "$round" 1;; esac; done
+    want cache && for arm in "${ORDER[@]}"; do case "$arm" in sigflint-*) PRE=-1; LOAD=-1; gate "\"round\":$round,\"kind\":\"cache\",\"armTag\":\"$arm\",\"rt\":\"$rt\"" && shortproc cache "$arm" "$rt" "$round" 1;; esac; done
     # import time: REPS fresh processes per arm, the control `none` included, interleaved
     IORDER=("none" "${ORDER[@]}")
-    for rep in $(seq 1 "$REPS"); do
+    want import && for rep in $(seq 1 "$REPS"); do
       gate "\"round\":$round,\"rep\":$rep,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\"" || continue
       for arm in "${IORDER[@]}"; do shortproc import "$arm" "$rt" "$round" "$rep"; done
     done
