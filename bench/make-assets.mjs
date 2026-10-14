@@ -9,7 +9,7 @@ const read = (f) => JSON.parse(readFileSync(`${here}results/${f}`, 'utf8'));
 
 const THEMES = {
   dark: { bg: '#0d1117', text: '#e6edf3', muted: '#9198a1', grid: '#30363d', ours: '#f0883e', other: '#6e7681', pass: '#3fb950', fail: '#f85149', na: '#484f58' },
-  light: { bg: '#ffffff', text: '#1f2328', muted: '#59636e', grid: '#d1d9e0', ours: '#bc4c00', other: '#8c959f', pass: '#1a7f37', fail: '#cf222e', na: '#afb8c1' },
+  light: { bg: '#ffffff', text: '#1f2328', muted: '#59636e', grid: '#d1d9e0', ours: '#bc4c00', other: '#8c959f', pass: '#116329', fail: '#a40e26', na: '#afb8c1' },
 };
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const FONT = `font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"`;
@@ -19,7 +19,8 @@ const NAMES = {
 };
 const name = (id) => NAMES[id] ?? id;
 const fmtInt = (n) => Math.round(n).toLocaleString('en-US');
-const text = (x, y, s, { size = 13, fill, anchor = 'start', weight = 400 } = {}) => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" font-weight="${weight}">${esc(s)}</text>`;
+const text = (x, y, s, { size = 13, fill, anchor = 'start', weight = 400, halo } = {}) => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" font-weight="${weight}"${halo ? ` stroke="${halo}" stroke-width="4" stroke-linejoin="round" paint-order="stroke"` : ''}>${esc(s)}</text>`;
+const times = (v) => (v >= 10 ? v.toFixed(0) : v.toFixed(1));
 // sub is one line or an array of lines
 const header = (t, title, sub) => text(20, 28, title, { size: 16, fill: t.text, weight: 600 }) + [].concat(sub ?? []).map((s, i) => text(20, 48 + 17 * i, s, { size: 12, fill: t.muted })).join('');
 
@@ -46,7 +47,7 @@ function logBars(t, rows, { x0, plotW, top, lo, hi, unit }) {
     const w = Math.max(2, gx(r.value) - x0);
     out += text(x0 - 10, y + 14, r.label, { size: 12, fill: r.ours ? t.text : t.muted, anchor: 'end', weight: r.ours ? 700 : 400 });
     out += `<rect x="${x0}" y="${y}" width="${w}" height="19" rx="3" fill="${r.ours ? t.ours : t.other}"/>`;
-    out += text(x0 + w + 6, y + 14, r.valueLabel, { size: 12, fill: t.text, weight: r.ours ? 700 : 400 });
+    out += text(x0 + w + 6, y + 14, r.valueLabel, { size: 12, fill: t.text, weight: r.ours ? 700 : 400, halo: t.bg });
     y += rowH;
   }
   out += text(x0 + plotW / 2, top + rows.length * rowH + 30, unit, { size: 11, fill: t.muted, anchor: 'middle' });
@@ -122,7 +123,7 @@ out.speed = (t) => {
     o += text(20, y, rt.replace(/^(\w+) /, (m, a) => ({ node: 'Node.js', bun: 'Bun' })[a] + ' '), { size: 13, fill: t.text, weight: 600 });
     const rows = libs.map((l) => ({ l, ns: cell(rt, 'bench-download', l)?.medianNs }))
       .filter((r) => r.ns).sort((a, b) => a.ns - b.ns)
-      .map((r) => ({ label: name(r.l), value: r.ns / 1000, ours: r.l === 'sigflint', valueLabel: `${(r.ns / 1000).toFixed(r.ns < 10000 ? 2 : r.ns < 100000 ? 1 : 0)} µs` + (r.l === 'sigflint' ? '' : `  (${(r.ns / cell(rt, 'bench-download', 'sigflint').medianNs).toFixed(0)}×)`) }));
+      .map((r) => ({ label: name(r.l), value: r.ns / 1000, ours: r.l === 'sigflint', valueLabel: `${(r.ns / 1000).toFixed(r.ns < 10000 ? 2 : r.ns < 100000 ? 1 : 0)} µs` + (r.l === 'sigflint' ? '' : `  (${times(r.ns / cell(rt, 'bench-download', 'sigflint').medianNs)}×)`) }));
     const g = logBars(t, rows, { x0, plotW, top: y + 14, lo: 1, hi: 1000, unit: 'microseconds per signature (log scale)' });
     o += g.body;
     y = g.height + 28;
@@ -138,7 +139,7 @@ out.speed = (t) => {
     if (s.status === 'unsupported') return 'cannot sign';
     return `${(s.medianNs / 1000).toFixed(2)}`;
   };
-  let md = '### Speed\n\nMicroseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed.\n';
+  let md = '### Speed\n\nMicroseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.\n';
   for (const rt of runtimes) {
     md += `\n**${hdr(rt)}**\n\n| Library | ${workloads.map((w) => w[1]).join(' | ')} |\n|---|${workloads.map(() => '--:').join('|')}|\n`;
     md += libs.map((l) => `| ${l === 'sigflint' ? '**sigflint**' : name(l)} | ${workloads.map(([w]) => (l === 'sigflint' ? `**${cellText(rt, w, l)}**` : cellText(rt, w, l))).join(' | ')} |`).join('\n') + '\n';
@@ -169,7 +170,7 @@ const status = (lib, col) => compat.find((r) => r.lib === lib && rtOf(r)?.[0] ==
 const compatVersions = [...new Set(compat.map((r) => r.runtime.replace(/ .*$/, '') === 'node' || r.runtime.startsWith('bun') || r.runtime.startsWith('deno') ? r.runtime : null).filter(Boolean))];
 out.runtimes = (t) => {
   const x0 = 230, cw = 120, rowH = 28, top = 84;
-  let o = header(t, 'Where each library runs', 'Each library signs one S3 GET on each runtime; ✓ means the signature equals botocore’s.');
+  let o = header(t, 'Where each library runs', 'Each library signs one S3 GET on each runtime; a tick means the signature equals botocore’s, a cross that it failed or did not load.');
   rtCols.forEach(([, label], i) => { o += text(x0 + cw * i + cw / 2, top - 14, label, { size: 11, fill: t.muted, anchor: 'middle', weight: 600 }); });
   cLibs.forEach((lib, r) => {
     const y = top + r * rowH, ours = lib.startsWith('sigflint');
@@ -177,7 +178,8 @@ out.runtimes = (t) => {
     rtCols.forEach(([col], i) => {
       const ok = status(lib, col) === 'ok';
       o += `<rect x="${x0 + cw * i + 4}" y="${y}" width="${cw - 8}" height="${rowH - 6}" rx="4" fill="${ok ? t.pass : t.fail}" fill-opacity="0.22" stroke="${ok ? t.pass : t.fail}"/>`;
-      o += text(x0 + cw * i + cw / 2, y + 16, ok ? '✓' : '✗', { size: 13, fill: ok ? t.pass : t.fail, anchor: 'middle', weight: 700 });
+      const cx = x0 + cw * i + cw / 2, cy = y + (rowH - 6) / 2, mark = ok ? `M${cx - 5} ${cy}L${cx - 1.5} ${cy + 4}L${cx + 5.5} ${cy - 4}` : `M${cx - 4} ${cy - 4}L${cx + 4} ${cy + 4}M${cx + 4} ${cy - 4}L${cx - 4} ${cy + 4}`;
+      o += `<path d="${mark}" fill="none" stroke="${ok ? t.pass : t.fail}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
     });
   });
   const h = top + cLibs.length * rowH + 14;
@@ -254,7 +256,7 @@ const speedMore = (runtime) => (t) => {
     for (const l of moreLibs) {
       const v = r.libraries[l];
       if (typeof v === 'string') (v === 'wrong-result' ? wrong : cannot).push(name(l));
-      else rows.push({ label: name(l), value: v.ns / 1000, vl: `${(v.ns / 1000).toFixed(v.ns < 10000 ? 2 : v.ns < 100000 ? 1 : 0)} µs  (${v.times >= 10 ? v.times.toFixed(0) : v.times.toFixed(1)}×${Math.abs(v.times - 1) * 100 > r.bandPct ? '' : ', no clear change'})` });
+      else rows.push({ label: name(l), value: v.ns / 1000, vl: `${(v.ns / 1000).toFixed(v.ns < 10000 ? 2 : v.ns < 100000 ? 1 : 0)} µs  (${times(v.times)}×${Math.abs(v.times - 1) * 100 > r.bandPct ? '' : ', no clear change'})` });
     }
     rows.sort((a, b) => a.value - b.value);
     o += text(20, y, label, { size: 13, fill: t.text, weight: 600 });
@@ -263,7 +265,7 @@ const speedMore = (runtime) => (t) => {
       const wBar = Math.max(2, gx(row.value) - x0);
       o += text(x0 - 10, y + 14, row.label, { size: 12, fill: row.ours ? t.text : t.muted, anchor: 'end', weight: row.ours ? 700 : 400 });
       o += `<rect x="${x0}" y="${y}" width="${wBar}" height="16" rx="3" fill="${row.ours ? t.ours : t.other}"/>`;
-      o += text(x0 + wBar + 6, y + 13, row.vl, { size: 12, fill: t.text, weight: row.ours ? 700 : 400 });
+      o += text(x0 + wBar + 6, y + 13, row.vl, { size: 12, fill: t.text, weight: row.ours ? 700 : 400, halo: t.bg });
       y += rowH;
     }
     const notes = [wrong.length ? `wrong signature: ${wrong.join(', ')}` : '', cannot.length ? `cannot sign or not offered: ${cannot.join(', ')}` : ''].filter(Boolean);

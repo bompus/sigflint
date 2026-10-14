@@ -14,7 +14,7 @@ Requests whose signature equals botocore’s (same key, same clock).
 
 ### Speed
 
-Microseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed.
+Microseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.
 
 **Node 26.11.1**
 
@@ -47,7 +47,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 32,499 | 5,391 | 2,654 | 2,458 | 0 |  |
+| **sigflint** | 34,358 | 5,651 | 2,769 | 2,550 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |

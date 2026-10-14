@@ -217,7 +217,6 @@ export function amzDatetime(now) {
  * @property {(key: string | Uint8Array, data: string) => Uint8Array} hmac - HMAC-SHA-256 as bytes
  * @property {(key: Uint8Array, data: string) => string} hmacHex - HMAC-SHA-256 as lowercase hex
  * @property {ReturnType<typeof createKeys>} getSigningKey - the entry's one signing-key cache, shared by every symmetric signer
- * @property {(credentials: Credentials, text: string) => string} signAsymmetric - the entry's one SigV4a signer, shared by both SigV4a functions
  */
 
 /** The payload hash for x-amz-content-sha256. The hash function may return a promise, which is then the result. */
@@ -289,7 +288,6 @@ export function prepare(request, credentials, payloadHash, scheme = symmetric) {
   return { headers, canonicalRequest, datetime, date, region, service, credentialScope: scheme.scope(date, region, service), signedHeaders, algorithm: scheme.algorithm };
 }
 
-/** @typedef {ReturnType<typeof prepare>} Prepared */
 
 export const stringToSign = (prepared, canonicalRequestHash) => `${prepared.algorithm}\n${prepared.datetime}\n${prepared.credentialScope}\n${canonicalRequestHash}`;
 

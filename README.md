@@ -16,8 +16,8 @@ const response = await fetch(url, { headers });
 It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
 - **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](#how-it-is-tested).
-- **Fast.** 1.3 to 3.7 µs per signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 550 times as long on the requests they sign correctly. See [speed](#speed).
-- **Small, and you pay only for what you import.** Signing headers is 5.4 kB minified, 2.7 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
+- **Fast.** 1.3 to 3.7 µs per header or presigned-URL signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 550 times as long on the requests they sign correctly. See [speed](#speed).
+- **Small, and you pay only for what you import.** Signing headers is 5.7 kB minified, 2.8 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
 ## Install
@@ -120,7 +120,7 @@ const frame = await signer.sign(encodedMessage);  // the signed event to send
 
 On Node.js, Bun and Deno `getAuthHeaders` and `presign` return their result directly, and the chunk and event signers' methods return bytes. In Cloudflare Workers and browsers they return promises, because the only SHA-256 and HMAC there is WebCrypto, which has only promises. The package picks the right one when you import it (the `workerd`, `worker` and `browser` export conditions select the WebCrypto code, with or without `nodejs_compat`), so `await` the result and the same code runs everywhere. The TypeScript type is `headers | Promise<headers>` (and likewise for the others), so forgetting the `await` is a compile error rather than a request with no signature.
 
-On Node and Bun, the `await` adds 0 to 0.1 µs to a 1.1 to 1.3 µs call (`bench/await-cost.mjs`). `sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it takes about 170 µs per signature, more than 100 times as long as the default, so import it only where you need it.
+On Node and Bun, the `await` adds well under a microsecond to a 1.1 to 1.3 µs call (`bench/await-cost.mjs` measures it). `sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it takes about 0.2 ms per signature, 50 to 150 times as long as the default, so import it only where you need it.
 
 ## API
 
@@ -216,13 +216,13 @@ Requests whose signature equals botocore’s (same key, same clock).
 | aws-sig | 2.1.0 | 226 (14.9%) | 12 (0.8%) |
 <!-- END correctness -->
 
-The reference is botocore's S3 signer (`S3SigV4Auth`), run on the same requests with a fixed clock, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those.
+The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those.
 
-Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches on all 1,211 ordinary requests; `minio` matches on 1,066 of them. The table above is what each library produces when given the URL as an application has it.
+Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches 1,519 of the 1,520 ordinary requests; `minio` matches 1,320 of them (`bench/results/screen-node.json`). The table above is what each library produces when given the URL as an application has it.
 
 ### Other services and presigned URLs
 
-Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each library called through its normal public API; same fixed clock):
+Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each library called through its normal public API; same fixed clock). The sigflint row is `npm test` on the same corpora:
 
 <!-- BEGIN pic-compat-more -->
 <picture>
@@ -251,7 +251,7 @@ Read the `aws4` row with care: all 692 differences are headers that `aws4` itsel
   <img alt="Bar chart: time to sign one request on Node.js and Bun" src="docs/speed-light.svg">
 </picture>
 
-Microseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed.
+Microseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.
 
 **Node 26.11.1**
 
@@ -298,7 +298,7 @@ These were measured on the final code under [`bench/protocol-more.md`](bench/pro
 | bun 1.4.3 | bench-encode | 3,469 | 3,511 | +1.2% | 29% | no clear change |
 | bun 1.4.3 | bench-body-1k | 3,092 | 3,136 | +1.4% | 14.9% | no clear change |
 
-No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower than before the split, with Node bands of 7% to 11% and Bun bands of 15% to 54%. A first version of the split was up to 9.8% slower on Node; restoring the fixed-string path for a request with no extra signed headers and no session token (the usual request) removed that, at a cost of about 60 bytes gzipped.
+No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower than before the split, with Node bands of 7% to 11% and Bun bands of 15% to 54%. A first version of the split was slower on Node; restoring the fixed-string path for a request with no extra signed headers and no session token (the usual request) removed that.
 
 **node 26.12.0**, microseconds per call (times as long as sigflint in brackets):
 
@@ -336,7 +336,7 @@ No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower t
 
 “Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 5% to 10%, Bun 34% to 68%, so the Bun ratios are less precise than the Node ones; every gap shown is far outside its band.
 
-Only sigflint offers these (microseconds per call, Node / Bun): SigV4a headers 15.6 / 14.6, SigV4a presigned URL 17.5 / 18.2, one 64 KiB chunk 33.6 / 33.0, the last chunk with a trailer 3.0 / 2.3, a 4 KiB event 12.1 / 13.1. SigV4a is dominated by the ECDSA signature.
+Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads and event streams, which were not timed here). Microseconds per call, Node / Bun: SigV4a headers 15.6 / 14.6, SigV4a presigned URL 17.5 / 18.2, one 64 KiB chunk 33.6 / 33.0, the last chunk with a trailer 3.0 / 2.3, a 4 KiB event 12.1 / 13.1. SigV4a is dominated by the ECDSA signature.
 
 ## Memory
 
@@ -380,7 +380,7 @@ Median of 5 processes, one fresh process per library, runtime and round. “(×)
 
 What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone takes 1.3 ms on Node and 1.9 ms on Bun, with no clear difference from `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4`. Importing plus the first signature takes 2.7 ms on Node, faster than every other library (1.5 to 7 times as fast), and on Bun it is inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
 
-The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight libraries in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
+The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight arms (seven libraries, sigflint twice) in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The signers have shared one signing-key cache since the allocation and memory runs, so those figures describe the code before that change. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](bench/results/memory-report.md) and [`bench/memory-protocol.md`](bench/memory-protocol.md).
 
 ## Size
 
@@ -392,7 +392,7 @@ The allocation, collection, GC, CPU and peak-memory figures were measured on the
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 32,499 | 5,391 | 2,654 | 2,458 | 0 |  |
+| **sigflint** | 34,358 | 5,651 | 2,769 | 2,550 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -412,15 +412,15 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 
 | Imports | Minified | gzip |
 |---|--:|--:|
-| `getAuthHeaders` | 5,391 | 2,654 |
-| `getAuthHeaders`, `presign` | 6,591 | 3,053 |
-| `getAuthHeadersV4a` | 6,448 | 3,120 |
-| `presignV4a` | 6,051 | 2,973 |
-| `chunkSigner` | 2,489 | 1,299 |
-| `eventSigner` | 2,888 | 1,491 |
-| all six | 10,961 | 4,634 |
+| `getAuthHeaders` | 5,651 | 2,769 |
+| `getAuthHeaders`, `presign` | 7,259 | 3,346 |
+| `getAuthHeadersV4a` | 6,102 | 2,976 |
+| `presignV4a` | 6,126 | 3,023 |
+| `chunkSigner` | 2,766 | 1,457 |
+| `eventSigner` | 3,117 | 1,613 |
+| all six | 12,081 | 5,078 |
 
-The Bun and web entries are 4,752 / 2,411 and 4,982 / 2,500 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in 1.1 ms instead of 3.4 ms (a paired run of 420 processes, 0 rejected; the separate run behind the memory table measured 1.3 ms for the same file, so read both as about 1 ms). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well (the sizes above change by at most 6 bytes). The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 5,018 / 2,530 and 5,217 / 2,603 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in about 1.3 ms (`bench/results/memory-import-dist.jsonl`). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 
@@ -459,7 +459,7 @@ Open an issue describing the use case if you need one of them.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md). sigflint never logs or stores credentials.
+See [SECURITY.md](SECURITY.md). sigflint never logs credentials or writes them anywhere; it keeps the last secret key in memory as the key of its signing-key cache.
 
 ## License
 

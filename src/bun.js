@@ -2,7 +2,8 @@
 import crypto from 'node:crypto';
 import { createSigner, createKeys } from './base.js';
 import { createPresigner } from './presign.js';
-import { createSignerV4a, createPresignerV4a, createAsymmetric } from './v4a.js';
+import { createSignerV4a, createPresignerV4a } from './v4a.js';
+import { ecdsa } from './ecdsa-node.js';
 import { createChunkSigner } from './chunks.js';
 import { createEventSigner } from './events.js';
 
@@ -12,23 +13,11 @@ const bun = /** @type {any} */ (globalThis).Bun;
 let baseKey;
 let base;
 
-// SigV4a: ECDSA P-256. The key is rebuilt from the derived scalar; ECDH supplies the public point that a JWK needs.
-const b64url = (bytes) => Buffer.from(bytes).toString('base64url');
-const ecdsa = {
-  key(d) {
-    const ecdh = crypto.createECDH('prime256v1');
-    ecdh.setPrivateKey(d);
-    const point = ecdh.getPublicKey();
-    return crypto.createPrivateKey({ key: { kty: 'EC', crv: 'P-256', d: b64url(d), x: b64url(point.subarray(1, 33)), y: b64url(point.subarray(33)) }, format: 'jwk' });
-  },
-  sign: (key, text) => crypto.sign('sha256', text, { key, dsaEncoding: 'der' }).toString('hex'),
-};
-
 const hmac = (key, data) => crypto.createHmac('sha256', key).update(data).digest();
 const getSigningKey = /* @__PURE__ */ createKeys(hmac);
-const signAsymmetric = /* @__PURE__ */ createAsymmetric(hmac, ecdsa);
+const hexHash = (data) => bun.SHA256.hash(data, 'hex');
 const primitives = {
-  hexHash: (data) => bun.SHA256.hash(data, 'hex'),
+  hexHash,
   hmac,
   hmacHex: (key, data) => {
     if (key !== baseKey) {
@@ -38,12 +27,11 @@ const primitives = {
     return base.copy().update(data).digest('hex');
   },
   getSigningKey,
-  signAsymmetric,
 };
 
 export const getAuthHeaders = /* @__PURE__ */ createSigner(primitives);
 export const presign = /* @__PURE__ */ createPresigner(primitives);
-export const getAuthHeadersV4a = /* @__PURE__ */ createSignerV4a(primitives);
-export const presignV4a = /* @__PURE__ */ createPresignerV4a(primitives);
+export const getAuthHeadersV4a = /* @__PURE__ */ createSignerV4a({ hexHash, hmac, ecdsa });
+export const presignV4a = /* @__PURE__ */ createPresignerV4a({ hexHash, hmac, ecdsa });
 export const chunkSigner = /* @__PURE__ */ createChunkSigner(primitives);
 export const eventSigner = /* @__PURE__ */ createEventSigner(primitives);
