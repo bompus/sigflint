@@ -6,7 +6,7 @@ HERE=$(cd "$(dirname "$0")" && pwd); ROOT=$(dirname "$HERE")
 OUT_A=$HERE/results/speed-regression.jsonl; OUT_B=$HERE/results/speed-more.jsonl; ROUNDS=5
 cd "$ROOT" && sha256sum -c --quiet bench/results/more-artifacts.sha256 || { echo "artifact hashes differ; refusing to run"; exit 4; }
 cd "$HERE"
-exec 9>"$HOME/.cache/bench-host.lock"
+exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
 echo "waiting for lock $(date -u +%FT%TZ)"; flock -w 7200 9 || { echo "lock not acquired"; exit 3; }; echo "lock held $(date -u +%FT%TZ)"
 busy() { read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ < /proc/stat; sleep 1; read -r _ u2 n2 s2 i2 w2 q2 sq2 st2 _ < /proc/stat
   local t1=$((u1+n1+s1+i1+w1+q1+sq1+st1)) t2=$((u2+n2+s2+i2+w2+q2+sq2+st2)); echo $(( 100*((t2-t1)-(i2+w2-i1-w1))/(t2-t1) )); }
