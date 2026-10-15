@@ -16,7 +16,7 @@
     "cloudflare-workers"
   ],
   "license": "MIT",
-  "author": "Aaron Queen",
+  "author": "bompus",
   "type": "module",
   "sideEffects": false,
   "engines": {
