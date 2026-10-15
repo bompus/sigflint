@@ -1,7 +1,7 @@
 <h1 align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.png">
-    <img src="docs/assets/banner-light.png" alt="sigflint: SigV4 and SigV4a signing for every AWS service" width="100%">
+    <img src="docs/assets/banner-light.png" alt="sigflint: Fast SigV4 and SigV4a signing for every AWS service" width="100%">
   </picture>
 </h1>
 
