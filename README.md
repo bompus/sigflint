@@ -65,10 +65,10 @@ Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `node
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/speed-dark.svg">
-  <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and seven other libraries" src="docs/speed-light.svg">
+  <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and six other libraries" src="docs/speed-light.svg">
 </picture>
 
-Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`.
+Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed and memory figures were measured before the latest hardening changes and are re-run before each release.
 
 ## Scope
 

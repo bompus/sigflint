@@ -2,6 +2,8 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md).
 
+The speed, memory and import figures were measured before the hardening changes in commit 295ec6a (stricter input checks and one shared signing-key cache); the size figures were measured after. The benchmarks are re-run on the code of each release before it is published.
+
 ## Runtimes
 
 <!-- BEGIN runtimes -->
@@ -114,7 +116,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 ### Other services, presigned URLs, and the 1.0 layout
 
-These were measured on the final code under [`bench/protocol-more.md`](../bench/protocol-more.md): the same fresh-process method as above, 5 rounds, a second copy of sigflint as the noise control. The tables above were measured on the S3 header code before it was split into modules, so part A re-times that code against the final one.
+These were measured under [`bench/protocol-more.md`](../bench/protocol-more.md): the same fresh-process method as above, 5 rounds, a second copy of sigflint as the noise control. The tables above were measured on the S3 header code before it was split into modules, so part A re-times that code against the split layout.
 
 **S3 header signing, before and after the split** (nanoseconds per call; positive change is slower):
 
@@ -211,7 +213,7 @@ Median of 5 processes, one fresh process per library, runtime and round. “(×)
 
 What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone takes 1.3 ms on Node and 1.9 ms on Bun, with no clear difference from `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4`. Importing plus the first signature takes 2.7 ms on Node, faster than every other library (1.5 to 7 times as fast), and on Bun it is inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
 
-The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight arms (seven libraries, sigflint twice) in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The signers have shared one signing-key cache since the allocation and memory runs, so those figures describe the code before that change. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](../bench/results/memory-report.md) and [`bench/memory-protocol.md`](../bench/memory-protocol.md).
+The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight arms (six other libraries, sigflint twice) in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The signers have shared one signing-key cache since the allocation and memory runs, so those figures describe the code before that change. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](../bench/results/memory-report.md) and [`bench/memory-protocol.md`](../bench/memory-protocol.md).
 
 ## Size
 
@@ -265,7 +267,7 @@ The Bun and web entries are 5,018 / 2,530 and 5,217 / 2,603 bytes for `getAuthHe
 | `test/corpus-v4a.json` | 662 | the AWS CRT's SigV4a signers (headers and presigned URLs). ECDSA signatures differ on every run, so the test verifies the reference's signature under the public key derived here and checks that ours verifies too and that the other parameters are equal |
 | `test/corpus-stream.json` | 60 chunk chains, 60 event chains | the AWS SDK's smithy signer; the two chunked-upload examples in the S3 documentation; event frames are also checked for lengths and checksums |
 
-Each runs against the synchronous entry and the WebCrypto entry. The corpora are generated by `conformance/` (`npm run conformance` rebuilds them with the pinned botocore and awscrt; `node conformance/build.mjs` is the S3 one alone). The generators, the cases and the reference scripts are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
+Each runs against the synchronous source, the built file that Node and Bun load, and the WebCrypto entry. The corpora are generated by `conformance/` (`npm run conformance` rebuilds them with the pinned botocore and awscrt; `node conformance/build.mjs` is the S3 one alone). The generators, the cases and the reference scripts are in the repository. The same tests run on Node 22, 24 and 26, Bun and Deno in CI.
 
 ## Methodology and limits
 

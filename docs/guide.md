@@ -69,7 +69,7 @@ const frame = await signer.sign(encodedMessage);  // the signed event to send
 
 On Node.js, Bun and Deno `getAuthHeaders` and `presign` return their result directly, and the chunk and event signers' methods return bytes. In Cloudflare Workers and browsers they return promises, because the only SHA-256 and HMAC there is WebCrypto, which has only promises. The package picks the right one when you import it (the `workerd`, `worker` and `browser` export conditions select the WebCrypto code, with or without `nodejs_compat`), so `await` the result and the same code runs everywhere. The TypeScript type is `headers | Promise<headers>` (and likewise for the others), so forgetting the `await` is a compile error rather than a request with no signature.
 
-On Node and Bun, the `await` adds well under a microsecond to a 1.1 to 1.3 µs call (`bench/await-cost.mjs` measures it). `sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it takes about 0.2 ms per signature, 50 to 150 times as long as the default, so import it only where you need it.
+`sigflint/web` selects the WebCrypto code on any runtime. On Node and Bun it is slower than the default, which uses the runtime's synchronous hash and HMAC, so import it only where you need it. (`bench/await-cost.mjs` measures the cost of the `await` itself; the result is not part of the committed benchmarks.)
 
 ## API
 
@@ -87,9 +87,9 @@ Returns an object of headers to send with the request (or, in Workers and browse
 | `region` | `string` | for example `us-west-2`. Pass it: the default is an empty string, which no region matches |
 | `body` | `string` | hashed into `x-amz-content-sha256`. Missing or empty means the hash of an empty body |
 | `unsignedPayload` | `boolean` | send `UNSIGNED-PAYLOAD` instead of hashing the body |
-| `signHeaders` | `Record<string, string>` | extra headers to sign and return, such as `x-amz-acl` or `content-type` |
+| `signHeaders` | `Record<string, string>` | extra headers to sign and return, such as `x-amz-acl` or `content-type`. `x-amz-date` and `authorization` are set by the signer and are refused here |
 | `now` | `number` | signing time in milliseconds since the epoch. Default: the current time |
-| `expires` | `number` | `presign` and `presignV4a` only: lifetime in seconds. Default 3600 |
+| `expires` | `number` | `presign` and `presignV4a` only: lifetime in whole seconds, 1 to 604800 (7 days). Default 3600 |
 | `regionSet` | `string` | `getAuthHeadersV4a` and `presignV4a` only, required: `us-east-1,us-west-2` or `*` |
 
 `credentials`
@@ -111,6 +111,17 @@ Returns an object of headers to send with the request (or, in Workers and browse
 | `eventSigner(authHeaders, credentials)` | `{ sign(message, now?) }`: the signed event for each encoded message, in order |
 
 Types are included (`.d.ts`, generated from the source).
+
+### Input it refuses
+
+A request that cannot be signed correctly throws instead of returning a signature the service would reject:
+
+- `signHeaders` that name `x-amz-date`, `authorization` or `__proto__`, or whose value holds a line break (`TypeError`).
+- `presign` and `presignV4a` with a URL that is not `http:` or `https:`, or that already carries `X-Amz-Signature` or `X-Amz-Algorithm` (`TypeError`), or an `expires` outside 1 to 604800 (`RangeError`).
+- `chunkSigner` and `eventSigner` given the headers of a SigV4a signature (`TypeError`): chunks and events are signed with SigV4 only.
+- `getAuthHeadersV4a` and `presignV4a` without `regionSet` (`TypeError`).
+
+`chunk(data)` with an empty `data` returns it unchanged (zero bytes) and signs nothing, because a zero-length chunk ends the upload; call `end()` for that. Trailer names are lowercased before they are signed.
 
 ### How it reads the URL
 
