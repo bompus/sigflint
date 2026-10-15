@@ -21,7 +21,7 @@ const response = await fetch(url, { headers });
 It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
 - **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](docs/benchmarks.md#how-it-is-tested).
-- **Fast.** 1.3 to 3.7 µs per header or presigned-URL signature on Node and 1.7 to 6.4 µs on Bun. The other libraries take 1.8 to 550 times as long on the requests they sign correctly. See [speed](docs/benchmarks.md#speed).
+- **Fast.** 1.3 to 3.7 µs per header or presigned-URL signature on Node and 1.5 to 5.1 µs on Bun. The other libraries take 2.4 to 507 times as long on the requests they sign correctly (one Bun presigned-URL comparison with `minio` is not clear and is left out). See [speed](docs/benchmarks.md#speed).
 - **Small, and you pay only for what you import.** Signing headers is 5.7 kB minified, 2.8 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](docs/benchmarks.md#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
 
@@ -73,7 +73,7 @@ Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `node
   <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and six other libraries" src="docs/speed-light.svg">
 </picture>
 
-Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed and memory figures were measured before the latest hardening changes and are re-run before each release.
+Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed, memory and import figures were measured on the code in this release and are re-run before each release.
 
 ## Scope
 

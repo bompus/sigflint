@@ -1,12 +1,14 @@
 // Draws the memory charts as static SVG (a dark and a light file each) from results/memory-summary.json.
 // Usage: node make-memory-assets.mjs [summary.json] [out dir]   (defaults: results/memory-summary.json, ../docs/)
-// One chart per resource (bars per signer, one panel per runtime, start at zero, median with the min-max range of the 5 rounds as a whisker).
+// One chart per resource (bars per signer, one panel per runtime, start at zero, median with the min-max range of the rounds as a whisker).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
 const here = new URL('.', import.meta.url).pathname;
 const [, , summaryPath = `${here}results/memory-summary.json`, outDir = `${here}../docs/`] = process.argv;
 mkdirSync(outDir, { recursive: true });
 const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
+/** The rounds behind a metric: one number, or a range when workloads differ. */
+const roundsOf = (...metrics) => { const n = summary.cells.filter((c) => metrics.includes(c.metric)).map((c) => c.arms['sigflint-A'].n); return Math.min(...n) === Math.max(...n) ? `${n[0]}` : `${Math.min(...n)} to ${Math.max(...n)}`; };
 const THEMES = {
   dark: { bg: '#0d1117', text: '#e6edf3', muted: '#9198a1', grid: '#30363d', ours: '#f0883e', other: '#6e7681' },
   light: { bg: '#ffffff', text: '#1f2328', muted: '#59636e', grid: '#d1d9e0', ours: '#bc4c00', other: '#8c959f' },
@@ -76,7 +78,7 @@ for (const ch of CHARTS) {
       const p = panel(t, rt, cells, { x0: 190, plotW: 430, top: y, unit: cells.unit });
       body += p.body; y = p.height + 36;
     }
-    body += text(20, y, 'Bars: median of 5 rounds; whisker: lowest to highest round; (N×): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.', { size: 11, fill: t.muted });
+    body += text(20, y, `Bars: median of ${roundsOf(ch.metric)} rounds; whisker: lowest to highest round; (N×): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.`, { size: 11, fill: t.muted });
     y += 20;
     writeFileSync(`${outDir}${ch.file}-${name}.svg`, `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${y}" viewBox="0 0 ${w} ${y}" role="img" aria-labelledby="t" ${FONT}>\n<title id="t">${esc(ch.title)}</title>\n<rect width="${w}" height="${y}" rx="8" fill="${t.bg}"/>\n${body}\n</svg>\n`);
   }
@@ -120,7 +122,7 @@ const block = `<picture>
   <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="memory-gc-light.svg">
 </picture>
 ${md}
-Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
+Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} processes (${roundsOf('firstMs')} for import), one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
 const readmePath = `${here}../docs/benchmarks.md`;
 const readme = readFileSync(readmePath, 'utf8');
 if (!readme.includes('<!-- BEGIN memory -->')) throw new Error('docs/benchmarks.md has no memory block');

@@ -107,6 +107,8 @@ tables.push('### Correctness\n\nRequests whose signature equals botocore’s (sa
 
 // ---- speed --------------------------------------------------------------------------------------------------------
 const speed = read('speed-summary.json');
+const speedRounds = Math.max(...Object.values(speed.cells).flatMap((c) => Object.values(c.arms).map((a) => a.n ?? 0))); // processes per library and runtime in the matrix
+const moreRounds = new Set(readFileSync(`${here}results/speed-more.jsonl`, 'utf8').trim().split('\n').map((l) => JSON.parse(l).round)).size; // rounds of the other-services run
 const arm = { sigflint: 'sigflint-A', aws4fetch: 'aws4fetch', aws4: 'aws4', smithy: 'smithy', 'aws-sig': 'aws-sig', wdl: 'wdl', minio: 'minio' };
 const workloads = [['bench-download', 'GET, plain key'], ['bench-part-put', 'part upload (query, headers)'], ['bench-encode', 'GET, key and query to encode'], ['bench-body-1k', 'PUT, 1 KiB body']];
 const runtimes = [...new Set(Object.keys(speed.cells).map((k) => k.split('|')[0]))].sort((a, b) => (a.startsWith('node') ? -1 : 1) - (b.startsWith('node') ? -1 : 1));
@@ -115,7 +117,7 @@ const libs = Object.keys(arm);
 out.speed = (t) => {
   const panelW = 700, x0 = 190, plotW = 400;
   let o = header(t, 'Time to sign one request, plain GET (lower is better)', [
-    'Median of 5 separate processes per library and runtime; log scale. A plain GET, which every library here signs correctly.',
+    `Median of ${speedRounds} separate processes per library and runtime; log scale. A plain GET, which every library here signs correctly.`,
     'Measured before the S3 code was split into modules; the shipped code is within 4% of it (no clear change).',
   ]);
   let y = 98;
@@ -139,7 +141,7 @@ out.speed = (t) => {
     if (s.status === 'unsupported') return 'cannot sign';
     return `${(s.medianNs / 1000).toFixed(2)}`;
   };
-  let md = '### Speed\n\nMicroseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.\n';
+  let md = `### Speed\n\nMicroseconds per signature, median of ${speedRounds} processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.\n`;
   for (const rt of runtimes) {
     md += `\n**${hdr(rt)}**\n\n| Library | ${workloads.map((w) => w[1]).join(' | ')} |\n|---|${workloads.map(() => '--:').join('|')}|\n`;
     md += libs.map((l) => `| ${l === 'sigflint' ? '**sigflint**' : name(l)} | ${workloads.map(([w]) => (l === 'sigflint' ? `**${cellText(rt, w, l)}**` : cellText(rt, w, l))).join(' | ')} |`).join('\n') + '\n';
@@ -278,7 +280,7 @@ const speedMore = (runtime) => (t) => {
   o += text(x0 + plotW / 2, y, 'microseconds per signature (log scale)', { size: 11, fill: t.muted, anchor: 'middle' });
   y += 20;
   const band = `${Math.round(Math.min(...bands))}% to ${Math.round(Math.max(...bands))}%`;
-  o += text(20, y, `Median of 5 fresh processes per library. (N×): that library’s time divided by sigflint’s. Reporting band on ${runtimeName}: ${band}.`, { size: 11, fill: t.muted });
+  o += text(20, y, `Median of ${moreRounds} fresh processes per library. (N×): that library’s time divided by sigflint’s. Reporting band on ${runtimeName}: ${band}.`, { size: 11, fill: t.muted });
   y += 22;
   return doc(t, 800, y, `Signing time, other services and presigned URLs, ${runtimeName}`, moreWorkloads.map(([w, label]) => { const r = more.more.find((x) => x.runtime === runtime && x.workload === w); return `${label}: sigflint ${(r.sigflintNs / 1000).toFixed(2)} µs`; }).join('; '),
     header(t, 'Other services and presigned URLs: time to sign one request (lower is better)', `${runtimeName}, log scale. Only libraries that sign the request correctly are timed.`) + grid + o);

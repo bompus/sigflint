@@ -1,9 +1,9 @@
 #!/bin/bash
 # Speed matrix: arms x runtimes x rounds, one process per (round, runtime, arm), arm order reversed on even rounds.
 # Records the machine state (whole-machine CPU busy, load, swap) around every process; Linux only (/proc).
-# Usage: [BENCH_LOCK=/path/to/lockfile] run-matrix.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=5]
+# Usage: [BENCH_LOCK=/path/to/lockfile] [FROM_ROUND=n] run-matrix.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5 to an earlier file)
 set -u
-NEW=$1; OUT=$2; ROUNDS=${3:-5}
+NEW=$1; OUT=$2; ROUNDS=${3:-3}; FROM=${FROM_ROUND:-1}
 HERE=$(cd "$(dirname "$0")" && pwd)
 if [ -n "${BENCH_LOCK:-}" ]; then # optional: serialize with other heavy jobs on a shared machine
   exec 9>"$BENCH_LOCK"
@@ -17,7 +17,7 @@ busy() { # CPU busy percent over 1 s, whole machine
   read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ < /proc/stat; sleep 1; read -r _ u2 n2 s2 i2 w2 q2 sq2 st2 _ < /proc/stat
   local t1=$((u1+n1+s1+i1+w1+q1+sq1+st1)) t2=$((u2+n2+s2+i2+w2+q2+sq2+st2)); echo $(( 100*((t2-t1)-(i2+w2-i1-w1))/(t2-t1) ))
 }
-for round in $(seq 1 "$ROUNDS"); do
+for round in $(seq "$FROM" "$ROUNDS"); do
   ORDER=("${ARMS[@]}"); if (( round % 2 == 0 )); then ORDER=($(printf '%s\n' "${ARMS[@]}" | tac)); fi
   for rt in bun node; do
     for arm in "${ORDER[@]}"; do

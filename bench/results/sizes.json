@@ -5,8 +5,8 @@
   "gzipBytes": 2769,
   "brotliBytes": 2550,
   "source": {
-   "bytes": 34358,
-   "lines": 694
+   "bytes": 34486,
+   "lines": 716
   },
   "directDependencies": 0,
   "dependencyNames": []
@@ -17,8 +17,8 @@
   "gzipBytes": 2530,
   "brotliBytes": 2325,
   "source": {
-   "bytes": 32878,
-   "lines": 670
+   "bytes": 33006,
+   "lines": 692
   },
   "directDependencies": 0,
   "dependencyNames": []

@@ -2,7 +2,7 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md).
 
-The speed, memory and import figures were measured before the hardening changes in commit 295ec6a (stricter input checks and one shared signing-key cache); the size figures were measured after. The benchmarks are re-run on the code of each release before it is published.
+The speed, memory, import and size figures were measured on the code that ships: the built file that Node and Bun load, from the same source as `src/`. The benchmarks are re-run on the code of each release before it is published. The re-run used a shorter plan ([`bench/protocol-rerun.md`](../bench/protocol-rerun.md)): 3 rounds per library, and 2 more only for parts where a comparison was unsettled; every range and round count is given with the figures, and [`bench/results/rerun-extension.md`](../bench/results/rerun-extension.md) records which parts were extended and why.
 
 ## Runtimes
 
@@ -84,54 +84,54 @@ Read the `aws4` row with care: all 692 differences are headers that `aws4` itsel
   <img alt="Bar chart: time to sign one request on Node.js and Bun" src="speed-light.svg">
 </picture>
 
-Microseconds per signature, median of 5 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.
+Microseconds per signature, median of 3 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.
 
-**Node 26.11.1**
+**Node 26.12.0**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.31** | **1.68** | **2.17** | **2.36** |
-| aws4fetch | 235.41 | 237.08 | 254.07 | 230.90 |
-| aws4 | 6.04 | 6.98 | 8.30 | 6.33 |
-| @smithy/signature-v4 | 10.38 | 10.83 | wrong signature | 11.57 |
-| aws-sig | 64.78 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 716.20 | 631.51 | 734.79 | wrong signature |
-| minio | 11.67 | 11.66 | wrong signature | 12.61 |
+| **sigflint** | **1.33** | **1.66** | **2.22** | **2.39** |
+| aws4fetch | 219.56 | 238.28 | 236.88 | 226.96 |
+| aws4 | 5.66 | 6.75 | 8.33 | 6.30 |
+| @smithy/signature-v4 | 9.75 | 10.05 | wrong signature | 11.15 |
+| aws-sig | 59.45 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 675.36 | 582.30 | 667.53 | wrong signature |
+| minio | 11.40 | 10.84 | wrong signature | 12.17 |
 
 **Bun 1.4.3**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.66** | **2.19** | **3.39** | **3.10** |
-| aws4fetch | 221.66 | 221.74 | 229.05 | 228.30 |
-| aws4 | 9.73 | 11.29 | 14.10 | 11.70 |
-| @smithy/signature-v4 | 12.88 | 13.12 | wrong signature | 14.14 |
-| aws-sig | 48.71 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 580.71 | 579.84 | 632.34 | wrong signature |
-| minio | 8.98 | 8.51 | wrong signature | 11.59 |
+| **sigflint** | **1.61** | **1.81** | **2.80** | **2.61** |
+| aws4fetch | 196.86 | 199.48 | 206.36 | 208.22 |
+| aws4 | 5.91 | 7.46 | 10.37 | 7.26 |
+| @smithy/signature-v4 | 9.29 | 10.90 | wrong signature | 14.23 |
+| aws-sig | 45.45 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 591.84 | 564.71 | 653.07 | wrong signature |
+| minio | 6.78 | 6.52 | wrong signature | 8.16 |
 
-Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 51%; bun 1.4.3 bench-part-put: 65%; bun 1.4.3 bench-encode: 41%; bun 1.4.3 bench-body-1k: 31%; node 26.11.1 bench-download: 34%; node 26.11.1 bench-part-put: 38%; node 26.11.1 bench-encode: 64%; node 26.11.1 bench-body-1k: 32%. Every gap between sigflint and another library is far outside its band.
+Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 64%; bun 1.4.3 bench-part-put: 31%; bun 1.4.3 bench-encode: 51%; bun 1.4.3 bench-body-1k: 35%; node 26.12.0 bench-download: 13%; node 26.12.0 bench-part-put: 9%; node 26.12.0 bench-encode: 15%; node 26.12.0 bench-body-1k: 10%. Every gap between sigflint and another library is far outside its band.
 
 <!-- END speed -->
 
 ### Other services, presigned URLs, and the 1.0 layout
 
-These were measured under [`bench/protocol-more.md`](../bench/protocol-more.md): the same fresh-process method as above, 5 rounds, a second copy of sigflint as the noise control. The tables above were measured on the S3 header code before it was split into modules, so part A re-times that code against the split layout.
+These were measured under [`bench/protocol-more.md`](../bench/protocol-more.md): the same fresh-process method as above, 5 rounds (3 rounds were not enough to settle the check against the older code, so rounds 4 and 5 were added), a second copy of sigflint as the noise control. The older code is the S3 header code from before it was split into modules and hardened; part A re-times it against the shipped build.
 
-**S3 header signing, before and after the split** (nanoseconds per call; positive change is slower):
+**S3 header signing, older code and shipped build** (nanoseconds per call; positive change is slower):
 
 | Runtime | Workload | Before | After | Change | Reporting band | |
 |---|---|--:|--:|--:|--:|---|
-| node 26.12.0 | bench-download | 1,308 | 1,335 | +2.1% | 8.8% | no clear change |
-| node 26.12.0 | bench-part-put | 1,618 | 1,652 | +2.1% | 6.8% | no clear change |
-| node 26.12.0 | bench-encode | 2,137 | 2,220 | +3.9% | 8% | no clear change |
-| node 26.12.0 | bench-body-1k | 2,304 | 2,361 | +2.5% | 11.2% | no clear change |
-| bun 1.4.3 | bench-download | 1,691 | 1,709 | +1.1% | 53.5% | no clear change |
-| bun 1.4.3 | bench-part-put | 2,182 | 2,226 | +2% | 30.7% | no clear change |
-| bun 1.4.3 | bench-encode | 3,469 | 3,511 | +1.2% | 29% | no clear change |
-| bun 1.4.3 | bench-body-1k | 3,092 | 3,136 | +1.4% | 14.9% | no clear change |
+| node 26.12.0 | bench-download | 1,272 | 1,337 | +5.1% | 8.8% | no clear change |
+| node 26.12.0 | bench-part-put | 1,592 | 1,681 | +5.6% | 14.3% | no clear change |
+| node 26.12.0 | bench-encode | 2,122 | 2,235 | +5.3% | 13.2% | no clear change |
+| node 26.12.0 | bench-body-1k | 2,244 | 2,332 | +3.9% | 22% | no clear change |
+| bun 1.4.3 | bench-download | 1,472 | 1,488 | +1.1% | 51.7% | no clear change |
+| bun 1.4.3 | bench-part-put | 1,868 | 1,906 | +2% | 37.1% | no clear change |
+| bun 1.4.3 | bench-encode | 2,780 | 2,922 | +5.1% | 47% | no clear change |
+| bun 1.4.3 | bench-body-1k | 2,703 | 2,710 | +0.3% | 31.5% | no clear change |
 
-No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower than before the split, with Node bands of 7% to 11% and Bun bands of 15% to 54%. A first version of the split was slower on Node; restoring the fixed-string path for a request with no extra signed headers and no session token (the usual request) removed that.
+No workload changed outside its band, but the Node differences (+3.9% to +5.6%) all point the same way, so the shipped build may be a few percent slower on Node than the older code; those gaps are inside the bands (9% to 22%) and 5 rounds cannot separate them. On Bun the differences are +0.3% to +5.1% inside bands of 31% to 52%. Restoring the fixed-string path for a request with no extra signed headers and no session token (the usual request) removed a larger slowdown that an earlier version of the split had.
 
 **node 26.12.0**, microseconds per call (times as long as sigflint in brackets):
 
@@ -144,11 +144,11 @@ No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower t
 
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| DynamoDB POST, JSON body | **1.75** | wrong signature | 313.13 (178.6×) | 11.70 (6.7×) | 58.67 (33.5×) | wrong signature | wrong signature |
-| API Gateway GET, session token | **1.59** | 5.27 (3.3×) | 300.20 (188.4×) | 9.86 (6.2×) | wrong signature | 706.61 (443.6×) | wrong signature |
-| SQS, query parameters | **1.88** | 6.71 (3.6×) | 301.21 (160.5×) | 11.22 (6×) | 57.17 (30.5×) | 701.30 (373.6×) | wrong signature |
-| presigned URL, API Gateway | **3.43** | 11.51 (3.4×) | 321.25 (93.7×) | 12.29 (3.6×) | wrong signature | wrong signature | wrong signature |
-| presigned URL, S3 | **3.72** | 11.52 (3.1×) | 242.41 (65.2×) | 13.03 (3.5×) | wrong signature | wrong signature | 14.07 (3.8×) |
+| DynamoDB POST, JSON body | **1.75** | wrong signature | 296.72 (169.7×) | 11.28 (6.5×) | 56.37 (32.2×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.56** | 5.05 (3.2×) | 282.16 (180.4×) | 9.61 (6.1×) | wrong signature | 667.25 (426.6×) | wrong signature |
+| SQS, query parameters | **1.84** | 6.33 (3.4×) | 285.17 (154.7×) | 10.86 (5.9×) | 55.47 (30.1×) | 663.25 (359.9×) | wrong signature |
+| presigned URL, API Gateway | **3.45** | 10.73 (3.1×) | 305.55 (88.7×) | 12.02 (3.5×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **3.70** | 10.95 (3.0×) | 230.51 (62.3×) | 12.34 (3.3×) | wrong signature | wrong signature | 13.60 (3.7×) |
 
 **bun 1.4.3**, microseconds per call (times as long as sigflint in brackets):
 
@@ -161,15 +161,15 @@ No workload changed outside its band: S3 header signing is 1.1% to 3.9% slower t
 
 | Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio |
 |---|--:|--:|--:|--:|--:|--:|--:|
-| DynamoDB POST, JSON body | **1.91** | wrong signature | 214.56 (112.2×) | 12.73 (6.7×) | 49.26 (25.8×) | wrong signature | wrong signature |
-| API Gateway GET, session token | **1.93** | 5.76 (3×) | 211.31 (109.7×) | 10.92 (5.7×) | wrong signature | 571.41 (296.5×) | wrong signature |
-| SQS, query parameters | **2.58** | 8.15 (3.2×) | 213.64 (82.8×) | 13.88 (5.4×) | 48.16 (18.7×) | 571.00 (221.2×) | wrong signature |
-| presigned URL, API Gateway | **5.86** | 17.17 (2.9×) | 227.62 (38.8×) | 16.86 (2.9×) | wrong signature | wrong signature | wrong signature |
-| presigned URL, S3 | **6.37** | 16.99 (2.7×) | 230.23 (36.1×) | 16.35 (2.6×) | wrong signature | wrong signature | 11.31 (1.8×) |
+| DynamoDB POST, JSON body | **1.66** | wrong signature | 198.35 (119.3×) | 10.00 (6.0×) | 41.13 (24.7×) | wrong signature | wrong signature |
+| API Gateway GET, session token | **1.48** | 4.50 (3.0×) | 198.17 (134.1×) | 9.19 (6.2×) | wrong signature | 530.75 (359.1×) | wrong signature |
+| SQS, query parameters | **1.99** | 5.73 (2.9×) | 201.88 (101.6×) | 10.95 (5.5×) | 39.19 (19.7×) | 537.51 (270.6×) | wrong signature |
+| presigned URL, API Gateway | **4.63** | 12.31 (2.7×) | 215.25 (46.5×) | 13.49 (2.9×) | wrong signature | wrong signature | wrong signature |
+| presigned URL, S3 | **5.09** | 12.05 (2.4×) | 218.40 (42.9×) | 13.85 (2.7×) | wrong signature | wrong signature | 9.25 (1.8×, no clear change) |
 
-“Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 5% to 10%, Bun 34% to 68%, so the Bun ratios are less precise than the Node ones; every gap shown is far outside its band.
+“Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting band (the larger of 3% and twice the spread of the two sigflint arms): Node 7% to 10%, Bun 16% to 101%, so the Bun ratios are much less precise than the Node ones. On Node every gap shown is far outside its band. On Bun the three presigned-URL gaps against `aws4` and `@smithy/signature-v4` are outside their bands (85% to 101%) with disjoint ranges but close to them, and the one against `minio` (9.25 against 5.09 microseconds, 82% against a band of 85%) is not clear after 5 rounds: it is shown as no clear change.
 
-Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads and event streams, which were not timed here). Microseconds per call, Node / Bun: SigV4a headers 15.6 / 14.6, SigV4a presigned URL 17.5 / 18.2, one 64 KiB chunk 33.6 / 33.0, the last chunk with a trailer 3.0 / 2.3, a 4 KiB event 12.1 / 13.1. SigV4a is dominated by the ECDSA signature.
+Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads and event streams, which were not timed here). Microseconds per call, Node / Bun: SigV4a headers 15.4 / 13.5, SigV4a presigned URL 16.9 / 16.8, one 64 KiB chunk 32.6 / 30.9, the last chunk with a trailer 3.0 / 1.7, a 4 KiB event 11.5 / 11.6. SigV4a is dominated by the ECDSA signature.
 
 ## Memory
 
@@ -188,32 +188,32 @@ Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads 
 
 | Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
 |---|--:|--:|--:|--:|--:|
-| **sigflint** | **2.6 KiB** | **6** | **1.2 ms** | **116.9 MiB** | **2.7 ms** |
-| aws4 | 9.8 KiB (3.8×) | 24 (4.0×) | 7.1 ms (5.9×) | 116.6 MiB (no clear change) | 3.9 ms (1.5×) |
-| minio | 8.2 KiB (3.2×) | 19 (3.2×) | 23.3 ms (19×) | 118.2 MiB (no clear change) | 17.1 ms (6.4×) |
-| aws4fetch | 29.3 KiB (11×) | 90 (15×) | 42.3 ms (35×) | 128.4 MiB (1.1×) | 18.4 ms (6.9×) |
-| @smithy/signature-v4 | 17.8 KiB (7.0×) | 44 (7.3×) | 21.5 ms (18×) | 115.7 MiB (no clear change) | 13.2 ms (5.0×) |
-| aws-sig | 69.4 KiB (27×) | 46 (7.7×) | 41.4 ms (34×) | 170.1 MiB (1.5×) | 8.8 ms (3.3×) |
-| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 174 (29×) | 96.1 ms (80×) | 125.9 MiB (1.1×) | 18.6 ms (7.0×) |
+| **sigflint** | **2.6 KiB** | **6** | **1.1 ms** | **116.1 MiB** | **2.2 ms** |
+| aws4 | 9.8 KiB (3.8×) | 24 (4.0×) | 6.3 ms (5.5×) | 116.3 MiB (no clear change) | 3.3 ms (1.5×) |
+| minio | 8.3 KiB (3.2×) | 19 (3.2×) | 20.8 ms (18×) | 117.7 MiB (no clear change) | 16.0 ms (7.3×) |
+| aws4fetch | 29.3 KiB (11×) | 90 (15×) | 32.4 ms (28×) | 128.3 MiB (1.1×) | 17.3 ms (7.9×) |
+| @smithy/signature-v4 | 17.9 KiB (7.0×) | 44 (7.3×) | 20.5 ms (18×) | 115.7 MiB (no clear change) | 12.2 ms (5.6×) |
+| aws-sig | 69.4 KiB (27×) | 46 (7.7×) | 34.6 ms (30×) | 169.3 MiB (1.5×) | 8.1 ms (3.7×) |
+| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 175 (29×) | 74.9 ms (66×) | 125.3 MiB (1.1×) | 16.8 ms (7.7×) |
 
 **Bun 1.4.3**, plain GET of one key:
 
 | Library | Heap allocated per call | Collections per 10,000 calls | GC pause per 10,000 calls | Peak memory of the process | Import + first signature |
 |---|--:|--:|--:|--:|--:|
-| **sigflint** | **1.4 KiB** | **3** | **5.2 ms** | **65.9 MiB** | **2.5 ms** |
-| aws4 | 6.4 KiB (4.5×) | 14 (4.7×) | 27.1 ms (5.2×) | 71.1 MiB (1.1×) | 3.4 ms (no clear change) |
-| minio | 7.0 KiB (5.0×) | 16 (5.3×) | 31.0 ms (5.9×) | 70.7 MiB (1.1×) | 20.2 ms (8.3×) |
-| aws4fetch | 15.1 KiB (11×) | 28 (9.3×) | 58.9 ms (11×) | 69.4 MiB (1.1×) | 3.2 ms (no clear change) |
-| @smithy/signature-v4 | 13.2 KiB (9.3×) | 24 (8.0×) | 50.4 ms (9.7×) | 73.3 MiB (1.1×) | 11.2 ms (4.6×) |
-| aws-sig | 47.9 KiB (34×) | 80 (27×) | 150 ms (29×) | 79.8 MiB (1.2×) | 4.7 ms (1.9×) |
-| @wdl-dev/aws-sigv4 | 29.9 KiB (21×) | 49 (16×) | 119 ms (23×) | 74.6 MiB (1.1×) | 4.8 ms (2.0×) |
+| **sigflint** | **1.4 KiB** | **3** | **5.1 ms** | **64.6 MiB** | **2.2 ms** |
+| aws4 | 6.4 KiB (4.6×) | 14 (4.7×) | 27.3 ms (5.4×) | 71.9 MiB (1.1×) | 3.0 ms (no clear change) |
+| minio | 7.0 KiB (5.1×) | 16 (5.3×) | 31.4 ms (6.2×) | 70.3 MiB (1.1×) | 18.5 ms (8.3×) |
+| aws4fetch | 15.1 KiB (11×) | 27 (9.0×) | 56.6 ms (11×) | 69.6 MiB (1.1×) | 2.9 ms (no clear change) |
+| @smithy/signature-v4 | 13.2 KiB (9.5×) | 24 (8.0×) | 45.6 ms (9.0×) | 77.2 MiB (1.2×) | 10.5 ms (4.7×) |
+| aws-sig | 47.8 KiB (34×) | 80 (27×) | 149 ms (29×) | 80.3 MiB (1.2×) | 4.2 ms (1.9×) |
+| @wdl-dev/aws-sigv4 | 29.4 KiB (21×) | 49 (16×) | 110 ms (22×) | 75.1 MiB (1.2×) | 4.5 ms (2.0×) |
 
-Median of 5 processes, one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate 2.0 to 34 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 30% to 77%; peak memory 3% to 5%; import + first signature 19% to 22%. Every gap shown with a multiplier is outside its band.
+Median of 5 processes (5 for import), one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate 2.0 to 34 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 33% to 66%; peak memory 3% to 4%; import + first signature 20% to 27%. Every gap shown with a multiplier is outside its band.
 <!-- END memory -->
 
-What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone takes 1.3 ms on Node and 1.9 ms on Bun, with no clear difference from `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4`. Importing plus the first signature takes 2.7 ms on Node, faster than every other library (1.5 to 7 times as fast), and on Bun it is inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap, with one small exception: `aws4fetch` and `@wdl-dev/aws-sigv4` kept about 100 to 190 KiB more per 10,000 calls on Node for the plain GET, which is not shown to be a leak. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
+What is counted: the JavaScript heap that one `getAuthHeaders` call allocates (native memory, such as hash state, is not in it), the stop-the-world garbage-collection time over 10,000 calls, the peak resident memory of a process that loaded only that library, and the time to import the library and sign once in a fresh process. Importing alone takes 1.0 ms on Node and 1.7 ms on Bun, with no clear difference from `aws4fetch`, `aws4` and `@wdl-dev/aws-sigv4` on either runtime (and from `aws-sig` on Bun, where `aws4fetch` and `@wdl-dev/aws-sigv4` are, if anything, a little lower). Importing plus the first signature takes 2.2 ms on Node, faster than every other library (1.5 to 7.9 times as fast); on Bun it takes 2.2 ms, faster than `@smithy/signature-v4`, `aws-sig`, `@wdl-dev/aws-sigv4` and `minio` (1.9 to 8.3 times) and inside the noise band of `aws4` and `aws4fetch`. Across 20,000 calls no library showed a clear growth in retained heap: 34 of 36 comparisons with sigflint are no clear change after 5 rounds, which does not show that they are equal. The two clear ones are `aws4fetch` and `@wdl-dev/aws-sigv4` on Node for the plain GET, which kept about 110 to 190 KiB per 10,000 calls against sigflint's 30 KiB; that is not shown to be a leak. Peak memory of a process that loaded sigflint was not clearly different from `aws4`, `@smithy/signature-v4` and `minio` on Node. sigflint keeps up to 1,000 signing keys, about 340 bytes each on Node and 360 on Bun, so a full cache is about 340 KB; the other libraries' caches were not measured.
 
-The allocation, collection, GC, CPU and peak-memory figures were measured on the six-module `src/` code (all eight arms (six other libraries, sigflint twice) in one run of 810 processes, 0 rejected; a first attempt with a mistake in the setup was discarded and is described in `bench/memory-protocol.md`). The import figures were measured again, in 630 processes with 0 rejected, on the single built file that Node and Bun load, because that is the layout the package ships; the peak memory of that file was not re-measured. The signers have shared one signing-key cache since the allocation and memory runs, so those figures describe the code before that change. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](../bench/results/memory-report.md) and [`bench/memory-protocol.md`](../bench/memory-protocol.md).
+All figures in this section were measured again on the single built file that Node and Bun load (`dist/`, from the same source tree as the package), in one fresh process per library, runtime and round, with the import part taking the median of 7 fresh processes per round: 3 rounds, then rounds 4 and 5 because some comparisons were unsettled. 0 processes were rejected. The numbers for the other three workloads, the per-round values and the calibration of the allocation counters are in [`bench/results/memory-report.md`](../bench/results/memory-report.md) and [`bench/memory-protocol.md`](../bench/memory-protocol.md); the shortened plan and the extension decisions are in [`bench/protocol-rerun.md`](../bench/protocol-rerun.md) and [`bench/results/rerun-extension.md`](../bench/results/rerun-extension.md).
 
 ## Size
 
@@ -225,7 +225,7 @@ The allocation, collection, GC, CPU and peak-memory figures were measured on the
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 34,358 | 5,651 | 2,769 | 2,550 | 0 |  |
+| **sigflint** | 34,486 | 5,651 | 2,769 | 2,550 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -271,8 +271,8 @@ Each runs against the synchronous source, the built file that Node and Bun load,
 
 ## Methodology and limits
 
-- Speed: one process per library, runtime and round; 5 rounds with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it. The protocol was written before the runs ([`bench/protocol.md`](../bench/protocol.md)) and the raw results are in `bench/results/`.
-- Memory: 5 rounds, 810 processes, each under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
+- Speed: one process per library, runtime and round; 3 rounds (5 for the other-services part) with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it. The protocol was written before the runs ([`bench/protocol.md`](../bench/protocol.md), shortened by [`bench/protocol-rerun.md`](../bench/protocol-rerun.md)) and the raw results are in `bench/results/`.
+- Memory: 5 rounds (3, then 2 more because comparisons were unsettled), each process under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
 - Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`.
 - Other services, presigned URLs and the check against the pre-split build: a second protocol, written before the runs ([`bench/protocol-more.md`](../bench/protocol-more.md)), run on the final code; raw results in `bench/results/speed-regression.jsonl` and `speed-more.jsonl`.

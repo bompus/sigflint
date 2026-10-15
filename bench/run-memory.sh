@@ -1,10 +1,10 @@
 #!/bin/bash
 # Memory matrix (see memory-protocol.md): allocation, GC / CPU / growth, import time and key-cache retention.
 # One process per (round, runtime, arm, kind); arm order reversed on even rounds; every process under a cgroup memory cap.
-# Linux only (/proc). Usage: [BENCH_LOCK=/path/to/lockfile] [REPS=7] [KINDS="alloc run cache import"] run-memory.sh <dir with node.js and bun.js, SHA256SUMS> <out.jsonl> [rounds=5]
+# Linux only (/proc). Usage: [BENCH_LOCK=/path/to/lockfile] [REPS=7] [KINDS="alloc run cache import"] run-memory.sh <dir with node.js and bun.js, SHA256SUMS> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5)
 # KINDS limits the run to some of the process kinds (default all four).
 set -u
-NEW=$1; OUT=$2; ROUNDS=${3:-5}; REPS=${REPS:-7}
+NEW=$1; OUT=$2; ROUNDS=${3:-3}; REPS=${REPS:-7}; FROM=${FROM_ROUND:-1}
 HERE=$(cd "$(dirname "$0")" && pwd)
 LOGDIR="$(dirname "$OUT")/memory-logs"; mkdir -p "$LOGDIR"
 CAP=${CAP:-2G}
@@ -76,7 +76,7 @@ shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
   sw1=$(swapfree); post=-1
   emit "$tag" "$rc" "$post" "$((sw1-sw0))" "$out"
 }
-for round in $(seq 1 "$ROUNDS"); do
+for round in $(seq "$FROM" "$ROUNDS"); do
   ORDER=("${ARMS[@]}"); if (( round % 2 == 0 )); then ORDER=($(printf '%s\n' "${ARMS[@]}" | tac)); fi
   for rt in bun node; do
     for arm in "${ORDER[@]}"; do want alloc && memproc alloc "$arm" "$rt" "$round"; want run && memproc run "$arm" "$rt" "$round"; done
