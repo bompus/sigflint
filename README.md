@@ -1,4 +1,9 @@
-# sigflint
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.png">
+    <img src="docs/assets/banner-light.png" alt="sigflint: Fast SigV4 and SigV4a signing for every AWS service" width="100%">
+  </picture>
+</h1>
 
 Fast AWS Signature Version 4 request signing for every AWS service, with no dependencies. It runs on Node.js, Bun, Deno, Cloudflare Workers and browsers.
 
