@@ -1,6 +1,6 @@
 {
   "name": "sigflint",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Fast, dependency-free AWS Signature Version 4 signing for every AWS service: headers, presigned URLs, SigV4a, chunked uploads and event streams. Node.js, Bun, Deno, Cloudflare Workers and browsers.",
   "keywords": [
     "aws",

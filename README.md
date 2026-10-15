@@ -87,7 +87,7 @@ Open an issue describing the use case if you need one of them.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md). sigflint never logs credentials or writes them anywhere; it keeps the last secret key in memory as the key of its signing-key cache.
+See [SECURITY.md](SECURITY.md). sigflint never logs credentials or writes them anywhere. Its signing-key caches keep secret keys in process memory: each cached signing key (up to 1,000 per cache) is stored under a lookup string that contains the secret access key it was derived from.
 
 ## Sponsoring
 

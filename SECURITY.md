@@ -1,6 +1,6 @@
 # Security policy
 
-sigflint computes request signatures from an access key and a secret key you give it. It does not log them, write them anywhere or send them; the only output is the headers it returns. The signing-key cache keeps the most recent secret key in memory, and nothing else.
+sigflint computes request signatures from an access key and a secret key you give it. It does not log them, write them anywhere or send them; the only output is the headers it returns. Its signing-key caches keep secret keys in process memory: each cached signing key (up to 1,000 per cache) is stored under a lookup string that contains the secret access key it was derived from.
 
 ## Reporting a vulnerability
 
