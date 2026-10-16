@@ -5,6 +5,7 @@
 - A lowercase `method` (`get`) is signed as upper case (`GET`), the same signature botocore produces and what `fetch` sends. Before, it signed the lowercase word, and the service answered `SignatureDoesNotMatch`.
 - `end(trailers)` on a chunk signer throws a `TypeError` when a trailer name or value holds a line break. Before, the break was signed as another trailer line.
 - The publish workflow stops unless the tagged commit is on `main`.
+- Correction to the 1.0.0 entry: a raw `+` in an S3 path is signed as a space, but "as S3 reads it" was not verified. The rule is this library's reading and the corpus follows it; nothing has been tried against AWS S3, and a local `s3s-fs` 0.17.0 server reads a raw `+` as a plus sign and rejected the signature. Write `%2B` in the URL to mean a plus: that server accepted it from sigflint and from botocore. The signing is unchanged (`docs/guide.md`).
 - Correction to the 1.0.0 entry: a bundler that picks the `node` or `bun` condition gets the built file (`dist/`) and drops unused signers just as well; the per-signer modules (`src/`) go to the `workerd`, `worker` and `browser` conditions and to bundlers that match none of them.
 
 ## 1.0.0 - 2026-10-16

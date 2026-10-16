@@ -126,7 +126,7 @@ A request that cannot be signed correctly throws instead of returning a signatur
 
 ### How it reads the URL
 
-- **Paths.** For S3, percent-escapes are decoded and every byte except `A-Z a-z 0-9 - . _ ~ /` is encoded again, once. A raw `+` in the path is a space, which is how S3 reads it; `%2B` is a plus. An escape that is not valid (`%zz`, a lone `%`) is signed as a literal `%`. For every other service the path is normalised (empty segments dropped, `.` and `..` resolved) and encoded a second time, as the specification says.
+- **Paths.** For S3, percent-escapes are decoded and every byte except `A-Z a-z 0-9 - . _ ~ /` is encoded again, once. A raw `+` in the path is signed as a space (`%20`). That is this library's reading of how S3 treats it: the test corpus follows the same rule, botocore does not check it independently, and it has not been tried against AWS S3. A local `s3s-fs` 0.17.0 server reads a raw `+` as a plus sign and rejected sigflint's signature for it. To mean a literal plus, write `%2B`: it is signed as a plus, and that server accepted it from sigflint and from botocore. `%20` is a space. An escape that is not valid (`%zz`, a lone `%`) is signed as a literal `%`. For every other service the path is normalised (empty segments dropped, `.` and `..` resolved) and encoded a second time, as the specification says.
 - **Queries.** Names and values are decoded and encoded the same way, sorted by name and then value, and a name with no value is written as `name=`. Repeated names keep every value.
 - **Headers.** Names are lowercased, values trimmed with runs of spaces collapsed, and the list sorted.
 
