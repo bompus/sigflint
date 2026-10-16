@@ -5,6 +5,20 @@
   </picture>
 </h1>
 
+<p align="center">
+  <a href="https://github.com/bompus/sigflint/actions/workflows/ci.yml"><img src="https://github.com/bompus/sigflint/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="https://github.com/bompus/sigflint/releases/latest"><img src="https://badgen.net/github/release/bompus/sigflint" alt="Latest GitHub release"></a>
+  <a href="https://www.npmjs.com/package/sigflint"><img src="https://badgen.net/npm/v/sigflint" alt="Latest sigflint version on npm"></a>
+  <a href="LICENSE"><img src="https://badgen.net/badge/license/MIT/blue" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="docs/guide.md#usage">Headers and presigned URLs</a> ·
+  <a href="docs/guide.md#sigv4a-multi-region">SigV4a</a> ·
+  <a href="docs/guide.md#chunked-uploads">Chunked uploads and event streams</a> ·
+  <a href="package.json">No dependencies</a>
+</p>
+
 Fast AWS Signature Version 4 request signing for every AWS service, with no dependencies. It runs on Node.js, Bun, Deno, Cloudflare Workers and browsers.
 
 ```js
@@ -58,7 +72,7 @@ For a large or binary body, skip hashing and send `unsignedPayload: true`. S3 ac
 const headers = await getAuthHeaders({ method: 'PUT', url, region, unsignedPayload: true }, credentials);
 ```
 
-For another S3-compatible service, pass its region name and URL (`https://us-sea-1.linodeobjects.com/bucket/key`, `http://127.0.0.1:9000/bucket/key`). These are examples of the form, not endpoints that were tried: signatures are checked against botocore, the AWS CRT, the AWS SDK's signer and the AWS documentation examples, and nothing has been sent to AWS S3 or any other server, so a service that canonicalizes requests differently from S3 may reject them.
+For another S3-compatible service, pass its region name and URL (`https://us-sea-1.linodeobjects.com/bucket/key`, `http://127.0.0.1:9000/bucket/key`). These are examples of the form, not endpoints that were tried. Signatures are checked against botocore, the AWS CRT, the AWS SDK's signer and the AWS documentation examples. Nothing has been sent to AWS S3, so a service that canonicalizes requests differently from S3 may reject them. The only server tried is a local `s3s-fs` 0.17.0 test server on loopback, once, with header-signed requests (create a bucket, `PUT`, `GET`, list): it accepted them, except that it rejected sigflint's signature for a raw `+` in the path, so write `%2B` ([how the path is read](docs/guide.md#how-it-reads-the-url)).
 
 More in the [guide](docs/guide.md): [other services](docs/guide.md#other-services), [presigned URLs](docs/guide.md#presigned-urls), [SigV4a](docs/guide.md#sigv4a-multi-region), [chunked uploads](docs/guide.md#chunked-uploads), [event streams](docs/guide.md#event-streams), why to always `await`, and the [full API](docs/guide.md#api).
 
