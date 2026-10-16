@@ -190,7 +190,7 @@ export function amzDatetime(now) {
 
 /**
  * @typedef {Object} SignRequest
- * @property {string} method - GET, HEAD, PUT, POST, DELETE
+ * @property {string} method - GET, HEAD, PUT, POST, DELETE; any case, signed in upper case (as botocore does)
  * @property {URL} url
  * @property {string} [service] - default 's3'
  * @property {string} [region] - for example us-west-2
@@ -227,7 +227,8 @@ export function payloadHashOf(request, hexHash) {
 
 /** Everything up to the hashing: the headers to return, the canonical request and the credential scope. */
 export function prepare(request, credentials, payloadHash, scheme = symmetric) {
-  const { method, url, signHeaders } = request;
+  const { url, signHeaders } = request;
+  const method = request.method.toUpperCase(); // 'get' is signed as GET, which is what fetch sends and what botocore signs
   const region = request.region ?? '';
   const service = request.service ?? 's3';
   // S3 always sends x-amz-content-sha256; other services only when the payload is unsigned

@@ -81,7 +81,7 @@ Returns an object of headers to send with the request (or, in Workers and browse
 
 | Field | Type | |
 |---|---|---|
-| `method` | `string` | `GET`, `HEAD`, `PUT`, `POST`, `DELETE` |
+| `method` | `string` | `GET`, `HEAD`, `PUT`, `POST`, `DELETE`; any case, it is signed in upper case |
 | `url` | `URL` | the full request URL, host included |
 | `service` | `string` | for example `s3` (the default), `dynamodb`, `sqs`, `execute-api` |
 | `region` | `string` | for example `us-west-2`. Pass it: the default is an empty string, which no region matches |
@@ -117,6 +117,7 @@ Types are included (`.d.ts`, generated from the source).
 A request that cannot be signed correctly throws instead of returning a signature the service would reject:
 
 - `signHeaders` that name `x-amz-date`, `authorization` or `__proto__`, or whose value holds a line break (`TypeError`).
+- `end(trailers)` with a trailer whose name or value holds a line break (`TypeError`).
 - `presign` and `presignV4a` with a URL that is not `http:` or `https:`, or that already carries `X-Amz-Signature` or `X-Amz-Algorithm` (`TypeError`), or an `expires` outside 1 to 604800 (`RangeError`).
 - `chunkSigner` and `eventSigner` given the headers of a SigV4a signature (`TypeError`): chunks and events are signed with SigV4 only.
 - `getAuthHeadersV4a` and `presignV4a` without `regionSet` (`TypeError`).

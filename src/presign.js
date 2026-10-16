@@ -8,7 +8,8 @@ export const encodeQueryPart = (text) => encodeURIComponent(text).replace(/[!'()
  * signed; S3 URLs are always UNSIGNED-PAYLOAD, other services sign the body hash. `extra` is appended to the authentication parameters.
  */
 export function preparePresign(request, credentials, payloadHash, scheme = symmetric, extra = '') {
-  const { method, url, signHeaders } = request;
+  const { url, signHeaders } = request;
+  const method = request.method.toUpperCase();
   if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new TypeError('presign needs an http or https URL');
   if (url.search.length > 1 && (url.search.includes('X-Amz-Signature=') || url.search.includes('X-Amz-Algorithm='))) throw new TypeError('the URL is already presigned');
   const expires = request.expires ?? 3600;

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- A lowercase `method` (`get`) is signed as upper case (`GET`), the same signature botocore produces and what `fetch` sends. Before, it signed the lowercase word, and the service answered `SignatureDoesNotMatch`.
+- `end(trailers)` on a chunk signer throws a `TypeError` when a trailer name or value holds a line break. Before, the break was signed as another trailer line.
+- The publish workflow stops unless the tagged commit is on `main`.
+
 ## 1.0.0 - 2026-10-16
 
 First version: AWS Signature Version 4 signing for every AWS service.

@@ -23,10 +23,14 @@ export function seedOf(authHeaders) {
 export const chunkStringToSign = (datetime, scope, previous, payloadHash) => `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${emptyHash}\n${payloadHash}`;
 export const trailerStringToSign = (datetime, scope, previous, trailerHash) => `AWS4-HMAC-SHA256-TRAILER\n${datetime}\n${scope}\n${previous}\n${trailerHash}`;
 
-/** Trailing headers in canonical form: lowercase names in name order, each line ending in a newline. */
+/** Trailing headers in canonical form: lowercase names in name order, each line ending in a newline. A line break in a name or value would start another trailer line, so it throws. */
 export function canonicalTrailers(trailers) {
   return Object.keys(trailers)
-    .map((name) => [name.toLowerCase(), String(trailers[name]).trim()])
+    .map((name) => {
+      const value = String(trailers[name]);
+      if (/[\r\n]/.test(name) || /[\r\n]/.test(value)) throw new TypeError('a trailer name or value cannot hold a line break');
+      return [name.toLowerCase(), value.trim()];
+    })
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
     .map(([name, value]) => `${name}:${value}\n`)
     .join('');

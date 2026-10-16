@@ -37,6 +37,22 @@ for (const [name, { getAuthHeaders, presign, getAuthHeadersV4a, chunkSigner, eve
     await rejects(() => presign({ ...request, signHeaders: { 'x-foo': 'a\r\nb' } }, credentials), TypeError, /line break/);
   });
 
+  test(`${name}: a lowercase method signs as the uppercase one, as botocore does`, async () => {
+    for (const method of ['get', 'Put', 'delete']) {
+      const lower = { ...request, method };
+      const upper = { ...request, method: method.toUpperCase() };
+      assert.deepEqual(await getAuthHeaders(lower, credentials), await getAuthHeaders(upper, credentials));
+      assert.equal(await presign(lower, credentials), await presign(upper, credentials));
+    }
+  });
+
+  test(`${name}: a line break in a trailer name or value is refused`, async () => {
+    for (const trailers of [{ 'x-amz-checksum-crc32c': 'a\nx-evil:1' }, { 'x-amz-checksum-crc32c': 'a\r\nx-evil:1' }, { 'x-a\nx-evil': '1' }]) {
+      const signer = await chunkSigner(await chunkedHeaders(), credentials);
+      await rejects(() => signer.end(trailers), TypeError, /line break/);
+    }
+  });
+
   test(`${name}: presign signs own signHeaders only and refuses a URL it cannot sign`, async () => {
     const inherited = Object.create({ 'x-inherited': 'yes' });
     inherited['x-own'] = '1';
