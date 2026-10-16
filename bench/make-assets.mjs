@@ -167,7 +167,7 @@ tables.push('### Size\n\n| Library | Source, all signers (bytes) | Bundled + min
 const compat = readFileSync(`${here}results/compat.jsonl`, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
 const rtCols = [['node', 'Node.js'], ['bun', 'Bun'], ['deno', 'Deno'], ['workerd (nodejs_compat)', 'Workers + nodejs_compat'], ['workerd (no-flag)', 'Workers, no flag']];
 const rtOf = (r) => rtCols.find(([p]) => r.runtime.startsWith(p));
-const cLibs = ['sigflint', 'aws4fetch', 'aws4', 'smithy', 'smithy-web', 'aws-sig', 'wdl', 'minio'];
+const cLibs = ['sigflint', 'sigflint-web', 'aws4fetch', 'aws4', 'smithy', 'smithy-web', 'aws-sig', 'wdl', 'minio'];
 const status = (lib, col) => compat.find((r) => r.lib === lib && rtOf(r)?.[0] === col)?.status ?? '?';
 const compatVersions = [...new Set(compat.map((r) => r.runtime.replace(/ .*$/, '') === 'node' || r.runtime.startsWith('bun') || r.runtime.startsWith('deno') ? r.runtime : null).filter(Boolean))];
 out.runtimes = (t) => {

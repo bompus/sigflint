@@ -60,6 +60,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | Library | Node.js | Bun | Deno | Workers + nodejs_compat | Workers, no flag |
 |---|:-:|:-:|:-:|:-:|:-:|
 | **sigflint** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **sigflint/web** | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws4 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | @smithy/signature-v4 | ✓ | ✓ | ✓ | ✗ | ✗ |

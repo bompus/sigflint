@@ -15,6 +15,7 @@ The speed, memory, import and size figures were measured on the code that ships:
 | Library | Node.js | Bun | Deno | Workers + nodejs_compat | Workers, no flag |
 |---|:-:|:-:|:-:|:-:|:-:|
 | **sigflint** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **sigflint/web** | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws4 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | @smithy/signature-v4 | ✓ | ✓ | ✓ | ✗ | ✗ |
@@ -271,7 +272,7 @@ Each runs against the synchronous source, the built file that Node and Bun load,
 
 ## Methodology and limits
 
-- Speed: one process per library, runtime and round; 3 rounds (5 for the other-services part) with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it. The protocol was written before the runs ([`bench/protocol.md`](../bench/protocol.md), shortened by [`bench/protocol-rerun.md`](../bench/protocol-rerun.md) and [`bench/protocol-rerun-2.md`](../bench/protocol-rerun-2.md)) and the raw results are in `bench/results/`.
+- Speed: one process per library, runtime and round; 3 rounds (5 for the other-services part) with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it except the five Bun presigned-URL comparisons marked “no clear change”, which stay inconclusive after five rounds. The protocol was written before the runs ([`bench/protocol.md`](../bench/protocol.md), shortened by [`bench/protocol-rerun.md`](../bench/protocol-rerun.md) and [`bench/protocol-rerun-2.md`](../bench/protocol-rerun-2.md)) and the raw results are in `bench/results/`.
 - Memory: 5 rounds (3, then 2 more because comparisons were unsettled), each process under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
 - Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`, except Node: the runtime grid and the speed, memory and import figures ran on Node 26.12.0 (that file lists 26.11.1). The correctness comparison did not record a Node version.
