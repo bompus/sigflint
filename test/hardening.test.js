@@ -53,6 +53,17 @@ for (const [name, { getAuthHeaders, presign, getAuthHeadersV4a, chunkSigner, eve
     }
   });
 
+  test(`${name}: a refused trailer does not move the chunk chain, so end() can be retried`, async () => {
+    const good = { 'x-amz-checksum-crc32c': 'sOO8/Q==' };
+    const signer = await chunkSigner(await chunkedHeaders(), credentials);
+    await signer.chunk(new Uint8Array([1, 2, 3]));
+    await rejects(() => signer.end({ 'x-amz-checksum-crc32c': 'a\nb' }), TypeError, /line break/);
+    const retried = await signer.end(good);
+    const fresh = await chunkSigner(await chunkedHeaders(), credentials);
+    await fresh.chunk(new Uint8Array([1, 2, 3]));
+    assert.deepEqual(retried, await fresh.end(good));
+  });
+
   test(`${name}: presign signs own signHeaders only and refuses a URL it cannot sign`, async () => {
     const inherited = Object.create({ 'x-inherited': 'yes' });
     inherited['x-own'] = '1';

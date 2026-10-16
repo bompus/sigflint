@@ -75,9 +75,9 @@ export function createChunkSigner({ hexHash, hmacHex, getSigningKey }) {
     return {
       chunk: (data) => (data.length === 0 ? data : frameChunk(sign(data), data)), // a zero-length chunk would end the upload; it is not sent
       end(trailers) {
+        const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was
         const signature = sign(new Uint8Array(0));
-        if (trailers === undefined) return frameEnd(signature);
-        const text = canonicalTrailers(trailers);
+        if (text === undefined) return frameEnd(signature);
         const trailerSignature = hmacHex(key, trailerStringToSign(seed.datetime, seed.scope, signature, hexHash(text)));
         return frameEnd(signature, text, trailerSignature);
       },

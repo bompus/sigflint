@@ -153,9 +153,9 @@ export function chunkSigner(authHeaders, credentials) {
   return {
     chunk: async (data) => (data.length === 0 ? data : frameChunk(await sign(data), data)),
     async end(trailers) {
+      const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was
       const signature = await sign(new Uint8Array(0));
-      if (trailers === undefined) return frameEnd(signature);
-      const text = canonicalTrailers(trailers);
+      if (text === undefined) return frameEnd(signature);
       return frameEnd(signature, text, await signWith(await keyPromise, trailerStringToSign(seed.datetime, seed.scope, signature, await hexHash(text))));
     },
   };
