@@ -5,6 +5,7 @@
 - A lowercase `method` (`get`) is signed as upper case (`GET`), the same signature botocore produces and what `fetch` sends. Before, it signed the lowercase word, and the service answered `SignatureDoesNotMatch`.
 - `end(trailers)` on a chunk signer throws a `TypeError` when a trailer name or value holds a line break. Before, the break was signed as another trailer line.
 - The publish workflow stops unless the tagged commit is on `main`.
+- Correction to the 1.0.0 entry: a bundler that picks the `node` or `bun` condition gets the built file (`dist/`) and drops unused signers just as well; the per-signer modules (`src/`) go to the `workerd`, `worker` and `browser` conditions and to bundlers that match none of them.
 
 ## 1.0.0 - 2026-10-16
 

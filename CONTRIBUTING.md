@@ -17,7 +17,7 @@ The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`); ru
 
 ## The conformance corpus
 
-`test/corpus.json` holds 3,300+ requests with the signature and canonical request that botocore's S3 signer produces for each. The corpus is generated; do not edit it by hand.
+`test/corpus.json` holds 3,300+ requests with the signature and canonical request that botocore's S3 signer produces for each. The generator normalizes each path and query itself (`conformance/oracle.py`) before botocore signs the request, so botocore does not check that step; the four examples in the S3 documentation do. The corpus is generated; do not edit it by hand.
 
 ```sh
 python3 -m venv .venv && .venv/bin/pip install -r conformance/requirements.txt

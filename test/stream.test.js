@@ -53,17 +53,21 @@ for (const [name, { chunkSigner, eventSigner }] of entries) {
     );
   });
 
-  test(`${name}: the first chunk of every smithy chain has the same signature`, async () => {
+  test(`${name}: every chunk in every smithy chain has the same signature`, async () => {
     const failures = [];
+    let chunks = 0;
     for (const chain of corpus.chunks) {
-      const first = chain.items[0];
-      const dt = datetimeOf(first.at);
+      const dt = datetimeOf(chain.items[0].at);
       const signer = chunkSigner(authFor(chain.seed, { date: dt.slice(0, 8), datetime: dt, region: chain.region, service: chain.service }), credentials);
-      const frame = first.payload === '' ? await signer.end() : await signer.chunk(Uint8Array.from(Buffer.from(first.payload, 'base64')));
-      const got = /chunk-signature=([0-9a-f]{64})/.exec(text(frame.subarray(0, 120)))[1];
-      if (got !== first.signature) failures.push({ seed: chain.seed, expected: first.signature, got });
+      for (const item of chain.items) {
+        chunks++;
+        assert.equal(item.at, chain.items[0].at); // aws-chunked signs every chunk with the date of the upload's headers
+        const frame = item.payload === '' ? await signer.end() : await signer.chunk(Uint8Array.from(Buffer.from(item.payload, 'base64')));
+        const got = /chunk-signature=([0-9a-f]{64})/.exec(text(frame.subarray(0, 120)))[1];
+        if (got !== item.signature) failures.push({ seed: chain.seed, expected: item.signature, got });
+      }
     }
-    assert.ok(corpus.chunks.length >= 60);
+    assert.ok(chunks >= 150, `only ${chunks} chunks`);
     assert.deepEqual(failures.slice(0, 5), []);
   });
 

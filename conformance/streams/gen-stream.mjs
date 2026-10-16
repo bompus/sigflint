@@ -19,7 +19,7 @@ for (let i = 0; i < 300; i++) {
   const n = 1 + Math.floor(rnd() * 5);
   for (let j = 0; j < n; j++) {
     const payload = bytes(SIZES[Math.floor(rnd() * SIZES.length)]);
-    const signingDate = new Date(start + j * Math.floor(rnd() * 90000000)); // events may cross a day boundary
+    const signingDate = new Date(start); // aws-chunked signs every chunk with the date of the upload's headers (the seed's x-amz-date)
     const signature = await signer.signEvent({ headers: new Uint8Array(0), payload }, { signingDate, priorSignature: prior, signingRegion: region, signingService: service });
     chain.items.push({ at: signingDate.getTime(), payload: Buffer.from(payload).toString('base64'), signature });
     prior = signature;
@@ -35,7 +35,7 @@ for (let i = 0; i < 300; i++) {
   const n = 1 + Math.floor(rnd() * 4);
   for (let j = 0; j < n; j++) {
     const payload = bytes(SIZES[Math.floor(rnd() * 6)]);
-    const signingDate = new Date(start + j * Math.floor(rnd() * 90000000));
+    const signingDate = new Date(start + j * Math.floor(rnd() * 90000000)); // events may cross a day boundary
     const { signature } = await signer.signMessage({ message: { headers: { ':date': { type: 'timestamp', value: signingDate } }, body: payload }, priorSignature: prior }, { signingDate, signingRegion: region, signingService: service });
     chain.items.push({ at: signingDate.getTime(), payload: Buffer.from(payload).toString('base64'), signature });
     prior = signature;
