@@ -23,10 +23,10 @@ The speed, memory, import and size figures were measured on the code that ships:
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | minio | ✓ | ✓ | ✓ | ✓ | ✗ |
 
-Runtimes: node 26.11.1, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
+Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
 <!-- END runtimes -->
 
-Each library signed one S3 GET on each runtime and was checked against botocore's signature. The grid ran on 2026-10-13 on the first version of the signer (package version 0.1.0, source tree `99754401`), before the signer was split into modules and its input checks were added. It has not been re-run on the release (source tree `712d1eb2`): the test suite covers the release on Node 22, 24 and 26, Bun and Deno in CI, but nothing re-checks Workers or the `nodejs_compat` setting on it. “Workers” ran in a local workerd through wrangler, not on Cloudflare's network. `smithy` needs a SHA-256 class you supply; the “web hash” row passes it `@aws-crypto/sha256-js`, and its default Node one does not run in workerd. sigflint has three code paths so that each runtime gets the fastest primitive it has: Bun uses its own hasher, Node and Deno use `node:crypto`, and Workers and browsers use WebCrypto. A plain `import 'sigflint'` selects the right one; `sigflint/web` forces the WebCrypto one on any runtime.
+Each library signed one S3 GET on each runtime and was checked against botocore's signature. The grid ran on 2026-10-16 on the code that is released (package version 1.0.0, source tree `712d1eb2`, the built package as each runtime resolves it): one signature per library and runtime, so it shows that each signature matched, not how often it does. “Workers” ran in a local workerd through wrangler, not on Cloudflare's network. `smithy` needs a SHA-256 class you supply; the “web hash” row passes it `@aws-crypto/sha256-js`, and its default Node one does not run in workerd. sigflint has three code paths so that each runtime gets the fastest primitive it has: Bun uses its own hasher, Node and Deno use `node:crypto`, and Workers and browsers use WebCrypto. A plain `import 'sigflint'` selects the right one; `sigflint/web` forces the WebCrypto one on any runtime.
 
 ## Correctness
 
@@ -245,15 +245,15 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 
 | Imports | Minified | gzip |
 |---|--:|--:|
-| `getAuthHeaders` | 5,651 | 2,769 |
-| `getAuthHeaders`, `presign` | 7,259 | 3,346 |
-| `getAuthHeadersV4a` | 6,102 | 2,976 |
-| `presignV4a` | 6,126 | 3,023 |
-| `chunkSigner` | 2,766 | 1,457 |
+| `getAuthHeaders` | 5,667 | 2,774 |
+| `getAuthHeaders`, `presign` | 7,291 | 3,352 |
+| `getAuthHeadersV4a` | 6,118 | 2,980 |
+| `presignV4a` | 6,142 | 3,026 |
+| `chunkSigner` | 2,906 | 1,516 |
 | `eventSigner` | 3,117 | 1,613 |
-| all six | 12,081 | 5,078 |
+| all six | 12,253 | 5,128 |
 
-The Bun and web entries are 5,018 / 2,530 and 5,217 / 2,603 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in about 1.3 ms (`bench/results/memory-import-dist.jsonl`). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 5,034 / 2,535 and 5,233 / 2,608 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in about 1.2 ms (the import figure in the memory section, measured on `dist/`). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 
@@ -274,7 +274,7 @@ Each runs against the synchronous source, the built file that Node and Bun load,
 - Speed: one process per library, runtime and round; 3 rounds (5 for the other-services part) with the library order reversed on every other round; 8 arms, so sigflint ran twice (A and B) as a noise control. Each process validates its signature against botocore first, then times batches of about 50 ms for one second and reports the median. The reporting band is the larger of 3% and twice the larger spread of the two sigflint arms; every gap in the tables above is far outside it. The protocol was written before the runs ([`bench/protocol.md`](../bench/protocol.md), shortened by [`bench/protocol-rerun.md`](../bench/protocol-rerun.md) and [`bench/protocol-rerun-2.md`](../bench/protocol-rerun-2.md)) and the raw results are in `bench/results/`.
 - Memory: 5 rounds (3, then 2 more because comparisons were unsettled), each process under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
-- Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`, except Node: the runtime grid ran on Node 26.11.1 (the version in that file), and the speed, memory and import figures on Node 26.12.0. The correctness comparison did not record a Node version.
+- Machine: one shared Linux host, normal priority, no CPU pinning. Versions of everything are in `bench/frozen/versions.txt`, except Node: the runtime grid and the speed, memory and import figures ran on Node 26.12.0 (that file lists 26.11.1). The correctness comparison did not record a Node version.
 - Other services, presigned URLs and the check against the pre-split build: a second protocol, written before the runs ([`bench/protocol-more.md`](../bench/protocol-more.md)), run on the final code; raw results in `bench/results/speed-regression.jsonl` and `speed-more.jsonl`.
 - Not timed: `Bun.S3Client.presign` (a different request) and `@aws-lite/client` (wraps `aws4`).
 - Not tested: real Cloudflare and real AWS. The signatures are checked against botocore, the AWS CRT and the AWS SDK's signer; the only live server tried is a local `s3s-fs` 0.17.0 on loopback, once, with header-signed requests (see [the guide on a raw `+`](guide.md#how-it-reads-the-url)). SigV4a, presigned URLs, chunked uploads and event streams have not been sent to any service.
