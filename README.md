@@ -20,7 +20,7 @@ const response = await fetch(url, { headers });
 
 It signs requests with the `Authorization` header or as a presigned URL, for S3 and for any other service (`service: 'dynamodb'`, `'sqs'`, `'execute-api'`, ...), and it also does multi-region signatures (SigV4a), chunked uploads and event streams.
 
-- **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](docs/benchmarks.md#how-it-is-tested).
+- **Correct.** It returns the same signature as botocore for all 3,360 S3 requests in its test corpus, and for 1,622 requests to other services and 1,600 presigned URLs. For S3, botocore signs the request after this repository's own path and query normalization (`conformance/oracle.py`), so that step is not checked independently by the corpus; the four S3 examples published by AWS, which are in it, are. SigV4a signatures verify against the AWS CRT's, and chunk and event signatures match the AWS SDK's. See [how it is tested](docs/benchmarks.md#how-it-is-tested).
 - **Fast.** 1.3 to 3.7 µs per header or presigned-URL signature on Node and 1.5 to 5.1 µs on Bun. The other libraries take 2.4 to 507 times as long on the requests they sign correctly (one Bun presigned-URL comparison with `minio` is not clear and is left out). See [speed](docs/benchmarks.md#speed).
 - **Small, and you pay only for what you import.** Signing headers is 5.7 kB minified, 2.8 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](docs/benchmarks.md#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
@@ -58,7 +58,7 @@ For a large or binary body, skip hashing and send `unsignedPayload: true`. S3 ac
 const headers = await getAuthHeaders({ method: 'PUT', url, region, unsignedPayload: true }, credentials);
 ```
 
-Any S3-compatible service works the same way; pass its region name and URL (`https://us-sea-1.linodeobjects.com/bucket/key`, `http://127.0.0.1:9000/bucket/key`).
+For another S3-compatible service, pass its region name and URL (`https://us-sea-1.linodeobjects.com/bucket/key`, `http://127.0.0.1:9000/bucket/key`). These are examples of the form, not endpoints that were tried: signatures are checked against botocore, the AWS CRT, the AWS SDK's signer and the AWS documentation examples, and nothing has been sent to AWS S3 or any other server, so a service that canonicalizes requests differently from S3 may reject them.
 
 More in the [guide](docs/guide.md): [other services](docs/guide.md#other-services), [presigned URLs](docs/guide.md#presigned-urls), [SigV4a](docs/guide.md#sigv4a-multi-region), [chunked uploads](docs/guide.md#chunked-uploads), [event streams](docs/guide.md#event-streams), why to always `await`, and the [full API](docs/guide.md#api).
 
