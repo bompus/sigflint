@@ -122,7 +122,7 @@ const block = `<picture>
   <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="memory-gc-light.svg">
 </picture>
 ${md}
-Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} processes (${roundsOf('firstMs')} for import), one fresh process per library, runtime and round. “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
+Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} rounds, one fresh process per library, runtime and round (for import, each round is the median of 7 fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band. Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is outside its band.`;
 const readmePath = `${here}../docs/benchmarks.md`;
 const readme = readFileSync(readmePath, 'utf8');
 if (!readme.includes('<!-- BEGIN memory -->')) throw new Error('docs/benchmarks.md has no memory block');

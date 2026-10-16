@@ -1,113 +1,113 @@
 {
  "node": {
   "headers": {
-   "minifiedBytes": 5651,
-   "gzipBytes": 2769,
-   "brotliBytes": 2550
+   "minifiedBytes": 5667,
+   "gzipBytes": 2774,
+   "brotliBytes": 2557
   },
   "headers + presign": {
-   "minifiedBytes": 7259,
-   "gzipBytes": 3346,
-   "brotliBytes": 3049
+   "minifiedBytes": 7291,
+   "gzipBytes": 3352,
+   "brotliBytes": 3053
   },
   "SigV4a headers": {
-   "minifiedBytes": 6102,
-   "gzipBytes": 2976,
-   "brotliBytes": 2733
+   "minifiedBytes": 6118,
+   "gzipBytes": 2980,
+   "brotliBytes": 2737
   },
   "SigV4a presign": {
-   "minifiedBytes": 6126,
-   "gzipBytes": 3023,
-   "brotliBytes": 2740
+   "minifiedBytes": 6142,
+   "gzipBytes": 3026,
+   "brotliBytes": 2742
   },
   "chunked uploads": {
-   "minifiedBytes": 2766,
-   "gzipBytes": 1457,
-   "brotliBytes": 1318
+   "minifiedBytes": 2906,
+   "gzipBytes": 1516,
+   "brotliBytes": 1369
   },
   "event streams": {
    "minifiedBytes": 3117,
    "gzipBytes": 1613,
-   "brotliBytes": 1465
+   "brotliBytes": 1466
   },
   "everything": {
-   "minifiedBytes": 12081,
-   "gzipBytes": 5078,
-   "brotliBytes": 4624
+   "minifiedBytes": 12253,
+   "gzipBytes": 5128,
+   "brotliBytes": 4678
   }
  },
  "bun": {
   "headers": {
-   "minifiedBytes": 5018,
-   "gzipBytes": 2530,
-   "brotliBytes": 2325
+   "minifiedBytes": 5034,
+   "gzipBytes": 2535,
+   "brotliBytes": 2330
   },
   "headers + presign": {
-   "minifiedBytes": 6622,
-   "gzipBytes": 3105,
-   "brotliBytes": 2813
+   "minifiedBytes": 6654,
+   "gzipBytes": 3111,
+   "brotliBytes": 2829
   },
   "SigV4a headers": {
-   "minifiedBytes": 6086,
-   "gzipBytes": 2977,
-   "brotliBytes": 2736
+   "minifiedBytes": 6102,
+   "gzipBytes": 2982,
+   "brotliBytes": 2738
   },
   "SigV4a presign": {
-   "minifiedBytes": 6110,
-   "gzipBytes": 3026,
-   "brotliBytes": 2745
+   "minifiedBytes": 6126,
+   "gzipBytes": 3028,
+   "brotliBytes": 2743
   },
   "chunked uploads": {
-   "minifiedBytes": 2153,
-   "gzipBytes": 1211,
-   "brotliBytes": 1078
+   "minifiedBytes": 2293,
+   "gzipBytes": 1269,
+   "brotliBytes": 1129
   },
   "event streams": {
    "minifiedBytes": 2504,
    "gzipBytes": 1375,
-   "brotliBytes": 1230
+   "brotliBytes": 1232
   },
   "everything": {
-   "minifiedBytes": 11441,
-   "gzipBytes": 4857,
-   "brotliBytes": 4411
+   "minifiedBytes": 11613,
+   "gzipBytes": 4904,
+   "brotliBytes": 4458
   }
  },
  "web": {
   "headers": {
-   "minifiedBytes": 5217,
-   "gzipBytes": 2603,
-   "brotliBytes": 2392
+   "minifiedBytes": 5233,
+   "gzipBytes": 2608,
+   "brotliBytes": 2389
   },
   "headers + presign": {
-   "minifiedBytes": 6744,
-   "gzipBytes": 3172,
-   "brotliBytes": 2873
+   "minifiedBytes": 6776,
+   "gzipBytes": 3179,
+   "brotliBytes": 2883
   },
   "SigV4a headers": {
-   "minifiedBytes": 6369,
-   "gzipBytes": 3056,
-   "brotliBytes": 2812
+   "minifiedBytes": 6385,
+   "gzipBytes": 3060,
+   "brotliBytes": 2826
   },
   "SigV4a presign": {
-   "minifiedBytes": 6393,
-   "gzipBytes": 3102,
-   "brotliBytes": 2824
+   "minifiedBytes": 6409,
+   "gzipBytes": 3101,
+   "brotliBytes": 2821
   },
   "chunked uploads": {
-   "minifiedBytes": 2396,
-   "gzipBytes": 1282,
-   "brotliBytes": 1149
+   "minifiedBytes": 2532,
+   "gzipBytes": 1338,
+   "brotliBytes": 1201
   },
   "event streams": {
    "minifiedBytes": 2719,
    "gzipBytes": 1445,
-   "brotliBytes": 1309
+   "brotliBytes": 1304
   },
   "everything": {
-   "minifiedBytes": 11646,
-   "gzipBytes": 4890,
-   "brotliBytes": 4456
+   "minifiedBytes": 11814,
+   "gzipBytes": 4932,
+   "brotliBytes": 4479
   }
  }
 }

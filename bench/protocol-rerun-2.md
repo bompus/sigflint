@@ -1,0 +1,15 @@
+# Protocol: the re-run before the next release
+
+Declared before the counted runs (2026-10-16), in the worktree that holds the results.
+
+Question: do the speed, memory, import and size figures still describe the code that is released? Since the last record (`protocol-rerun.md`, `src/` at git tree `6daf9b99`) `src/` changed in two small ways: a lowercase `method` is signed in upper case (`base.js`, `presign.js`), and `end(trailers)` on a chunk signer refuses a line break in a trailer name or value and builds the trailer text before it signs the closing chunk (`chunks.js`, `web.js`). The release gate (`check-benchmarked.mjs`) is keyed on the `src/` tree, so the runs are repeated.
+
+Candidate: `dist/node.js` and `dist/bun.js`, built by `npm run build` from `src/` at git tree `712d1eb2` (main at 48051ab). Hashes: node.js `439a387d`, bun.js `21a8a862` (`results/more-artifacts.sha256`). The matrix and memory runs read a hashed copy of the two files plus `{"type":"module"}` (`SHA256SUMS` is checked first); `run-more.sh` reads `dist/` itself. If `src/` changes before the record, every part is void.
+
+Plan: the same as `protocol-rerun.md`, unchanged: the parts, arms, workloads and runtimes, 3 rounds by default, rounds 4 and 5 for a whole part only when a claim comparison is unsettled after round 3 (decided from the part's own analysis and written next to the results first), cap 5, 7 import processes per arm and round, the 20% busy gate with up to 8 retries per process, the swap and exit-status rejections, the A/A noise floor and the band `max(3%, 2 x A/A spread)` (6% floor for allocation), normal priority, all CPUs, no `nice` or `taskset`. Runtimes: whatever `node` and `bun` are installed (recorded in each row); libraries as in `bench/package-lock.json`. The allocation calibration is repeated first on the same runtimes and must stay within 10%. Rejected and errored rows stay in the raw files and are reported; a rejected part is repeated and the first attempt is reported, not hidden.
+
+Differences from the last run, declared here:
+- Host admission is the current host rule: for each part, under the shared host lock, a fresh admission check immediately before launch (Linux and native Windows busy cores averaged over one aligned 10 s window at most 4 combined, at least 8 GiB available on each OS, memory full PSI at most 10 ms and I/O full PSI at most 100 ms per second, no swap or zswap activity). The harness's own per-process gate (whole-machine Linux CPU at most 20% before each process) stays. There is no continuous observer of native Windows CPU during the timed region, so a competing load on the Windows side during a part would show only in the per-process Linux gate and in the next admission check; that is a limitation of every figure.
+- The extension rule is applied as before. The Node and Bun columns are paired afterwards (every workload and metric, both runtimes, a verdict for each pair) in `results/rerun-2-notes.md`.
+
+Claim status: a confirmation that the figures in the README and `docs/benchmarks.md` describe the code that is released; a change inside the band is "no clear change".
