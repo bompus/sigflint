@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.1 - 2026-10-16
+## 1.0.1 - 2026-10-18
 
 - A lowercase `method` (`get`) is signed as upper case (`GET`), as botocore does. `fetch` sends `get`, `put`, `post`, `delete`, `head` and `options` in upper case, so before this the signature did not match and the service answered `SignatureDoesNotMatch`. Node's `fetch` sends `patch` as written, so pass `PATCH` in upper case to both sigflint and `fetch`.
 - `end(trailers)` on a chunk signer throws a `TypeError` when a trailer name or value holds a line break. Before, the break was signed as another trailer line.
