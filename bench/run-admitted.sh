@@ -20,7 +20,7 @@ case $PART in A) OUT=$R/speed-raw.jsonl;; R) OUT=$R/speed-regression.jsonl;; B) 
 (cd "$NEW" && sha256sum -c --quiet SHA256SUMS) || { echo "artifact hashes differ; refusing to run"; exit 4; }
 exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
 echo "waiting for lock $(date -u +%FT%TZ)"; flock -w 7200 9 || { echo "lock not acquired"; exit 3; }; echo "lock held $(date -u +%FT%TZ)"
-TMP=$(mktemp "$HERE/results/.unit.XXXXXX"); trap 'rm -f "$TMP"' EXIT
+mkdir -p "$R" && TMP=$(mktemp "$R/.unit.XXXXXX") || { echo "cannot create the unit buffer in $R"; exit 2; }; trap 'rm -f "$TMP"' EXIT
 CAPPED=$HOME/.local/bin/run-capped; LOGDIR=$R/memory-logs; mkdir -p "$LOGDIR"
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
 declare -A CAND=( [sigflint-A]=sigflint [sigflint-B]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy [aws-sig]=aws-sig [wdl]=wdl [minio]=minio [none]=none )
@@ -29,11 +29,13 @@ busy() { read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ < /proc/stat; sleep 1; read -r _ 
   local t1=$((u1+n1+s1+i1+w1+q1+sq1+st1)) t2=$((u2+n2+s2+i2+w2+q2+sq2+st2)); echo $(( 100*((t2-t1)-(i2+w2-i1-w1))/(t2-t1) )); }
 swapfree() { awk '/SwapFree/{print $2}' /proc/meminfo; }
 SEQ=$(grep -c '"kind":"admit"' "$REC" 2>/dev/null || true); SEQ=${SEQ:-0}
+admit_state() { # admit_state <text>: prints true or false for the top-level "admit" of a JSON object, and invalid for anything else (not JSON, not an object, no boolean true)
+  printf '%s' "$1" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let r="invalid";try{const o=JSON.parse(s);if(o&&typeof o==="object"&&!Array.isArray(o))r=o.admit===true?"true":"false"}catch{}process.stdout.write(r)})'; }
 check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when admitted
-  local out st; out=$(bash -c "$ADMIT"); st=$?; out=$(printf '%s' "$out" | tr -d '\n'); SEQ=$((SEQ+1)); CHECK_SEQ=$SEQ
-  case "$out" in \{*) ;; *) out="{\"reasons\":[\"no verdict\"],\"admit\":false}";; esac
+  local out st state; out=$(bash -c "$ADMIT"); st=$?; out=$(printf '%s' "$out" | tr -d '\n'); SEQ=$((SEQ+1)); CHECK_SEQ=$SEQ
+  state=$(admit_state "$out"); [ "$state" = invalid ] && out="{\"reasons\":[\"no verdict\"],\"admit\":false}"
   echo "{\"kind\":\"admit\",\"seq\":$SEQ,\"part\":\"$PART\",\"label\":\"$1\",\"at\":\"$(date -u +%FT%TZ)\",\"receipt\":$out}" >> "$REC"
-  case "$out" in *'"admit": true'*) (( st == 0 )) && return 0;; esac; return 1; } # admitted only when the command exited 0 and its verdict says so
+  [ "$state" = true ] && (( st == 0 )); } # admitted only when the command exited 0 and the top-level "admit" is the boolean true; anything else refuses
 unit_done() { grep -q "\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$1\",\"admitted\":true" "$REC" 2>/dev/null; }
 
 # gate: waits for a quiet machine (whole-machine Linux CPU busy at most 20%, up to 8 retries 15 s apart); sets PRE and LOAD; returns 1 when it never quiets
