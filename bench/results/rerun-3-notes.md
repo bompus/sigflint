@@ -52,7 +52,7 @@ Every unit (one library in one round, Node and Bun back to back) was bracketed b
 | C | 40 | 0 | 42 | 0 | none | 0.49, 1.05, 2.6 | 0.0 / 36.1 |
 | D | 5 | 0 | 7 | 0 | none | 0.78, 1.23, 2.79 | 0.2 / 15.3 |
 
-Three units were refused once and measured again, each time with both checks passing the second time: `A-r3-minio` (the check after it saw I/O pressure above the limit), `R-r1-final-1` and `B-r2-final-1` (see `rerun-3-admission.jsonl` for the check numbers). Their 36 process rows are in `rerun-3-not-admitted.jsonl` and are not in any figure. 124 units counted (A 24, R 15, B 40, C 40, D 5). No process was rejected by the per-process Linux busy gate or ended in error.
+Three units were refused once and measured again, each time with both checks passing the second time: `A-r3-minio` (the check after it, number 25, saw memory pressure of 53.5 ms against the 10 ms limit), `R-r1-final-1` (check 31: 7.2 combined busy cores against 4, and memory pressure of 127 ms) and `B-r2-final-1` (check 58: 5.1 combined busy cores); `rerun-3-admission.jsonl` has the receipts. Their 36 process rows are in `rerun-3-not-admitted.jsonl` and are not in any figure. 124 units counted (A 24, R 15, B 40, C 40, D 5). No process was rejected by the per-process Linux busy gate or ended in error.
 
 Lock windows (UTC, 2026-10-17): A 07:04:04 to 07:17:28, R 07:17:28 to 07:24:12, B 07:24:12 to 07:38:55, C 07:38:55 to 07:58:46, D 07:58:46 to 08:01:37, R rounds 4 and 5 08:01:38 to 08:04:52, B rounds 4 and 5 08:04:52 to 08:14:00, C rounds 4 and 5 08:14:03 to 08:27:20, D rounds 4 and 5 08:27:22 to 08:28:59. The lock was held for the timed runs only and given up between parts.
 

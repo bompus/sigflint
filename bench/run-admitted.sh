@@ -11,7 +11,7 @@
 #   B  other services and presigned URLs, 8 arms      -> results/speed-more.jsonl
 #   C  memory: allocation, GC / CPU / growth / peak RSS, key-cache retention -> results/memory-raw.jsonl
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
-# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing.
+# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}; NEW=${2:?dir}; ROUNDS=${3:-3}; FROM=${FROM_ROUND:-1}; REPS=${REPS:-7}; CAP=${CAP:-2G}
 HERE=$(cd "$(dirname "$0")" && pwd); R=${RESULTS:-$HERE/results}; REC=$R/rerun-3-admission.jsonl; NOTADM=$R/rerun-3-not-admitted.jsonl
@@ -51,6 +51,13 @@ speedproc() { local ar="\"arm\":\"$1\",\"runtime\":\"$2\",\"round\":$3"; shift 3
   sw0=$(swapfree); out=$("$@" 2>&1); rc=$?; post=$(busy); sw1=$(swapfree)
   ERRTAG=$ar emit "\"round\":${ar##*:}" "$rc" "$post" "$((sw1-sw0))" "$out"; }
 NODE_FLAGS_ALLOC="--expose-gc --min-semi-space-size=128 --max-semi-space-size=128"; NODE_FLAGS_RUN="--expose-gc"
+# jsc_rows <log> <arm> <round> <alloc|run>: appends the Bun GC rows parsed from the log to the unit's buffer; when the parser fails or finds fewer regions than the log marks, appends an error row instead, so the unit is not admitted
+jsc_rows() { local log=$1 arm=$2 round=$3 mode=$4 parsed want got l
+  local bad="{\"round\":$round,\"kind\":\"$mode\",\"armTag\":\"$arm\",\"rt\":\"bun\",\"status\":\"error\",\"msg\":\"gc log"
+  parsed=$(node "$HERE/parse-jsc-log.mjs" "$log" "$arm" "$round") || { echo "$bad parse failed\"}" >> "$TMP"; return; }
+  want=$(grep -c '^@@BEGIN' "$log"); got=$(printf '%s\n' "$parsed" | grep -c '^{')
+  (( want == got )) || { echo "$bad has $want regions, $got parsed\"}" >> "$TMP"; return; }
+  printf '%s\n' "$parsed" | while IFS= read -r l; do [ -n "$l" ] && echo "${l%\}},\"src\":\"jsc-log\",\"rt\":\"bun\",\"armTag\":\"$arm\",\"procKind\":\"$mode\",\"unit\":\"$UNIT\"}" >> "$TMP"; done; }
 memproc() { # memproc <alloc|run> <arm> <rt> <round>
   local mode=$1 arm=$2 rt=$3 round=$4 tag="\"round\":$4,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\"" sw0 sw1 out rc post err="$LOGDIR/$1-$3-$2-r$4.err"
   gate || { echo "{$tag,\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >> "$TMP"; return; }
@@ -59,7 +66,7 @@ memproc() { # memproc <alloc|run> <arm> <rt> <round>
     out=$(ARM=$arm "$CAPPED" "$CAP" node $flags "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/node.js" 2>"$err"); rc=$?
   else out=$(ARM=$arm BUN_JSC_logGC=1 "$CAPPED" "$CAP" bun "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/bun.js" 2>"$err"); rc=$?; fi
   post=$(busy); sw1=$(swapfree); emit "$tag" "$rc" "$post" "$((sw1-sw0))" "$out"
-  if [ "$rt" = bun ] && (( rc == 0 )); then node "$HERE/parse-jsc-log.mjs" "$err" "$arm" "$round" | while IFS= read -r l; do echo "${l%\}},\"src\":\"jsc-log\",\"rt\":\"bun\",\"armTag\":\"$arm\",\"procKind\":\"$mode\",\"unit\":\"$UNIT\"}" >> "$TMP"; done; fi
+  if [ "$rt" = bun ] && (( rc == 0 )); then jsc_rows "$err" "$arm" "$round" "$mode"; fi
   [ "$rt" = node ] && rm -f "$err"; }
 shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
   local kind=$1 arm=$2 rt=$3 round=$4 rep=$5 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
@@ -101,10 +108,14 @@ units_of() { local round=$1 order=("${ARMS[@]}")
   printf '%s\n' "${order[@]}"; }
 
 if [ "$PART" = C ] && (( FROM == 1 )) && [ ! -s "$R/memory-calibration-final.jsonl" ]; then # allocation calibration on both runtimes, kept apart from the counted rows (memory-protocol.md)
-  CAL=$R/memory-calibration-final.jsonl; CERR=$LOGDIR/calib-bun.err
-  ARM=calib "$CAPPED" "$CAP" node $NODE_FLAGS_ALLOC "$HERE/memory.mjs" alloc calib x >> "$CAL" 2>/dev/null
-  ARM=calib BUN_JSC_logGC=1 "$CAPPED" "$CAP" bun "$HERE/memory.mjs" alloc calib x 2>"$CERR" >> "$CAL"
-  node "$HERE/parse-jsc-log.mjs" "$CERR" calib 1 >> "$CAL"; echo "calibration done $(date -u +%FT%TZ)"
+  CAL=$R/memory-calibration-final.jsonl; CERR=$LOGDIR/calib-bun.err; CT=$(mktemp "$R/.calibration.XXXXXX")
+  ARM=calib "$CAPPED" "$CAP" node $NODE_FLAGS_ALLOC "$HERE/memory.mjs" alloc calib x >> "$CT" 2>/dev/null
+  ARM=calib BUN_JSC_logGC=1 "$CAPPED" "$CAP" bun "$HERE/memory.mjs" alloc calib x 2>"$CERR" >> "$CT"
+  node "$HERE/parse-jsc-log.mjs" "$CERR" calib 1 >> "$CT"
+  # complete when both Node workloads and all four Bun regions (real and control, two workloads) are present
+  if (( $(grep -c '"mode":"alloc","workload":"calib-[0-9]*".*"heapBytesPerCall"' "$CT") == 2 && $(grep -c '"region":"alloc-real"' "$CT") == 2 && $(grep -c '"region":"alloc-control"' "$CT") == 2 )); then
+    mv "$CT" "$CAL"; echo "calibration done $(date -u +%FT%TZ)"
+  else rm -f "$CT"; echo "calibration incomplete; nothing written to $CAL"; exit 8; fi
 fi
 PREV_OK=0
 for round in $(seq "$FROM" "$ROUNDS"); do
@@ -119,7 +130,8 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       if [ "$PART" = D ]; then run_import_round "$round"; else run_unit "$round" "$arm"; fi
       bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
       if check "after $UNIT" && (( bad == 0 )); then
-        cat "$TMP" >> "$OUT"; PREV_OK=1
+        cat "$TMP" >> "$OUT" || { echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"; exit 7; }
+        PREV_OK=1
         echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ]}" >> "$REC"
         echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"; break
       fi
