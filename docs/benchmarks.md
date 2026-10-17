@@ -2,7 +2,7 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md).
 
-The speed, memory, import and size figures were measured on the code that ships: the built file that Node and Bun load, from the same source as `src/`. The benchmarks are re-run on the code of each release before it is published. The re-run for this release used a shorter plan ([`bench/protocol-rerun-2.md`](../bench/protocol-rerun-2.md), which keeps [`bench/protocol-rerun.md`](../bench/protocol-rerun.md)): 3 rounds per library, and 2 more only for parts where a comparison was unsettled; every range and round count is given with the figures, and [`bench/results/rerun-2-notes.md`](../bench/results/rerun-2-notes.md) records which parts were extended and why.
+The speed, memory, import and size figures were measured on the code that ships: the built file that Node and Bun load, from the same source as `src/`. The benchmarks are re-run on the code of each release before it is published. This release is 1.0.1; the figures were measured on 2026-10-16 while `package.json` still said 1.0.0, on source tree `712d1eb2` and the built files `dist/node.js` (`439a387d`) and `dist/bun.js` (`21a8a862`), which are byte for byte what 1.0.1 builds (`bench/results/more-artifacts.sha256`). The re-run for this release used a shorter plan ([`bench/protocol-rerun-2.md`](../bench/protocol-rerun-2.md), which keeps [`bench/protocol-rerun.md`](../bench/protocol-rerun.md)): 3 rounds per library, and 2 more only for parts where a comparison was unsettled; every range and round count is given with the figures, and [`bench/results/rerun-2-notes.md`](../bench/results/rerun-2-notes.md) records which parts were extended and why.
 
 ## Runtimes
 
@@ -27,7 +27,7 @@ The speed, memory, import and size figures were measured on the code that ships:
 Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
 <!-- END runtimes -->
 
-Each library signed one S3 GET on each runtime and was checked against botocore's signature. The grid ran on 2026-10-16 on the code that is released (package version 1.0.0, source tree `712d1eb2`, the built package as each runtime resolves it): one signature per library and runtime, so it shows that each signature matched, not how often it does. “Workers” ran in a local workerd through wrangler, not on Cloudflare's network. `smithy` needs a SHA-256 class you supply; the “web hash” row passes it `@aws-crypto/sha256-js`, and its default Node one does not run in workerd. sigflint has three code paths so that each runtime gets the fastest primitive it has: Bun uses its own hasher, Node and Deno use `node:crypto`, and Workers and browsers use WebCrypto. A plain `import 'sigflint'` selects the right one; `sigflint/web` forces the WebCrypto one on any runtime.
+Each library signed one S3 GET on each runtime and was checked against botocore's signature. The grid ran on 2026-10-16 on the code that is released (source tree `712d1eb2`, run while `package.json` still said 1.0.0; the built package as each runtime resolves it): one signature per library and runtime, so it shows that each signature matched, not how often it does. “Workers” ran in a local workerd through wrangler, not on Cloudflare's network. `smithy` needs a SHA-256 class you supply; the “web hash” row passes it `@aws-crypto/sha256-js`, and its default Node one does not run in workerd. sigflint has three code paths so that each runtime gets the fastest primitive it has: Bun uses its own hasher, Node and Deno use `node:crypto`, and Workers and browsers use WebCrypto. A plain `import 'sigflint'` selects the right one; `sigflint/web` forces the WebCrypto one on any runtime.
 
 ## Correctness
 
@@ -37,7 +37,7 @@ Each library signed one S3 GET on each runtime and was checked against botocore'
   <img alt="Bar chart: how many requests each library signs the same as botocore" src="correctness-light.svg">
 </picture>
 
-Requests whose signature equals botocore’s (same key, same clock).
+Requests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: sigflint's row is the source of 1.0.1 (tree `712d1eb2`), before the version was changed.
 
 | Library | Version | Ordinary requests (1,520) | Edge cases (1,522) |
 |---|---|--:|--:|

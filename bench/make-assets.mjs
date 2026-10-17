@@ -102,7 +102,7 @@ out.correctness = (t) => {
   }
   return doc(t, 780, y + 20, 'Correctness against botocore', groups.map((g) => `${g.title}: ` + order.map((id) => `${name(id)} ${g.rows.find((r) => r.id === id).pass}/${g.total}`).join(', ')).join('. '), o);
 };
-tables.push('### Correctness\n\nRequests whose signature equals botocore’s (same key, same clock).\n\n| Library | Version | Ordinary requests (' + fmtInt(groups[0].total) + ') | Edge cases (' + fmtInt(groups[1].total) + ') |\n|---|---|--:|--:|\n' +
+tables.push('### Correctness\n\nRequests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: sigflint\'s row is the source of 1.0.1 (tree `712d1eb2`), before the version was changed.\n\n| Library | Version | Ordinary requests (' + fmtInt(groups[0].total) + ') | Edge cases (' + fmtInt(groups[1].total) + ') |\n|---|---|--:|--:|\n' +
   order.map((id) => { const cell = (g) => { const r = g.rows.find((x) => x.id === id); return `${fmtInt(r.pass)} (${((100 * r.pass) / g.total).toFixed(1)}%)`; }; return `| ${id === 'sigflint' ? '**sigflint**' : name(id)} | ${groups[0].rows.find((r) => r.id === id).version} | ${cell(groups[0])} | ${cell(groups[1])} |`; }).join('\n'));
 
 // ---- speed --------------------------------------------------------------------------------------------------------

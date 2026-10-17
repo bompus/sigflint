@@ -1,6 +1,6 @@
 ### Correctness
 
-Requests whose signature equals botocore’s (same key, same clock).
+Requests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: sigflint's row is the source of 1.0.1 (tree `712d1eb2`), before the version was changed.
 
 | Library | Version | Ordinary requests (1,520) | Edge cases (1,522) |
 |---|---|--:|--:|
