@@ -27,6 +27,7 @@
      "max": 2625,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -36,6 +37,7 @@
      "max": 30038,
      "ratio": 11.443047619047618,
      "gap": 27413,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -45,6 +47,7 @@
      "max": 10009,
      "ratio": 3.812952380952381,
      "gap": 7384,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -54,6 +57,7 @@
      "max": 18279,
      "ratio": 6.9634285714285715,
      "gap": 15654,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -63,6 +67,7 @@
      "max": 71052,
      "ratio": 27.065142857142856,
      "gap": 68421,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -72,6 +77,7 @@
      "max": 59408,
      "ratio": 22.631619047619047,
      "gap": 56783,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -81,6 +87,7 @@
      "max": 8477,
      "ratio": 3.2255238095238097,
      "gap": 5842,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -90,6 +97,7 @@
      "max": 2625,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -115,6 +123,7 @@
      "max": 4048,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -124,6 +133,7 @@
      "max": 32860,
      "ratio": 8.117588932806324,
      "gap": 28812,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -133,6 +143,7 @@
      "max": 12864,
      "ratio": 3.1734189723320156,
      "gap": 8798,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -142,6 +153,7 @@
      "max": 20423,
      "ratio": 5.044713438735178,
      "gap": 16373,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -151,6 +163,7 @@
      "max": 61286,
      "ratio": 15.139822134387352,
      "gap": 57238,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -160,6 +173,7 @@
      "max": 9062,
      "ratio": 2.2386363636363638,
      "gap": 5014,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -169,6 +183,7 @@
      "max": 4048,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -194,6 +209,7 @@
      "max": 5633,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -203,6 +219,7 @@
      "max": 33710,
      "ratio": 5.985440340909091,
      "gap": 28078,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -212,6 +229,7 @@
      "max": 13797,
      "ratio": 2.4497514204545454,
      "gap": 8165,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -221,6 +239,7 @@
      "max": 64729,
      "ratio": 11.493075284090908,
      "gap": 59097,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -230,6 +249,7 @@
      "max": 5632,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -255,6 +275,7 @@
      "max": 4136,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -264,6 +285,7 @@
      "max": 30445,
      "ratio": 7.371670702179177,
      "gap": 26315,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -273,6 +295,7 @@
      "max": 9762,
      "ratio": 2.3634382566585956,
      "gap": 5631,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -282,6 +305,7 @@
      "max": 18856,
      "ratio": 4.564648910411623,
      "gap": 14722,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -291,6 +315,7 @@
      "max": 8690,
      "ratio": 2.1038740920096854,
      "gap": 4559,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -300,6 +325,7 @@
      "max": 4136,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -325,6 +351,7 @@
      "max": 1426.7392,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -334,6 +361,7 @@
      "max": 15488.512,
      "ratio": 10.856455550768347,
      "gap": 14055.5264,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -343,6 +371,7 @@
      "max": 6591.6928,
      "ratio": 4.618698836708314,
      "gap": 5160.3456,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -352,6 +381,7 @@
      "max": 13511.372800000001,
      "ratio": 9.456125233376417,
      "gap": 12058.624,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -361,6 +391,7 @@
      "max": 49029.8368,
      "ratio": 34.30030159414046,
      "gap": 47486.976,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -370,6 +401,7 @@
      "max": 30681.497600000002,
      "ratio": 21.47063047536981,
      "gap": 29191.577599999997,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -379,6 +411,7 @@
      "max": 7218.176,
      "ratio": 5.059098089903777,
      "gap": 5788.3648,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -388,6 +421,7 @@
      "max": 1428.48,
      "ratio": 1.0002154243860404,
      "gap": 0.30719999999996617,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -413,6 +447,7 @@
      "max": 2759.4752,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -422,6 +457,7 @@
      "max": 16260.710399999998,
      "ratio": 5.893521440504919,
      "gap": 13497.0368,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -431,6 +467,7 @@
      "max": 8051.609600000001,
      "ratio": 2.9173937256357902,
      "gap": 5288.448,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -440,6 +477,7 @@
      "max": 14383.3088,
      "ratio": 5.20137367737145,
      "gap": 11587.9936,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -449,6 +487,7 @@
      "max": 30312.5504,
      "ratio": 10.780620011137925,
      "gap": 26976.3584,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -458,6 +497,7 @@
      "max": 7211.4176,
      "ratio": 2.612845739743828,
      "gap": 4448.460800000001,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -467,6 +507,7 @@
      "max": 2761.8304000000003,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -492,6 +533,7 @@
      "max": 4366.9504,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -501,6 +543,7 @@
      "max": 17485.4144,
      "ratio": 3.9790811660139305,
      "gap": 13007.974400000003,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -510,6 +553,7 @@
      "max": 8676.864,
      "ratio": 1.986538777233179,
      "gap": 4307.660799999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -519,6 +563,7 @@
      "max": 33665.9456,
      "ratio": 7.383809010107643,
      "gap": 27874.5088,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -528,6 +573,7 @@
      "max": 4366.2336,
      "ratio": 0.9997889355315308,
      "gap": -0.9215999999996711,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -553,6 +599,7 @@
      "max": 2637.1072,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -562,6 +609,7 @@
      "max": 17284.1984,
      "ratio": 6.392267340198174,
      "gap": 14210.048000000003,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -571,6 +619,7 @@
      "max": 7839.744,
      "ratio": 2.9739654167476197,
      "gap": 5201.92,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -580,6 +629,7 @@
      "max": 15554.764799999999,
      "ratio": 5.891703905187487,
      "gap": 12890.931199999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -589,6 +639,7 @@
      "max": 8727.244799999999,
      "ratio": 3.3100058286380416,
      "gap": 6087.4752,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -598,6 +649,7 @@
      "max": 2640.5888,
      "ratio": 1.0018651641733047,
      "gap": 4.915199999999913,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -623,6 +675,7 @@
      "max": 30152,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -632,6 +685,7 @@
      "max": 190832,
      "ratio": 6.328469089944282,
      "gap": 160664,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -641,6 +695,7 @@
      "max": 49248,
      "ratio": 1.63120191032104,
      "gap": 19032,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -650,6 +705,7 @@
      "max": 51632,
      "ratio": 1.7102679755903423,
      "gap": 21416,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws-sig": {
@@ -659,6 +715,7 @@
      "max": 65568,
      "ratio": 2.173520827805784,
      "gap": 35384,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -668,7 +725,8 @@
      "max": 110648,
      "ratio": 3.669143008755638,
      "gap": 80480,
-     "verdict": "more than sigflint"
+     "unsettled": true,
+     "verdict": "no clear change"
     },
     "minio": {
      "n": 5,
@@ -677,6 +735,7 @@
      "max": 48840,
      "ratio": 1.617670469620589,
      "gap": 18624,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -686,6 +745,7 @@
      "max": 30168,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -711,6 +771,7 @@
      "max": 38232,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -720,6 +781,7 @@
      "max": -912,
      "ratio": -0.036786060019361085,
      "gap": -25704,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -729,6 +791,7 @@
      "max": -14024,
      "ratio": -0.7679896740884156,
      "gap": -43832,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -738,6 +801,7 @@
      "max": 18368,
      "ratio": 0.7057115198451114,
      "gap": -7296,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -747,6 +811,7 @@
      "max": 1448,
      "ratio": 0.05227492739593417,
      "gap": -23496,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -756,6 +821,7 @@
      "max": 1000,
      "ratio": 0.03807679896740884,
      "gap": -23848,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -765,6 +831,7 @@
      "max": 38136,
      "ratio": 0.9967731526298806,
      "gap": -80,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -790,6 +857,7 @@
      "max": -568,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -799,6 +867,7 @@
      "max": -1040,
      "ratio": 1.5662650602409638,
      "gap": -376,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -808,6 +877,7 @@
      "max": -45376,
      "ratio": 70.21686746987952,
      "gap": -45960,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -817,6 +887,7 @@
      "max": 16848,
      "ratio": -25.325301204819276,
      "gap": 17480,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -826,6 +897,7 @@
      "max": 15872,
      "ratio": 1.2650602409638554,
      "gap": -176,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -851,6 +923,7 @@
      "max": 23184,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -860,6 +933,7 @@
      "max": 63544,
      "ratio": 3.5347284060552093,
      "gap": 45544,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -869,6 +943,7 @@
      "max": 13232,
      "ratio": 0.5084594835262689,
      "gap": -8832,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -878,6 +953,7 @@
      "max": -9504,
      "ratio": -0.5289403383793411,
      "gap": -27472,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -887,6 +963,7 @@
      "max": -9624,
      "ratio": -0.53739982190561,
      "gap": -27624,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -896,6 +973,7 @@
      "max": 18520,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -921,6 +999,7 @@
      "max": 849,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -930,6 +1009,7 @@
      "max": 4102,
      "ratio": 4.432273262661956,
      "gap": 2914,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -939,6 +1019,7 @@
      "max": -3293,
      "ratio": -3.878680800942285,
      "gap": -4142,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -948,6 +1029,7 @@
      "max": 12331,
      "ratio": 10.905771495877502,
      "gap": 8410,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws-sig": {
@@ -957,6 +1039,7 @@
      "max": 360,
      "ratio": -0.6548881036513545,
      "gap": -1405,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -966,6 +1049,7 @@
      "max": 3357,
      "ratio": 0.833922261484099,
      "gap": -141,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -975,6 +1059,7 @@
      "max": 21688,
      "ratio": 24.297997644287396,
      "gap": 19780,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -984,6 +1069,7 @@
      "max": 888,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1009,6 +1095,7 @@
      "max": 2309,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1018,6 +1105,7 @@
      "max": 5730,
      "ratio": 1.8642951251646904,
      "gap": 1968,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -1027,6 +1115,7 @@
      "max": 26299,
      "ratio": 11.521739130434783,
      "gap": 23958,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -1036,6 +1125,7 @@
      "max": 15863,
      "ratio": 2.739130434782609,
      "gap": 3960,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -1045,6 +1135,7 @@
      "max": -2031,
      "ratio": -2.170838823012736,
      "gap": -7220,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -1054,6 +1145,7 @@
      "max": 5085,
      "ratio": 2.233201581027668,
      "gap": 2808,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -1063,6 +1155,7 @@
      "max": 2309,
      "ratio": 0.852437417654809,
      "gap": -336,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1088,6 +1181,7 @@
      "max": 2740,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1097,6 +1191,7 @@
      "max": -32,
      "ratio": -0.48389485375786745,
      "gap": -4008,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -1106,6 +1201,7 @@
      "max": 9134,
      "ratio": 3.3698630136986303,
      "gap": 6401,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -1115,6 +1211,7 @@
      "max": 11993,
      "ratio": 0.2165864494631618,
      "gap": -2116,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -1124,6 +1221,7 @@
      "max": 2701,
      "ratio": 0.9881525360977416,
      "gap": -32,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1149,6 +1247,7 @@
      "max": 5104,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1158,6 +1257,7 @@
      "max": -4542,
      "ratio": -1.0654388714733543,
      "gap": -10542,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -1167,6 +1267,7 @@
      "max": 6749,
      "ratio": 1.322296238244514,
      "gap": 1645,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -1176,6 +1277,7 @@
      "max": 3043,
      "ratio": -0.0037225705329153604,
      "gap": -5123,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -1185,6 +1287,7 @@
      "max": -1176,
      "ratio": -0.2304075235109718,
      "gap": -6280,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -1194,6 +1297,7 @@
      "max": 5104,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1219,6 +1323,7 @@
      "max": 2.7159,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1228,6 +1333,7 @@
      "max": 254.8893,
      "ratio": 90.99357825567503,
      "gap": 241.03879999999998,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1237,6 +1343,7 @@
      "max": 11.0319,
      "ratio": 3.8382989844683393,
      "gap": 7.6021,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1246,6 +1353,7 @@
      "max": 17.6815,
      "ratio": 6.274380227001195,
      "gap": 14.1269,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -1255,6 +1363,7 @@
      "max": 77.2674,
      "ratio": 28.19003882915173,
      "gap": 72.8258,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1264,6 +1373,7 @@
      "max": 648.3218,
      "ratio": 239.5007467144564,
      "gap": 638.8004,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1273,6 +1383,7 @@
      "max": 17.181,
      "ratio": 6.191830943847073,
      "gap": 13.9058,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1282,6 +1393,7 @@
      "max": 2.8493,
      "ratio": 0.9917861409796894,
      "gap": -0.021999999999999797,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1307,6 +1419,7 @@
      "max": 2.9098,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1316,6 +1429,7 @@
      "max": 236.9313,
      "ratio": 83.47007417199089,
      "gap": 224.599,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1325,6 +1439,7 @@
      "max": 10.9217,
      "ratio": 3.9578835279430127,
      "gap": 8.0555,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1334,6 +1449,7 @@
      "max": 14.7032,
      "ratio": 5.32532863332599,
      "gap": 11.7796,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1343,6 +1459,7 @@
      "max": 583.081,
      "ratio": 211.40761548064918,
      "gap": 573.0241,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1352,6 +1469,7 @@
      "max": 15.1019,
      "ratio": 5.209701108907983,
      "gap": 11.4647,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1361,6 +1479,7 @@
      "max": 2.8409,
      "ratio": 0.9622897848277888,
      "gap": -0.10270000000000001,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1386,6 +1505,7 @@
      "max": 3.5004,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1395,6 +1515,7 @@
      "max": 243.6242,
      "ratio": 66.2294143420476,
      "gap": 223.3129,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1404,6 +1525,7 @@
      "max": 12.5577,
      "ratio": 3.5038410982912223,
      "gap": 8.5719,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1413,6 +1535,7 @@
      "max": 676.6889,
      "ratio": 188.58437271797868,
      "gap": 642.1951,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1422,6 +1545,7 @@
      "max": 3.5967,
      "ratio": 0.996115086899372,
      "gap": -0.01330000000000009,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1447,6 +1571,7 @@
      "max": 3.3509,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1456,6 +1581,7 @@
      "max": 243.8792,
      "ratio": 71.05418527287439,
      "gap": 233.7498,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1465,6 +1591,7 @@
      "max": 10.1304,
      "ratio": 2.926334402253724,
      "gap": 6.4276,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1474,6 +1601,7 @@
      "max": 16.3722,
      "ratio": 4.757454970479816,
      "gap": 12.5375,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1483,6 +1611,7 @@
      "max": 16.6715,
      "ratio": 4.871070219078731,
      "gap": 12.916599999999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1492,6 +1621,7 @@
      "max": 3.3748,
      "ratio": 0.9641861719663141,
      "gap": -0.11949999999999994,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1517,6 +1647,7 @@
      "max": 3.7214,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1526,6 +1657,7 @@
      "max": 213.8574,
      "ratio": 62.15318552274122,
      "gap": 209.3457,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1535,6 +1667,7 @@
      "max": 17.3562,
      "ratio": 4.778196477083516,
      "gap": 12.9339,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1544,6 +1677,7 @@
      "max": 25.3903,
      "ratio": 6.872024070341483,
      "gap": 20.101699999999997,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -1553,6 +1687,7 @@
      "max": 77.5199,
      "ratio": 20.89031051908977,
      "gap": 68.0905,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1562,6 +1697,7 @@
      "max": 559.1289,
      "ratio": 159.69716355563344,
      "gap": 543.2679999999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1571,6 +1707,7 @@
      "max": 16.1729,
      "ratio": 4.437034440452195,
      "gap": 11.766,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1580,6 +1717,7 @@
      "max": 3.6864,
      "ratio": 1.02003914351649,
      "gap": 0.0686,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1605,6 +1743,7 @@
      "max": 3.668,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1614,6 +1753,7 @@
      "max": 214.0617,
      "ratio": 59.508213321332136,
      "gap": 208.0084,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1623,6 +1763,7 @@
      "max": 15.6646,
      "ratio": 3.819419441944194,
      "gap": 10.023599999999998,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1632,6 +1773,7 @@
      "max": 17.1142,
      "ratio": 4.516173492349235,
      "gap": 12.500700000000002,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1641,6 +1783,7 @@
      "max": 587.1142,
      "ratio": 156.27084270927094,
      "gap": 552.0189,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1650,6 +1793,7 @@
      "max": 12.0533,
      "ratio": 3.22007200720072,
      "gap": 7.8928,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1659,6 +1803,7 @@
      "max": 4.1402,
      "ratio": 0.9780040504050405,
      "gap": -0.07820000000000027,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1684,6 +1829,7 @@
      "max": 4.648,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1693,6 +1839,7 @@
      "max": 216.7595,
      "ratio": 47.728678754764374,
      "gap": 212.0968,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1702,6 +1849,7 @@
      "max": 18.6184,
      "ratio": 3.283747163409637,
      "gap": 10.3657,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1711,6 +1859,7 @@
      "max": 562.5445,
      "ratio": 122.85525127233471,
      "gap": 553.0888,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1720,6 +1869,7 @@
      "max": 5.5556,
      "ratio": 1.1095860230452312,
      "gap": 0.49739999999999984,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1745,6 +1895,7 @@
      "max": 4.2867,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1754,6 +1905,7 @@
      "max": 211.3185,
      "ratio": 48.85393573733688,
      "gap": 204.633,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1763,6 +1915,7 @@
      "max": 12.7838,
      "ratio": 2.409452317478135,
      "gap": 6.0271,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1772,6 +1925,7 @@
      "max": 18.5048,
      "ratio": 4.151302558346194,
      "gap": 13.4756,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1781,6 +1935,7 @@
      "max": 13.9881,
      "ratio": 3.101936298582854,
      "gap": 8.988299999999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1790,6 +1945,7 @@
      "max": 4.4764,
      "ratio": 0.9769655301435853,
      "gap": -0.09850000000000048,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1815,6 +1971,7 @@
      "max": 6,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1824,6 +1981,7 @@
      "max": 90,
      "ratio": 15,
      "gap": 84,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1833,6 +1991,7 @@
      "max": 24,
      "ratio": 4,
      "gap": 18,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1842,6 +2001,7 @@
      "max": 44,
      "ratio": 7.333333333333333,
      "gap": 38,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -1851,6 +2011,7 @@
      "max": 46,
      "ratio": 7.666666666666667,
      "gap": 40,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1860,6 +2021,7 @@
      "max": 176,
      "ratio": 29.166666666666668,
      "gap": 169,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1869,6 +2031,7 @@
      "max": 19,
      "ratio": 3.1666666666666665,
      "gap": 13,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1878,6 +2041,7 @@
      "max": 6,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1903,6 +2067,7 @@
      "max": 10,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1912,6 +2077,7 @@
      "max": 51,
      "ratio": 5.1,
      "gap": 41,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -1921,6 +2087,7 @@
      "max": 31,
      "ratio": 3.1,
      "gap": 21,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -1930,6 +2097,7 @@
      "max": 49,
      "ratio": 4.9,
      "gap": 39,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -1939,6 +2107,7 @@
      "max": 91,
      "ratio": 9.1,
      "gap": 81,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -1948,6 +2117,7 @@
      "max": 22,
      "ratio": 2.2,
      "gap": 12,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -1957,6 +2127,7 @@
      "max": 10,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -1982,6 +2153,7 @@
      "max": 13,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -1991,6 +2163,7 @@
      "max": 48,
      "ratio": 3.6923076923076925,
      "gap": 35,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2000,6 +2173,7 @@
      "max": 33,
      "ratio": 2.5384615384615383,
      "gap": 20,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2009,6 +2183,7 @@
      "max": 94,
      "ratio": 7.230769230769231,
      "gap": 81,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2018,6 +2193,7 @@
      "max": 14,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2043,6 +2219,7 @@
      "max": 10,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2052,6 +2229,7 @@
      "max": 44,
      "ratio": 4.4,
      "gap": 34,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2061,6 +2239,7 @@
      "max": 23,
      "ratio": 2.3,
      "gap": 13,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2070,6 +2249,7 @@
      "max": 45,
      "ratio": 4.5,
      "gap": 35,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2079,6 +2259,7 @@
      "max": 20,
      "ratio": 2,
      "gap": 10,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2088,6 +2269,7 @@
      "max": 10,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2113,6 +2295,7 @@
      "max": 3,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2122,6 +2305,7 @@
      "max": 28,
      "ratio": 9.333333333333334,
      "gap": 25,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2131,6 +2315,7 @@
      "max": 14,
      "ratio": 4.666666666666667,
      "gap": 11,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2140,6 +2325,7 @@
      "max": 24,
      "ratio": 8,
      "gap": 21,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -2149,6 +2335,7 @@
      "max": 80,
      "ratio": 26.666666666666668,
      "gap": 77,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2158,6 +2345,7 @@
      "max": 50,
      "ratio": 16.333333333333332,
      "gap": 46,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2167,6 +2355,7 @@
      "max": 16,
      "ratio": 5.333333333333333,
      "gap": 13,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2176,6 +2365,7 @@
      "max": 3,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2201,6 +2391,7 @@
      "max": 5,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2210,6 +2401,7 @@
      "max": 27,
      "ratio": 5.4,
      "gap": 22,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2219,6 +2411,7 @@
      "max": 14,
      "ratio": 2.8,
      "gap": 9,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2228,6 +2421,7 @@
      "max": 23,
      "ratio": 4.6,
      "gap": 18,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2237,6 +2431,7 @@
      "max": 46,
      "ratio": 9,
      "gap": 40,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2246,6 +2441,7 @@
      "max": 15,
      "ratio": 3,
      "gap": 10,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2255,6 +2451,7 @@
      "max": 5,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2280,6 +2477,7 @@
      "max": 7,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2289,6 +2487,7 @@
      "max": 31,
      "ratio": 4.428571428571429,
      "gap": 24,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2298,6 +2497,7 @@
      "max": 17,
      "ratio": 2.4285714285714284,
      "gap": 10,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2307,6 +2507,7 @@
      "max": 54,
      "ratio": 7.571428571428571,
      "gap": 46,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2316,6 +2517,7 @@
      "max": 7,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2341,6 +2543,7 @@
      "max": 5,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2350,6 +2553,7 @@
      "max": 31,
      "ratio": 6,
      "gap": 25,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2359,6 +2563,7 @@
      "max": 15,
      "ratio": 3,
      "gap": 10,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2368,6 +2573,7 @@
      "max": 26,
      "ratio": 5.2,
      "gap": 21,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2377,6 +2583,7 @@
      "max": 18,
      "ratio": 3.6,
      "gap": 13,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2386,6 +2593,7 @@
      "max": 5,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2411,6 +2619,7 @@
      "max": 1.2578170001506805,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2420,6 +2629,7 @@
      "max": 33.30196198448539,
      "ratio": 28.864575857294376,
      "gap": 31.628662027418613,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2429,6 +2639,7 @@
      "max": 7.041189994663,
      "ratio": 5.550751709093458,
      "gap": 5.165489993989468,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2438,6 +2649,7 @@
      "max": 21.158999998122454,
      "ratio": 17.825248369069424,
      "gap": 19.0980870090425,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -2447,6 +2659,7 @@
      "max": 37.77998099476099,
      "ratio": 31.705366631057636,
      "gap": 34.853201016783714,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2456,6 +2669,7 @@
      "max": 93.15038200840354,
      "ratio": 72.92869618410069,
      "gap": 81.6451839543879,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2465,6 +2679,7 @@
      "max": 22.624383997172117,
      "ratio": 19.536316696118817,
      "gap": 21.040294997394085,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2474,6 +2689,7 @@
      "max": 1.3034140020608902,
      "ratio": 1.066128967788954,
      "gap": 0.07506199926137924,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2499,6 +2715,7 @@
      "max": 1.6304540038108826,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2508,6 +2725,7 @@
      "max": 23.93918102234602,
      "ratio": 14.55049003080577,
      "gap": 19.924626987427473,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2517,6 +2735,7 @@
      "max": 6.896386992186308,
      "ratio": 4.217073727958556,
      "gap": 4.730381991714239,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2526,6 +2745,7 @@
      "max": 16.151891000568867,
      "ratio": 10.89363431871906,
      "gap": 14.547590006142855,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2535,6 +2755,7 @@
      "max": 73.76619201153517,
      "ratio": 45.46610412447833,
      "gap": 65.3829150274396,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2544,6 +2765,7 @@
      "max": 19.240782011300325,
      "ratio": 11.359689442320978,
      "gap": 15.232876993715763,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2553,6 +2775,7 @@
      "max": 1.6463560052216053,
      "ratio": 1.006596856678778,
      "gap": 0.00970001146197319,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2578,6 +2801,7 @@
      "max": 1.8174580000340939,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2587,6 +2811,7 @@
      "max": 29.206456001847982,
      "ratio": 17.00202309692494,
      "gap": 24.86760799586773,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2596,6 +2821,7 @@
      "max": 7.585533998906612,
      "ratio": 4.687658336865261,
      "gap": 5.730728007853031,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2605,6 +2831,7 @@
      "max": 82.51914598420262,
      "ratio": 47.19313209093018,
      "gap": 71.78546699881554,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2614,6 +2841,7 @@
      "max": 1.6188619956374168,
      "ratio": 0.9753646811348616,
      "gap": -0.038284000009298325,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2639,6 +2867,7 @@
      "max": 1.528499998152256,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2648,6 +2877,7 @@
      "max": 27.927846014499664,
      "ratio": 19.23675775101371,
      "gap": 25.96644400432706,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2657,6 +2887,7 @@
      "max": 5.917247999459505,
      "ratio": 3.927845025922644,
      "gap": 4.16881799697876,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2666,6 +2897,7 @@
      "max": 21.604158006608486,
      "ratio": 14.362938005555502,
      "gap": 19.026846010237932,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2675,6 +2907,7 @@
      "max": 23.322247996926308,
      "ratio": 14.710370172983495,
      "gap": 19.521537996828556,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2684,6 +2917,7 @@
      "max": 1.5650189965963364,
      "ratio": 0.9834287567690675,
      "gap": -0.023594997823238373,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2709,6 +2943,7 @@
      "max": 6.434851,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2718,6 +2953,7 @@
      "max": 98.28086499999999,
      "ratio": 11.093216267666302,
      "gap": 52.12420499999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2727,6 +2963,7 @@
      "max": 28.120755,
      "ratio": 5.136641092922713,
      "gap": 21.362777,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2736,6 +2973,7 @@
      "max": 52.776604,
      "ratio": 9.329964810203009,
      "gap": 43.018279,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -2745,6 +2983,7 @@
      "max": 164.8024719999999,
      "ratio": 30.480647741670154,
      "gap": 152.2463490000001,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2754,6 +2993,7 @@
      "max": 126.158979,
      "ratio": 21.1288061203486,
      "gap": 103.95081099999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2763,6 +3003,7 @@
      "max": 33.778821,
      "ratio": 6.065266200657942,
      "gap": 26.158458,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2772,6 +3013,7 @@
      "max": 6.740932,
      "ratio": 1.1686527127396826,
      "gap": 0.8709700000000007,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2797,6 +3039,7 @@
      "max": 9.581762999999999,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2806,6 +3049,7 @@
      "max": 58.26597100000001,
      "ratio": 5.739965799159464,
      "gap": 44.668229,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2815,7 +3059,8 @@
      "max": 26.299090999999997,
      "ratio": 2.6971204123201558,
      "gap": 15.993230000000002,
-     "verdict": "more than sigflint"
+     "unsettled": true,
+     "verdict": "no clear change"
     },
     "smithy": {
      "n": 5,
@@ -2824,6 +3069,7 @@
      "max": 52.68687299999999,
      "ratio": 4.681949691974901,
      "gap": 34.69775500000001,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2833,6 +3079,7 @@
      "max": 140.37657300000004,
      "ratio": 11.20809264257469,
      "gap": 96.198462,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2842,6 +3089,7 @@
      "max": 30.634584000000004,
      "ratio": 2.942721179318838,
      "gap": 18.307709000000003,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2851,6 +3099,7 @@
      "max": 12.484432,
      "ratio": 0.943589517755415,
      "gap": -0.5315979999999971,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2876,6 +3125,7 @@
      "max": 12.527685,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2885,6 +3135,7 @@
      "max": 65.133511,
      "ratio": 5.192370696668419,
      "gap": 52.02223500000002,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2894,6 +3145,7 @@
      "max": 35.500051,
      "ratio": 2.5758775616021135,
      "gap": 19.554729000000005,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -2903,6 +3155,7 @@
      "max": 161.58658699999998,
      "ratio": 10.062830718264406,
      "gap": 112.45873600000002,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2912,6 +3165,7 @@
      "max": 15.054011,
      "ratio": 1.0417868402447394,
      "gap": 0.5185239999999993,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -2937,6 +3191,7 @@
      "max": 9.462185999999999,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -2946,6 +3201,7 @@
      "max": 64.748306,
      "ratio": 7.60945160717254,
      "gap": 54.355978,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -2955,6 +3211,7 @@
      "max": 31.630204000000003,
      "ratio": 3.3940098567882666,
      "gap": 19.688282,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -2964,6 +3221,7 @@
      "max": 56.494623,
      "ratio": 6.130141171357849,
      "gap": 42.190163000000005,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -2973,6 +3231,7 @@
      "max": 36.06218500000001,
      "ratio": 4.215214366479868,
      "gap": 26.441849000000005,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -2982,6 +3241,7 @@
      "max": 9.870471000000002,
      "ratio": 1.0830652858100163,
      "gap": 0.6831270000000007,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3007,6 +3267,7 @@
      "max": 123244544,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3016,6 +3277,7 @@
      "max": 134979584,
      "ratio": 1.0986883823382172,
      "gap": 12111872,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -3025,6 +3287,7 @@
      "max": 123564032,
      "ratio": 1.0017354737509596,
      "gap": 212992,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -3034,6 +3297,7 @@
      "max": 121741312,
      "ratio": 0.9899209024463504,
      "gap": -1236992,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws-sig": {
@@ -3043,6 +3307,7 @@
      "max": 178503680,
      "ratio": 1.4524914060674832,
      "gap": 55533568,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -3052,6 +3317,7 @@
      "max": 132268032,
      "ratio": 1.072689650569035,
      "gap": 8921088,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -3061,6 +3327,7 @@
      "max": 124272640,
      "ratio": 1.0077428828888964,
      "gap": 950272,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "sigflint-B": {
@@ -3070,6 +3337,7 @@
      "max": 122900480,
      "ratio": 1.0004338684377398,
      "gap": 53248,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3095,6 +3363,7 @@
      "max": 68468736,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3104,7 +3373,8 @@
      "max": 73515008,
      "ratio": 1.066879364314953,
      "gap": 4550656,
-     "verdict": "more than sigflint"
+     "unsettled": true,
+     "verdict": "no clear change"
     },
     "aws4": {
      "n": 5,
@@ -3113,6 +3383,7 @@
      "max": 76193792,
      "ratio": 1.1116060679027209,
      "gap": 7593984,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "smithy": {
@@ -3122,6 +3393,7 @@
      "max": 81723392,
      "ratio": 1.1174452203226584,
      "gap": 7991296,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -3131,6 +3403,7 @@
      "max": 85696512,
      "ratio": 1.2318203708162774,
      "gap": 15773696,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -3140,6 +3413,7 @@
      "max": 79548416,
      "ratio": 1.1583794847098483,
      "gap": 10776576,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -3149,6 +3423,7 @@
      "max": 75116544,
      "ratio": 1.0874066939561762,
      "gap": 5947392,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -3158,6 +3433,7 @@
      "max": 68714496,
      "ratio": 1.0031302672766675,
      "gap": 212992,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3183,6 +3459,7 @@
      "max": 341.096,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "sigflint-B": {
@@ -3192,6 +3469,7 @@
      "max": 341.096,
      "ratio": 1,
      "gap": 0,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3217,6 +3495,7 @@
      "max": 360.069,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "sigflint-B": {
@@ -3226,6 +3505,7 @@
      "max": 360.069,
      "ratio": 0.9990639443046863,
      "gap": -0.3359999999999559,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3251,6 +3531,7 @@
      "max": 1.197292000000001,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3260,6 +3541,7 @@
      "max": 1.5213870000000007,
      "ratio": 1.2020228163961872,
      "gap": 0.23260199999999642,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -3269,6 +3551,7 @@
      "max": 1.737767999999999,
      "ratio": 1.3708120361483958,
      "gap": 0.4269399999999983,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -3278,6 +3561,7 @@
      "max": 11.896396000000003,
      "ratio": 9.4630955431162,
      "gap": 9.744112000000001,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -3287,7 +3571,8 @@
      "max": 2.9201669999999993,
      "ratio": 2.2288153626347813,
      "gap": 1.4148149999999973,
-     "verdict": "more than sigflint"
+     "unsettled": true,
+     "verdict": "no clear change"
     },
     "wdl": {
      "n": 5,
@@ -3296,6 +3581,7 @@
      "max": 1.8751889999999989,
      "ratio": 1.5506012428725882,
      "gap": 0.6339429999999986,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -3305,6 +3591,7 @@
      "max": 16.717635,
      "ratio": 13.517211310053696,
      "gap": 14.411878999999999,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -3314,6 +3601,7 @@
      "max": 1.322330000000001,
      "ratio": 0.9280879651544044,
      "gap": -0.08279699999999934,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3339,6 +3627,7 @@
      "max": 1.9293420000000001,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3348,6 +3637,7 @@
      "max": 1.1995570000000004,
      "ratio": 0.5829429272763929,
      "gap": -0.8026230000000005,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -3357,6 +3647,7 @@
      "max": 2.2377059999999993,
      "ratio": 1.1380229172165948,
      "gap": 0.26562399999999897,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -3366,6 +3657,7 @@
      "max": 10.084957999999999,
      "ratio": 4.9123877885696565,
      "gap": 7.529358999999998,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -3375,6 +3667,7 @@
      "max": 2.497960000000001,
      "ratio": 1.258829343016235,
      "gap": 0.4981150000000003,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "wdl": {
@@ -3384,6 +3677,7 @@
      "max": 1.6208559999999999,
      "ratio": 0.8164502632382981,
      "gap": -0.35324000000000133,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "minio": {
@@ -3393,6 +3687,7 @@
      "max": 19.984403999999998,
      "ratio": 9.866876557553887,
      "gap": 17.064233,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -3402,6 +3697,7 @@
      "max": 1.927327,
      "ratio": 0.9729289599541069,
      "gap": -0.052098000000000866,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3427,6 +3723,7 @@
      "max": 2.448867,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3436,6 +3733,7 @@
      "max": 18.776361999999995,
      "ratio": 7.115272360307586,
      "gap": 14.834391,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws4": {
@@ -3445,6 +3743,7 @@
      "max": 3.4386249999999983,
      "ratio": 1.3429219463812656,
      "gap": 0.8318579999999969,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -3454,6 +3753,7 @@
      "max": 13.526099000000002,
      "ratio": 5.141986912326431,
      "gap": 10.047606999999996,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -3463,6 +3763,7 @@
      "max": 8.888016999999998,
      "ratio": 3.2859121590703855,
      "gap": 5.5451519999999945,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "wdl": {
@@ -3472,6 +3773,7 @@
      "max": 18.592792999999997,
      "ratio": 7.351102360711574,
      "gap": 15.406465999999995,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -3481,6 +3783,7 @@
      "max": 17.786333,
      "ratio": 6.855714046617305,
      "gap": 14.204756,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -3490,6 +3793,7 @@
      "max": 2.6589069999999992,
      "ratio": 0.9443951135174704,
      "gap": -0.13488600000000162,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }
@@ -3515,6 +3819,7 @@
      "max": 2.5045129999999993,
      "ratio": 1,
      "gap": 0,
+     "unsettled": false,
      "verdict": "baseline"
     },
     "aws4fetch": {
@@ -3524,6 +3829,7 @@
      "max": 3.0609290000000016,
      "ratio": 1.1891727945525798,
      "gap": 0.463731000000001,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "aws4": {
@@ -3533,6 +3839,7 @@
      "max": 3.1176260000000013,
      "ratio": 1.2611425811446868,
      "gap": 0.6401550000000018,
+     "unsettled": true,
      "verdict": "no clear change"
     },
     "smithy": {
@@ -3542,6 +3849,7 @@
      "max": 11.465998999999998,
      "ratio": 4.398498467382622,
      "gap": 8.33095,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "aws-sig": {
@@ -3551,7 +3859,8 @@
      "max": 4.483128000000001,
      "ratio": 1.7937187571643851,
      "gap": 1.945692000000001,
-     "verdict": "more than sigflint"
+     "unsettled": true,
+     "verdict": "no clear change"
     },
     "wdl": {
      "n": 5,
@@ -3560,6 +3869,7 @@
      "max": 4.788126999999999,
      "ratio": 1.8484858621452074,
      "gap": 2.0799459999999996,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "minio": {
@@ -3569,6 +3879,7 @@
      "max": 20.444848,
      "ratio": 7.9408390111293246,
      "gap": 17.014509,
+     "unsettled": false,
      "verdict": "more than sigflint"
     },
     "sigflint-B": {
@@ -3578,6 +3889,7 @@
      "max": 2.4449199999999998,
      "ratio": 0.9811255946694125,
      "gap": -0.04626799999999953,
+     "unsettled": true,
      "verdict": "no clear change"
     }
    }

@@ -30,10 +30,10 @@ busy() { read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ < /proc/stat; sleep 1; read -r _ 
 swapfree() { awk '/SwapFree/{print $2}' /proc/meminfo; }
 SEQ=$(grep -c '"kind":"admit"' "$REC" 2>/dev/null || true); SEQ=${SEQ:-0}
 check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when admitted
-  local out; out=$(bash -c "$ADMIT" | tr -d '\n'); SEQ=$((SEQ+1)); CHECK_SEQ=$SEQ
+  local out st; out=$(bash -c "$ADMIT"); st=$?; out=$(printf '%s' "$out" | tr -d '\n'); SEQ=$((SEQ+1)); CHECK_SEQ=$SEQ
   case "$out" in \{*) ;; *) out="{\"reasons\":[\"no verdict\"],\"admit\":false}";; esac
   echo "{\"kind\":\"admit\",\"seq\":$SEQ,\"part\":\"$PART\",\"label\":\"$1\",\"at\":\"$(date -u +%FT%TZ)\",\"receipt\":$out}" >> "$REC"
-  case "$out" in *'"admit": true'*) return 0;; esac; return 1; }
+  case "$out" in *'"admit": true'*) (( st == 0 )) && return 0;; esac; return 1; } # admitted only when the command exited 0 and its verdict says so
 unit_done() { grep -q "\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$1\",\"admitted\":true" "$REC" 2>/dev/null; }
 
 # gate: waits for a quiet machine (whole-machine Linux CPU busy at most 20%, up to 8 retries 15 s apart); sets PRE and LOAD; returns 1 when it never quiets
@@ -79,7 +79,10 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
     B) local cand=$arm; case $arm in final-*) cand=sigflint;; esac
        speedproc "$arm" "$rt" "$round" env ARM=$arm SRC=$NEW "$rt" "$HERE/speed-more.mjs" "$cand" 1;;
     C) memproc alloc "$arm" "$rt" "$round"; memproc run "$arm" "$rt" "$round"
-       case $arm in sigflint-*) PRE=-1; LOAD=-1; gate && shortproc cache "$arm" "$rt" "$round" 1;; esac;;
+       case $arm in sigflint-*) PRE=-1; LOAD=-1
+         if gate; then shortproc cache "$arm" "$rt" "$round" 1
+         else echo "{\"round\":$round,\"rep\":1,\"kind\":\"cache\",\"armTag\":\"$arm\",\"rt\":\"$rt\",\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >> "$TMP"; fi;;
+       esac;;
   esac; done; }
 run_import_round() { # part D: one unit is a whole round; REPS fresh processes per arm and runtime, the control `none` included, interleaved
   local round=$1 rt rep arm; : > "$TMP"

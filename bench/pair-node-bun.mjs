@@ -10,7 +10,7 @@ const dir = process.argv[2] ?? `${here}results`;
 const outFile = process.argv[3] ?? 'rerun-3-node-bun.md';
 const prevFile = process.argv[4] ?? `${here}results/rerun-2-node-bun.md`;
 const jl = (f) => readFileSync(`${dir}/${f}`, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
-const med = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
+const med = (a) => { const s = [...a].sort((x, y) => x - y), h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; };
 const fmt = (x) => Math.round(x).toLocaleString('en-US');
 const stat = (v) => ({ med: med(v), min: Math.min(...v), max: Math.max(...v) });
 const cell = (s) => `${fmt(s.med)} (${fmt(s.min)}-${fmt(s.max)})`;
@@ -69,7 +69,7 @@ for (const r of rows) {
     disp = `no disposition yet: ${was} in the earlier run; nothing filed with oven-sh/bun`;
     changes.push(`${key}: ${was}, now ${r.verdict}`);
   } else disp = old.disposition;
-  if (r.klass.startsWith('node') && DIFFERENT_INSTRUMENT.has(r.metric) && !/no disposition yet/.test(disp) && !/different instruments/.test(disp)) disp = 'suspected only: the two runtimes use different instruments';
+  if (DIFFERENT_INSTRUMENT.has(r.metric)) disp = r.klass.startsWith('node') ? 'suspected only: the two runtimes use different instruments' : 'no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result';
   out.push(`| ${r.part} | ${r.metric} | ${r.workload} | ${r.lib} | ${cell(r.node)} | ${cell(r.bun)} | ${r.verdict} | ${disp} |`);
 }
 const intro = `# Node and Bun pairing for the admitted-pair re-run

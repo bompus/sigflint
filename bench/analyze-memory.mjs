@@ -74,8 +74,11 @@ for (const [m, byRt] of Object.entries(S)) for (const [rt, byWl] of Object.entri
     const v = vals(arm); if (!v.length) continue;
     const mv = med(v), gap = mv - mA;
     const overlap = !(Math.min(...v) > Math.max(...a) || Math.max(...v) < Math.min(...a));
-    const clear = arm !== BASE && Math.abs(gap) > Math.max(Math.abs(mA) * bandPct / 100, cfg.abs) && !overlap;
-    out.arms[arm] = { n: v.length, median: mv, min: Math.min(...v), max: Math.max(...v), ratio: mA ? mv / mA : null, gap, verdict: arm === BASE ? 'baseline' : !clear ? 'no clear change' : gap > 0 ? 'more than sigflint' : 'less than sigflint' };
+    const band = Math.max(Math.abs(mA) * bandPct / 100, cfg.abs);
+    // unsettled (protocol-rerun.md): the ranges overlap, or the median gap is at most twice the band; an unsettled comparison is reported as no clear change
+    const unsettled = arm !== BASE && (overlap || Math.abs(gap) <= 2 * band);
+    const clear = arm !== BASE && Math.abs(gap) > band && !overlap && !unsettled;
+    out.arms[arm] = { n: v.length, median: mv, min: Math.min(...v), max: Math.max(...v), ratio: mA ? mv / mA : null, gap, unsettled, verdict: arm === BASE ? 'baseline' : !clear ? 'no clear change' : gap > 0 ? 'more than sigflint' : 'less than sigflint' };
   }
   cells.push(out);
 }

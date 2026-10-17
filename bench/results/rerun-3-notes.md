@@ -21,7 +21,7 @@ Result: unsettled after round 3, so rounds 4 and 5 are run for the whole part (c
 - Heap allocated per call, collections, GC pause, CPU time: 0 of 36 unsettled in each.
 - Peak RSS: 4 of 12 unsettled (Node: `aws4`, `smithy`, `minio`; Bun: `aws4fetch`).
 - Retained heap: 35 of 36 unsettled by this rule (bands of 3% to 453%; most differences are inside the absolute floor of 64 KiB).
-The count of unsettled retained-heap, import and peak-RSS comparisons in `rerun-2-notes.md` came from a script that was not kept and is not reproduced by `unsettled-memory.mjs`; this run's counts are all from the kept script, and the same script gives 34 of 36 retained, 3 of 12 peak RSS, 8 of 12 import and 4 of 12 first-signature unsettled for the 2026-10-16 data after 5 rounds.
+The count of unsettled retained-heap, import and peak-RSS comparisons in `rerun-2-notes.md` came from a script that was not kept and is not reproduced by `unsettled-memory.mjs`; this run's counts are all from the kept script.
 
 ## Part D, import and first signature (run 2026-10-17 07:58:46 to 08:01:37, 378 processes in 3 units, 3 rounds, 0 rejected, 0 errors)
 
@@ -36,7 +36,7 @@ Cap reached. Regression check: 8 of 8 still unsettled, so every cell is reported
 
 ## Parts C and D after rounds 4 and 5 (C: 2026-10-17 08:14:03 to 08:27:20, D: 08:27:22 to 08:28:59; 5 rounds, 0 rejected, 0 errors)
 
-Cap reached. Counted by `node unsettled-memory.mjs results/memory-summary.json` over the 5 rounds: heap allocated per call, collections and CPU time 0 of 36 unsettled each; GC pause 1 of 36 (Bun `bench-part-put`, `aws4`); peak RSS 4 of 12; retained heap 35 of 36 (the absolute floor of 64 KiB is wider than most gaps; 2 comparisons are clear, `aws4fetch` and `wdl` on Node for the plain GET); import plus client build 8 of 12; import plus first signature 4 of 12. Unsettled comparisons are shown as no clear change.
+Cap reached. Counted by `node unsettled-memory.mjs results/memory-summary.json` over the 5 rounds: heap allocated per call, collections and CPU time 0 of 36 unsettled each; GC pause 1 of 36 (Bun `bench-part-put`, `aws4`); peak RSS 4 of 12; retained heap 35 of 36 (the absolute floor of 64 KiB is wider than most gaps; one comparison is settled and clear, `aws4fetch` on Node for the plain GET; `wdl` there has a gap outside its band but within twice the band, so it counts as unsettled); import plus client build 8 of 12; import plus first signature 4 of 12. `analyze-memory.mjs` applies the rule (a field `unsettled` on every comparison): an unsettled comparison is reported as no clear change and is not a claim, which removed the multiplier from Bun peak memory for `aws4fetch` and from Bun import plus first signature for `aws-sig`. The same rule gives 34 of 36 retained, 3 of 12 peak RSS, 8 of 12 import and 4 of 12 first-signature unsettled for the 2026-10-16 data after 5 rounds.
 
 Allocation calibration (start of part C, a known allocator of 512 B and 2048 B per call): Node slope 8.64 against the true value, +8.0%; Bun about 8.32, +3.9%, both inside the 10% the protocol allows. `memory-calibration-final.jsonl` has the rows.
 
