@@ -13,9 +13,9 @@
 </p>
 
 <p align="center">
-  <a href="docs/guide.md#usage">Headers and presigned URLs</a> ·
-  <a href="docs/guide.md#sigv4a-multi-region">SigV4a</a> ·
-  <a href="docs/guide.md#chunked-uploads">Chunked uploads and event streams</a> ·
+  <a href="docs/guide.md#usage">Headers and presigned URLs</a>&nbsp;·
+  <a href="docs/guide.md#sigv4a-multi-region">SigV4a</a>&nbsp;·
+  <a href="docs/guide.md#chunked-uploads">Chunked uploads and event streams</a>&nbsp;·
   <a href="package.json">No dependencies</a>
 </p>
 
