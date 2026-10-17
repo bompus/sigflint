@@ -66,7 +66,7 @@ Node ahead (the only rows that need a reporting disposition):
 - Different instruments on the two runtimes (Node counts heap growth between collections, Bun reads the collector log): garbage-collection pause 22 rows, collections 1 row, heap allocated per call 1 row. These stay suspected, with that reason.
 - Bun is ahead in the other rows, including every peak-memory row (Bun's process is smaller), all the other heap-allocated and collection-count rows, and 36 further speed rows.
 
-Disposition of every Node-ahead row above: only [oven-sh/bun#45627](https://github.com/oven-sh/bun/issues/45627) (reading properties of a parsed URL, part of the sigflint speed gap and not shown to be all of it) has been filed. The other reproduced rows still need a reduced reproduction and a search of open and closed Bun issues, and the Node and Bun comparison is not closed.
+Disposition of every Node-ahead row above: only [oven-sh/bun#45627](https://github.com/oven-sh/bun/issues/45627) (reading properties of a parsed URL, part of the sigflint speed gap and not shown to be all of it) has been filed for a sigflint row. Two single-call comparisons, [oven-sh/bun#45699](https://github.com/oven-sh/bun/issues/45699) (`crypto.hash`) and [oven-sh/bun#45700](https://github.com/oven-sh/bun/issues/45700) (`encodeURIComponent`), have also been filed; neither is shown to explain any sigflint gap (sigflint's Bun build hashes with `Bun.SHA256.hash`, which has not been measured against Node). The other reproduced rows still need a reduced reproduction and a search of open and closed Bun issues, and the Node and Bun comparison is not closed.
 
 ## Alternating samples for the nine in-band rows
 
