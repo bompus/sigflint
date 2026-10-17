@@ -6,6 +6,12 @@ Each part's decision after round 3, taken from its own analysis before any exten
 
 Each part ran under the shared host lock after a fresh admission check inside the lock (receipts in the author's scratch directory, kept until 2026-11-16). Part A was admitted at 3.19 combined busy cores. Part B was refused 4 times between 20:18 and 20:20 (combined CPU 4.15 and 4.28 busy cores, 2 to 6 zswap page-ins, I/O pressure 243 ms) while an Android emulator and its video stream, owned by another session, were running; no part B process was started in those attempts. After the emulator was stopped at the user's request, part B was admitted at 20:33 (3.7 combined busy cores, no swap activity). The check after each part (run once the part had ended, while the analysis scripts ran) reported 2 to 6 zswap page-ins and, after part A, 4.77 combined busy cores; those windows are outside the timed regions and no figure is adjusted for them. No continuous observer of native Windows CPU ran during the timed regions (see the protocol).
 
+## Swap-free changes and the swap rule
+
+`run-matrix.sh`, `run-memory.sh` and `run-more.sh` record the change in free swap (`swapFreeDeltaKb`) around every process but do not reject on it, and none records the exit status; a process that failed before printing leaves an `error` row (0 here). The declared "swap rejection" was applied at admission (no swap or zswap activity before each part, see above), not per process. Afterwards 50 of the 2,812 rows in `speed-raw`, `speed-more`, `speed-regression` and `memory-raw` carry a nonzero value. Every one is positive (swap space was freed, never used: 4 to 236 kB), so none shows a swap-out during a timed process.
+
+Sensitivity, so the reader does not have to take that on trust: the three analyzers were re-run on copies of these four files without any row that has a nonzero value (`speed-raw` 192 to 180 rows, `speed-more` 500 to 490, `speed-regression` 120 to 116, `memory-raw` 2,000 to 1,976). No verdict changes in any table: every "more", "less", "no clear change", "unsettled" and "wrong signature" stays. The numbers that move are small: the minio-against-sigflint ratio in part A on Node rises by up to 0.23 times (for example 8.39 to 8.62), the Bun regression bands for `bench-download` and `bench-part-put` fall from 54.3% and 73.1% to 45.8% and 63.2%, and a few memory bands move (for example the `bench-body-1k` band in one memory table from 40.9% to 3.0%, with the same labels). The published figures are the ones computed from all rows.
+
 ## Part A, S3 header speed matrix (run 2026-10-16 20:11:48 to 20:17:30, 48 processes, 3 rounds, 0 rejected, 0 errors)
 
 Rule: a comparison the README states a result for (sigflint against each other library that signed correctly, per runtime and workload) is unsettled when the min-max ranges overlap or the median gap is at most twice the reporting band.
@@ -25,6 +31,8 @@ Result: unsettled after round 3, so rounds 4 and 5 are run for the whole part (c
 - Heap allocated per call, collections, GC pause, CPU time: 0 of 36 unsettled in each.
 - Peak RSS, 3 of 12 unsettled (Node: `aws4`, `smithy`, `minio`, all "no clear change").
 - Retained heap, 7 of 36 unsettled (Bun: `wdl` on three workloads; Node: `aws4fetch`, `aws4`, `wdl` on `bench-encode` and `aws4` on `bench-body-1k`; bands of 3% to 5289%).
+
+Allocation calibration, from `memory-calibration-final.jsonl`: the protocol's gate is the slope of bytes per call against array length (expected 8 bytes per element, within 10%), not the average bytes per element, which includes a fixed cost per call. Node: (17,259 - 3,990) / (2,048 - 512) = 8.64 bytes per element (+8.0%). Bun, from the parsed collector log with the control subtracted: (19,306.7 - 6,569.5) / 1,536 = 8.29 bytes per element (+3.6%). Both pass.
 
 ## Part D, import and first signature (run 2026-10-16 21:03:26 to 21:04:27, 378 processes, 3 rounds, 0 rejected, 0 errors)
 
