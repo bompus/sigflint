@@ -4,7 +4,7 @@ Every workload, metric and library measured on both runtimes, from the raw resul
 
 | part | metric | workload | library | Node | Bun | verdict | disposition |
 |---|---|---|---|---|---|---|---|
-| A | speed ns | bench-download | sigflint-A | 1,352 (1,318-1,377) | 1,600 (1,383-1,847) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-download | sigflint-A | 1,352 (1,318-1,377) | 1,600 (1,383-1,847) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-download | aws4fetch | 226,047 (224,016-227,306) | 208,565 (200,071-225,566) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | A | speed ns | bench-download | aws4 | 5,670 (5,627-5,929) | 6,079 (5,676-8,746) | Node ahead in median, ranges overlap | not confirmed: ranges overlap, needs more alternating samples (not run) |
 | A | speed ns | bench-download | smithy | 10,222 (9,578-10,418) | 9,223 (8,706-9,753) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
@@ -12,29 +12,29 @@ Every workload, metric and library measured on both runtimes, from the raw resul
 | A | speed ns | bench-download | wdl | 698,621 (678,018-703,816) | 581,903 (565,767-593,075) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | A | speed ns | bench-download | minio | 11,343 (11,277-11,656) | 7,291 (6,326-10,200) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | A | speed ns | bench-download | sigflint-B | 1,365 (1,330-1,379) | 1,488 (1,378-1,615) | Node ahead in median, ranges overlap | not confirmed: ranges overlap, needs more alternating samples (not run) |
-| A | speed ns | bench-part-put | sigflint-A | 1,685 (1,655-1,797) | 2,065 (1,879-2,512) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-part-put | sigflint-A | 1,685 (1,655-1,797) | 2,065 (1,879-2,512) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-part-put | aws4fetch | 225,199 (217,242-230,259) | 210,791 (205,640-227,787) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
-| A | speed ns | bench-part-put | aws4 | 6,820 (6,739-6,883) | 8,257 (8,048-10,197) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-part-put | aws4 | 6,820 (6,739-6,883) | 8,257 (8,048-10,197) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-part-put | smithy | 10,716 (9,929-11,290) | 10,184 (10,116-12,812) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | A | speed ns | bench-part-put | wdl | 611,265 (588,810-621,350) | 553,085 (538,505-579,550) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | A | speed ns | bench-part-put | minio | 11,043 (10,998-11,132) | 7,916 (7,559-9,419) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| A | speed ns | bench-part-put | sigflint-B | 1,677 (1,659-1,710) | 1,992 (1,959-2,014) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
-| A | speed ns | bench-encode | sigflint-A | 2,217 (2,178-2,397) | 3,233 (2,649-3,620) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-part-put | sigflint-B | 1,677 (1,659-1,710) | 1,992 (1,959-2,014) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
+| A | speed ns | bench-encode | sigflint-A | 2,217 (2,178-2,397) | 3,233 (2,649-3,620) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-encode | aws4fetch | 238,063 (230,021-239,265) | 218,265 (214,960-219,275) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| A | speed ns | bench-encode | aws4 | 8,387 (7,951-8,442) | 10,106 (9,680-10,960) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-encode | aws4 | 8,387 (7,951-8,442) | 10,106 (9,680-10,960) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-encode | wdl | 667,343 (664,254-684,233) | 588,316 (578,242-596,867) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| A | speed ns | bench-encode | sigflint-B | 2,236 (2,190-2,320) | 3,140 (3,063-3,381) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
-| A | speed ns | bench-body-1k | sigflint-A | 2,407 (2,310-2,421) | 2,816 (2,699-3,120) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-encode | sigflint-B | 2,236 (2,190-2,320) | 3,140 (3,063-3,381) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
+| A | speed ns | bench-body-1k | sigflint-A | 2,407 (2,310-2,421) | 2,816 (2,699-3,120) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-body-1k | aws4fetch | 222,039 (216,172-247,174) | 213,210 (206,931-219,312) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
-| A | speed ns | bench-body-1k | aws4 | 6,446 (6,181-6,493) | 7,392 (7,327-8,302) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-body-1k | aws4 | 6,446 (6,181-6,493) | 7,392 (7,327-8,302) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | A | speed ns | bench-body-1k | smithy | 11,991 (11,150-12,061) | 10,279 (10,248-15,915) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | A | speed ns | bench-body-1k | minio | 12,272 (12,115-12,730) | 8,337 (7,807-9,410) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| A | speed ns | bench-body-1k | sigflint-B | 2,337 (2,335-2,447) | 2,779 (2,626-3,049) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| A | speed ns | bench-body-1k | sigflint-B | 2,337 (2,335-2,447) | 2,779 (2,626-3,049) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | B | speed ns | any-post-json | sigflint | 1,783 (1,710-1,794) | 1,618 (1,559-1,839) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | B | speed ns | any-token | sigflint | 1,590 (1,538-1,614) | 1,548 (1,392-1,573) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | B | speed ns | any-query | sigflint | 1,845 (1,803-1,867) | 2,101 (1,850-2,466) | Node ahead in median, ranges overlap | not confirmed: ranges overlap, needs more alternating samples (not run) |
-| B | speed ns | presign-any | sigflint | 3,378 (3,352-3,458) | 4,683 (4,057-7,926) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
-| B | speed ns | presign-s3 | sigflint | 3,669 (3,579-3,763) | 5,001 (4,355-7,216) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| B | speed ns | presign-any | sigflint | 3,378 (3,352-3,458) | 4,683 (4,057-7,926) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
+| B | speed ns | presign-s3 | sigflint | 3,669 (3,579-3,763) | 5,001 (4,355-7,216) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | B | speed ns | sigv4a-header | sigflint | 14,953 (14,795-15,543) | 12,630 (12,350-13,639) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | B | speed ns | sigv4a-presign | sigflint | 16,885 (16,558-17,892) | 15,451 (14,810-16,402) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | B | speed ns | chunk-64k | sigflint | 32,825 (32,031-34,859) | 30,536 (29,633-35,677) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
@@ -59,24 +59,24 @@ Every workload, metric and library measured on both runtimes, from the raw resul
 | B | speed ns | any-token | wdl | 726,314 (697,088-740,510) | 578,482 (529,182-582,491) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | B | speed ns | any-query | wdl | 725,935 (683,492-734,246) | 570,118 (524,824-590,239) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | B | speed ns | presign-s3 | minio | 13,442 (13,224-13,733) | 8,812 (8,609-12,927) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-download | sigflint-A | 3 (3-3) | 3 (3-4) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-download | sigflint-A | 3 (3-3) | 3 (3-4) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-download | aws4fetch | 254 (234-256) | 213 (194-216) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-download | aws4 | 11 (10-11) | 17 (16-17) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
-| C/D | cpuUs | bench-download | smithy | 17 (17-18) | 26 (24-26) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-download | aws4 | 11 (10-11) | 17 (16-17) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
+| C/D | cpuUs | bench-download | smithy | 17 (17-18) | 26 (24-26) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-download | aws-sig | 74 (73-74) | 67 (66-72) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | cpuUs | bench-download | wdl | 677 (674-680) | 577 (550-579) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | cpuUs | bench-download | minio | 17 (16-17) | 15 (15-15) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-part-put | sigflint-A | 3 (3-3) | 3 (3-4) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-part-put | sigflint-A | 3 (3-3) | 3 (3-4) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-part-put | aws4fetch | 242 (222-243) | 209 (204-217) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-part-put | aws4 | 11 (10-11) | 13 (13-15) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
-| C/D | cpuUs | bench-part-put | smithy | 15 (14-15) | 16 (15-16) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-part-put | aws4 | 11 (10-11) | 13 (13-15) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
+| C/D | cpuUs | bench-part-put | smithy | 15 (14-15) | 16 (15-16) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-part-put | wdl | 576 (567-590) | 563 (560-573) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | C/D | cpuUs | bench-part-put | minio | 14 (14-14) | 11 (10-11) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-encode | sigflint-A | 3 (3-3) | 5 (4-5) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-encode | sigflint-A | 3 (3-3) | 5 (4-5) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-encode | aws4fetch | 240 (232-244) | 218 (207-222) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-encode | aws4 | 12 (12-13) | 15 (14-16) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-encode | aws4 | 12 (12-13) | 15 (14-16) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-encode | wdl | 671 (648-677) | 573 (562-581) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | cpuUs | bench-body-1k | sigflint-A | 3 (3-3) | 4 (4-5) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cpuUs | bench-body-1k | sigflint-A | 3 (3-3) | 4 (4-5) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | cpuUs | bench-body-1k | aws4fetch | 238 (228-246) | 211 (209-214) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | cpuUs | bench-body-1k | aws4 | 10 (9-10) | 10 (9-11) | Node ahead in median, ranges overlap | not confirmed: ranges overlap, needs more alternating samples (not run) |
 | C/D | cpuUs | bench-body-1k | smithy | 16 (16-16) | 16 (16-17) | Node ahead in median, ranges overlap | not confirmed: ranges overlap, needs more alternating samples (not run) |
@@ -132,7 +132,7 @@ Every workload, metric and library measured on both runtimes, from the raw resul
 | C/D | gcMs | bench-body-1k | aws4 | 6 (6-6) | 29 (25-29) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
 | C/D | gcMs | bench-body-1k | smithy | 20 (19-21) | 48 (47-50) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
 | C/D | gcMs | bench-body-1k | minio | 20 (20-22) | 34 (31-37) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
-| C/D | cacheEntry | - | sigflint-A | 341 (340-342) | 359 (357-359) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | cacheEntry | - | sigflint-A | 341 (340-342) | 359 (357-359) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | allocBytes | bench-download | sigflint-A | 2,624 (2,608-2,625) | 1,426 (1,425-1,427) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | allocBytes | bench-download | aws4fetch | 29,935 (29,935-30,038) | 15,487 (14,972-15,493) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | allocBytes | bench-download | aws4 | 10,009 (10,009-10,009) | 6,583 (6,582-6,594) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
@@ -155,17 +155,17 @@ Every workload, metric and library measured on both runtimes, from the raw resul
 | C/D | allocBytes | bench-body-1k | aws4 | 9,764 (9,760-9,768) | 7,836 (7,833-7,838) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | allocBytes | bench-body-1k | smithy | 18,859 (18,849-18,862) | 15,548 (15,504-15,574) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | allocBytes | bench-body-1k | minio | 8,691 (8,609-8,692) | 8,720 (8,718-8,724) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
-| C/D | importMs | - | sigflint-A | 1 (1-1) | 2 (2-2) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | importMs | - | sigflint-A | 1 (1-1) | 2 (2-2) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | importMs | - | aws4fetch | 1 (1-2) | 1 (1-1) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | importMs | - | aws4 | 2 (1-2) | 2 (2-2) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | importMs | - | aws4 | 2 (1-2) | 2 (2-2) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | importMs | - | smithy | 11 (11-11) | 9 (9-9) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | importMs | - | aws-sig | 3 (2-3) | 2 (2-2) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | C/D | importMs | - | wdl | 2 (2-2) | 2 (2-2) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | importMs | - | minio | 15 (15-17) | 19 (19-20) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | importMs | - | minio | 15 (15-17) | 19 (19-20) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |
 | C/D | firstMs | - | sigflint-A | 2 (2-2) | 2 (2-2) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | C/D | firstMs | - | aws4fetch | 19 (16-19) | 3 (3-3) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | firstMs | - | aws4 | 3 (3-3) | 3 (3-3) | Bun ahead in median, ranges overlap | none needed (Node not ahead) |
 | C/D | firstMs | - | smithy | 13 (13-13) | 11 (10-11) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | firstMs | - | aws-sig | 9 (9-9) | 4 (4-4) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
 | C/D | firstMs | - | wdl | 18 (17-18) | 4 (4-5) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
-| C/D | firstMs | - | minio | 16 (16-18) | 19 (19-20) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done, submission deferred to the user |
+| C/D | firstMs | - | minio | 16 (16-18) | 19 (19-20) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun |

@@ -8,7 +8,7 @@ Candidate: `dist/node.js` and `dist/bun.js`, built by `npm run build` from `src/
 
 ## Rounds: a shorter plan (declared before the first counted run)
 
-The user shortened the benchmark plan: they do not think as many or as long runs are needed. The earlier runs used 5 rounds per arm. This re-run uses:
+The benchmark plan is shorter than before. The earlier runs used 5 rounds per arm. This re-run uses:
 
 - **3 rounds per arm** by default (one fresh process per arm, runtime and round; the arms alternate and the order is reversed on even rounds; the two sigflint arms are the A/A noise control, as before).
 - **2 more rounds (rounds 4 and 5) only when a claim comparison is unsettled** after round 3: for a comparison the README states a result for (the speed ratios against the other libraries, the regression check against `frozen/`, and the memory and import comparisons against the other libraries), the two arms' min-max ranges over the rounds overlap, or the median gap is at most twice the reporting band (`max(3%, 2 x A/A spread)`; 6% floor for allocation). Cells with disjoint ranges and a larger gap do not trigger it. A round runs every arm, so an extension adds rounds 4 and 5 for the whole part, as a separate lock hold. The cap is 5 rounds.
