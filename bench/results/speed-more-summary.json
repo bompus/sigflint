@@ -3,73 +3,73 @@
   {
    "runtime": "node",
    "workload": "bench-download",
-   "frozenNs": 1278,
-   "finalNs": 1356,
-   "changePct": 6.1,
-   "bandPct": 35.5,
+   "frozenNs": 1285,
+   "finalNs": 1321,
+   "changePct": 2.8,
+   "bandPct": 9.4,
    "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-part-put",
-   "frozenNs": 1590,
-   "finalNs": 1681,
-   "changePct": 5.7,
-   "bandPct": 22.2,
+   "frozenNs": 1569,
+   "finalNs": 1654,
+   "changePct": 5.4,
+   "bandPct": 5.4,
    "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-encode",
-   "frozenNs": 2107,
-   "finalNs": 2209,
-   "changePct": 4.8,
-   "bandPct": 25.1,
+   "frozenNs": 2127,
+   "finalNs": 2178,
+   "changePct": 2.4,
+   "bandPct": 6.2,
    "verdict": "no clear change"
   },
   {
    "runtime": "node",
    "workload": "bench-body-1k",
-   "frozenNs": 2227,
-   "finalNs": 2337,
-   "changePct": 4.9,
-   "bandPct": 20.8,
+   "frozenNs": 2243,
+   "finalNs": 2318,
+   "changePct": 3.3,
+   "bandPct": 6,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-download",
-   "frozenNs": 1411,
-   "finalNs": 1396,
-   "changePct": -1.1,
-   "bandPct": 54.3,
+   "frozenNs": 1370,
+   "finalNs": 1366,
+   "changePct": -0.3,
+   "bandPct": 33.7,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-part-put",
-   "frozenNs": 1811,
-   "finalNs": 1794,
-   "changePct": -0.9,
-   "bandPct": 73.1,
+   "frozenNs": 1783,
+   "finalNs": 1830,
+   "changePct": 2.6,
+   "bandPct": 30.2,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-encode",
-   "frozenNs": 2886,
-   "finalNs": 2613,
-   "changePct": -9.5,
-   "bandPct": 89.8,
+   "frozenNs": 2780,
+   "finalNs": 2707,
+   "changePct": -2.6,
+   "bandPct": 35.9,
    "verdict": "no clear change"
   },
   {
    "runtime": "bun",
    "workload": "bench-body-1k",
-   "frozenNs": 2622,
-   "finalNs": 2660,
-   "changePct": 1.4,
-   "bandPct": 45.6,
+   "frozenNs": 2645,
+   "finalNs": 2631,
+   "changePct": -0.5,
+   "bandPct": 27.9,
    "verdict": "no clear change"
   }
  ],
@@ -77,21 +77,21 @@
   {
    "runtime": "node",
    "workload": "any-post-json",
-   "sigflintNs": 1759,
-   "bandPct": 9.6,
+   "sigflintNs": 1753,
+   "bandPct": 18.4,
    "libraries": {
     "aws4": "wrong-result",
     "aws4fetch": {
-     "ns": 315965,
-     "times": 179.6
+     "ns": 322637,
+     "times": 184
     },
     "smithy": {
-     "ns": 11439,
-     "times": 6.5
+     "ns": 11204,
+     "times": 6.4
     },
     "aws-sig": {
-     "ns": 56129,
-     "times": 31.9
+     "ns": 54660,
+     "times": 31.2
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -100,25 +100,25 @@
   {
    "runtime": "node",
    "workload": "any-token",
-   "sigflintNs": 1590,
-   "bandPct": 9.6,
+   "sigflintNs": 1573,
+   "bandPct": 8.5,
    "libraries": {
     "aws4": {
-     "ns": 5081,
-     "times": 3.2
+     "ns": 4933,
+     "times": 3.1
     },
     "aws4fetch": {
-     "ns": 305111,
-     "times": 191.9
+     "ns": 287889,
+     "times": 183
     },
     "smithy": {
-     "ns": 9352,
-     "times": 5.9
+     "ns": 9561,
+     "times": 6.1
     },
     "aws-sig": "wrong-result",
     "wdl": {
-     "ns": 726314,
-     "times": 456.8
+     "ns": 732318,
+     "times": 465.6
     },
     "minio": "wrong-result"
    }
@@ -126,28 +126,28 @@
   {
    "runtime": "node",
    "workload": "any-query",
-   "sigflintNs": 1845,
-   "bandPct": 7.7,
+   "sigflintNs": 1852,
+   "bandPct": 9.3,
    "libraries": {
     "aws4": {
-     "ns": 6321,
+     "ns": 6309,
      "times": 3.4
     },
     "aws4fetch": {
-     "ns": 306108,
-     "times": 165.9
+     "ns": 291202,
+     "times": 157.2
     },
     "smithy": {
-     "ns": 10612,
-     "times": 5.8
+     "ns": 10642,
+     "times": 5.7
     },
     "aws-sig": {
-     "ns": 55360,
-     "times": 30
+     "ns": 55257,
+     "times": 29.8
     },
     "wdl": {
-     "ns": 725935,
-     "times": 393.5
+     "ns": 692495,
+     "times": 373.9
     },
     "minio": "wrong-result"
    }
@@ -155,20 +155,20 @@
   {
    "runtime": "node",
    "workload": "presign-any",
-   "sigflintNs": 3372,
-   "bandPct": 6.3,
+   "sigflintNs": 3382,
+   "bandPct": 8.7,
    "libraries": {
     "aws4": {
-     "ns": 10605,
-     "times": 3.1
+     "ns": 10670,
+     "times": 3.2
     },
     "aws4fetch": {
-     "ns": 309707,
-     "times": 91.8
+     "ns": 322654,
+     "times": 95.4
     },
     "smithy": {
-     "ns": 11700,
-     "times": 3.5
+     "ns": 11655,
+     "times": 3.4
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
@@ -178,25 +178,25 @@
   {
    "runtime": "node",
    "workload": "presign-s3",
-   "sigflintNs": 3609,
-   "bandPct": 10.2,
+   "sigflintNs": 3644,
+   "bandPct": 8.5,
    "libraries": {
     "aws4": {
-     "ns": 10927,
+     "ns": 10820,
      "times": 3
     },
     "aws4fetch": {
-     "ns": 233608,
-     "times": 64.7
+     "ns": 237951,
+     "times": 65.3
     },
     "smithy": {
-     "ns": 12256,
+     "ns": 12339,
      "times": 3.4
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
-     "ns": 13442,
+     "ns": 13420,
      "times": 3.7
     }
    }
@@ -204,21 +204,21 @@
   {
    "runtime": "bun",
    "workload": "any-post-json",
-   "sigflintNs": 1574,
-   "bandPct": 35.6,
+   "sigflintNs": 1657,
+   "bandPct": 55.4,
    "libraries": {
     "aws4": "wrong-result",
     "aws4fetch": {
-     "ns": 215440,
-     "times": 136.9
+     "ns": 213912,
+     "times": 129.1
     },
     "smithy": {
-     "ns": 9790,
-     "times": 6.2
+     "ns": 9741,
+     "times": 5.9
     },
     "aws-sig": {
-     "ns": 37148,
-     "times": 23.6
+     "ns": 37907,
+     "times": 22.9
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -227,25 +227,25 @@
   {
    "runtime": "bun",
    "workload": "any-token",
-   "sigflintNs": 1456,
-   "bandPct": 24.9,
+   "sigflintNs": 1483,
+   "bandPct": 48.6,
    "libraries": {
     "aws4": {
-     "ns": 4268,
+     "ns": 4341,
      "times": 2.9
     },
     "aws4fetch": {
-     "ns": 210644,
-     "times": 144.7
+     "ns": 213623,
+     "times": 144
     },
     "smithy": {
-     "ns": 8618,
-     "times": 5.9
+     "ns": 8947,
+     "times": 6
     },
     "aws-sig": "wrong-result",
     "wdl": {
-     "ns": 578482,
-     "times": 397.3
+     "ns": 550540,
+     "times": 371.2
     },
     "minio": "wrong-result"
    }
@@ -253,28 +253,28 @@
   {
    "runtime": "bun",
    "workload": "any-query",
-   "sigflintNs": 1893,
-   "bandPct": 65.1,
+   "sigflintNs": 2122,
+   "bandPct": 69.8,
    "libraries": {
     "aws4": {
-     "ns": 5530,
-     "times": 2.9
+     "ns": 5510,
+     "times": 2.6
     },
     "aws4fetch": {
-     "ns": 216999,
-     "times": 114.6
+     "ns": 218652,
+     "times": 103
     },
     "smithy": {
-     "ns": 10145,
-     "times": 5.4
+     "ns": 10155,
+     "times": 4.8
     },
     "aws-sig": {
-     "ns": 36818,
-     "times": 19.4
+     "ns": 38141,
+     "times": 18
     },
     "wdl": {
-     "ns": 570118,
-     "times": 301.2
+     "ns": 579741,
+     "times": 273.2
     },
     "minio": "wrong-result"
    }
@@ -282,19 +282,19 @@
   {
    "runtime": "bun",
    "workload": "presign-any",
-   "sigflintNs": 4388,
-   "bandPct": 176.3,
+   "sigflintNs": 4553,
+   "bandPct": 95.7,
    "libraries": {
     "aws4": {
-     "ns": 11153,
+     "ns": 11606,
      "times": 2.5
     },
     "aws4fetch": {
-     "ns": 234217,
-     "times": 53.4
+     "ns": 231090,
+     "times": 50.8
     },
     "smithy": {
-     "ns": 11919,
+     "ns": 12211,
      "times": 2.7
     },
     "aws-sig": "wrong-result",
@@ -305,26 +305,26 @@
   {
    "runtime": "bun",
    "workload": "presign-s3",
-   "sigflintNs": 4770,
-   "bandPct": 120,
+   "sigflintNs": 5017,
+   "bandPct": 109.9,
    "libraries": {
     "aws4": {
-     "ns": 10846,
-     "times": 2.3
+     "ns": 11139,
+     "times": 2.2
     },
     "aws4fetch": {
-     "ns": 231048,
-     "times": 48.4
+     "ns": 217380,
+     "times": 43.3
     },
     "smithy": {
-     "ns": 12847,
-     "times": 2.7
+     "ns": 12765,
+     "times": 2.5
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
-     "ns": 8812,
-     "times": 1.8
+     "ns": 9309,
+     "times": 1.9
     }
    }
   }
@@ -335,27 +335,27 @@
  },
  "rejected": 0,
  "errors": 0,
- "maxBusy": 9,
+ "maxBusy": 14,
  "alone": {
   "sigv4a-header": {
-   "nodeNs": 15013,
-   "bunNs": 12630
+   "nodeNs": 15070,
+   "bunNs": 13349
   },
   "sigv4a-presign": {
-   "nodeNs": 16911,
-   "bunNs": 15085
+   "nodeNs": 17018,
+   "bunNs": 16625
   },
   "chunk-64k": {
-   "nodeNs": 32817,
-   "bunNs": 30536
+   "nodeNs": 32472,
+   "bunNs": 31062
   },
   "chunk-end-trailer": {
-   "nodeNs": 3098,
-   "bunNs": 1676
+   "nodeNs": 2968,
+   "bunNs": 1825
   },
   "event-4k": {
-   "nodeNs": 11210,
-   "bunNs": 11253
+   "nodeNs": 11226,
+   "bunNs": 11659
   }
  }
 }
