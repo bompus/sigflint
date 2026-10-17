@@ -1,12 +1,12 @@
-{"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"(load)","status":"ok","heapBytes":-1672,"externalBytes":-1875781,"rssBytes":0,"rssAfterLoad":87162880}
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"(load)","status":"ok","heapBytes":-1672,"externalBytes":-1875781,"rssBytes":286720,"rssAfterLoad":95731712}
 {"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"calib-512","status":"ok","heapBytesPerCall":3990,"extBytesPerCall":0,"rawHeapBytesPerCall":4164.44,"controlHeapBytesPerCall":174.2,"keptChunks":40,"droppedChunks":0,"controlKept":39}
 {"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"calib-2048","status":"ok","heapBytesPerCall":17259,"extBytesPerCall":0,"rawHeapBytesPerCall":17433,"controlHeapBytesPerCall":174.2,"keptChunks":40,"droppedChunks":0,"controlKept":40}
-{"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":164429824}
-{"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"(load)","status":"ok","heapBytes":6957,"externalBytes":262144,"rssBytes":393216,"rssAfterLoad":41050112}
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.0","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":171958272}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"(load)","status":"ok","heapBytes":6737,"externalBytes":0,"rssBytes":131072,"rssAfterLoad":41308160}
 {"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"calib-512","status":"pending-log","na":10000}
 {"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"calib-2048","status":"pending-log","na":10000}
-{"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":52830208}
-{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-real","calls":10000,"collections":12,"heapBytes":66708480,"heapBytesPerCall":6670.848}
-{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1013760,"heapBytesPerCall":101.376}
-{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-real","calls":10000,"collections":36,"heapBytes":194071552,"heapBytesPerCall":19407.1552}
-{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1004544,"heapBytesPerCall":100.4544}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.3","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":53964800}
+{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-real","calls":10000,"collections":12,"heapBytes":66619392,"heapBytesPerCall":6661.9392}
+{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1017856,"heapBytesPerCall":101.7856}
+{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-real","calls":10000,"collections":36,"heapBytes":194328576,"heapBytesPerCall":19432.8576}
+{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1007616,"heapBytesPerCall":100.7616}

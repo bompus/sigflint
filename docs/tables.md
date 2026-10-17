@@ -20,27 +20,27 @@ Microseconds per signature, median of 3 processes. “wrong signature” means t
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.35** | **1.69** | **2.22** | **2.41** |
-| aws4fetch | 226.05 | 225.20 | 238.06 | 222.04 |
-| aws4 | 5.67 | 6.82 | 8.39 | 6.45 |
-| @smithy/signature-v4 | 10.22 | 10.72 | wrong signature | 11.99 |
-| aws-sig | 58.21 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 698.62 | 611.26 | 667.34 | wrong signature |
-| minio | 11.34 | 11.04 | wrong signature | 12.27 |
+| **sigflint** | **1.31** | **1.64** | **2.21** | **2.31** |
+| aws4fetch | 232.63 | 223.89 | 235.23 | 216.90 |
+| aws4 | 5.56 | 6.66 | 7.97 | 6.29 |
+| @smithy/signature-v4 | 9.63 | 9.90 | wrong signature | 11.17 |
+| aws-sig | 55.46 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 724.93 | 618.06 | 720.21 | wrong signature |
+| minio | 10.92 | 10.71 | wrong signature | 11.71 |
 
 **Bun 1.4.3**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.60** | **2.06** | **3.23** | **2.82** |
-| aws4fetch | 208.56 | 210.79 | 218.26 | 213.21 |
-| aws4 | 6.08 | 8.26 | 10.11 | 7.39 |
-| @smithy/signature-v4 | 9.22 | 10.18 | wrong signature | 10.28 |
-| aws-sig | 48.85 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 581.90 | 553.09 | 588.32 | wrong signature |
-| minio | 7.29 | 7.92 | wrong signature | 8.34 |
+| **sigflint** | **1.38** | **1.97** | **2.67** | **2.58** |
+| aws4fetch | 212.79 | 208.19 | 224.29 | 215.72 |
+| aws4 | 5.83 | 8.04 | 9.72 | 7.80 |
+| @smithy/signature-v4 | 9.20 | 8.54 | wrong signature | 9.42 |
+| aws-sig | 38.65 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 580.14 | 540.06 | 559.73 | wrong signature |
+| minio | 6.99 | 7.40 | wrong signature | 8.01 |
 
-Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): bun 1.4.3 bench-download: 58%; bun 1.4.3 bench-part-put: 61%; bun 1.4.3 bench-encode: 60%; bun 1.4.3 bench-body-1k: 30%; node 26.12.0 bench-download: 9%; node 26.12.0 bench-part-put: 17%; node 26.12.0 bench-encode: 20%; node 26.12.0 bench-body-1k: 10%. Every gap between sigflint and another library is far outside its band.
+Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.0 bench-download: 5%; node 26.12.0 bench-part-put: 5%; node 26.12.0 bench-encode: 8%; node 26.12.0 bench-body-1k: 4%; bun 1.4.3 bench-download: 44%; bun 1.4.3 bench-part-put: 31%; bun 1.4.3 bench-encode: 30%; bun 1.4.3 bench-body-1k: 32%. Every gap between sigflint and another library is far outside its band.
 
 
 ### Size
