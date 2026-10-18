@@ -87,6 +87,8 @@ Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `node
   <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and six other libraries" src="docs/speed-light.svg">
 </picture>
 
+Microseconds per signature; lower is better. On Node, signing a plain S3 GET takes 1.31 µs with sigflint and 5.56 µs with `aws4`, the fastest of the other libraries.
+
 Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed, memory and import figures were measured on the code in this release and are re-run before each release.
 
 ## Scope
