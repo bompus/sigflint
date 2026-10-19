@@ -71,7 +71,7 @@
     "check": "npm run check:style && npm run types && npm run types:streams && npm run types:bench && npm test && npm run check:package",
     "check:benchmarked": "node bench/check-benchmarked.mjs",
     "check:py": "ruff format --check . && ruff check .",
-    "check:sh": "git ls-files -z '*.sh' | xargs -0 shellcheck && git ls-files -z '*.sh' | xargs -0 shfmt -d",
+    "check:sh": "git ls-files -z '*.sh' | xargs -0 shellcheck && git ls-files -z '*.sh' | xargs -0 shfmt -d -i 2 -bn -ci",
     "check:package": "tsc -p tsconfig.build.json && npm run build && publint && attw --pack . --profile esm-only"
   },
   "devDependencies": {
