@@ -21,6 +21,8 @@
 
 Fast AWS Signature Version 4 request signing for every AWS service, with no dependencies. It runs on Node.js, Bun, Deno, Cloudflare Workers and browsers.
 
+Signs an S3 GET in 1.31 µs on Node, 4.2 times as fast as `aws4`, with the same signatures as botocore on 6,582 test requests.
+
 ```js
 import { getAuthHeaders } from 'sigflint';
 
@@ -38,6 +40,13 @@ It signs requests with the `Authorization` header or as a presigned URL, for S3 
 - **Fast.** 1.3 to 3.6 µs per header or presigned-URL signature on Node and 1.4 to 5.0 µs on Bun. The other libraries take 2.6 to 552 times as long on the requests they sign correctly (five Bun presigned-URL comparisons, with `aws4`, `@smithy/signature-v4` and `minio`, are not clear and are left out). See [speed](docs/benchmarks.md#speed).
 - **Small, and you pay only for what you import.** Signing headers is 5.7 kB minified, 2.8 kB gzipped; presigned URLs, SigV4a, chunked uploads and event streams each add to a bundle only when imported. Nothing to install with it. See [size](docs/benchmarks.md#size).
 - **Everywhere.** One import on Node, Bun, Deno and Cloudflare Workers, with or without `nodejs_compat`. See [runtimes](#runtimes).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/speed-dark.svg">
+  <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and six other libraries" src="docs/speed-light.svg">
+</picture>
+
+Microseconds per signature; lower is better. On Node, signing a plain S3 GET takes 1.31 µs with sigflint and 5.56 µs with `aws4`, the fastest of the other libraries.
 
 ## Install
 
@@ -81,13 +90,6 @@ More in the [guide](docs/guide.md): [other services](docs/guide.md#other-service
 Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `nodejs_compat`; browsers get the same WebCrypto code. Each runtime was checked against botocore's signature for one S3 request. The grid, with the other libraries, is in the [benchmarks](docs/benchmarks.md#runtimes).
 
 ## Benchmarks
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/speed-dark.svg">
-  <img alt="Bar chart: time in microseconds to sign one S3 request on Node.js and Bun, for sigflint and six other libraries" src="docs/speed-light.svg">
-</picture>
-
-Microseconds per signature; lower is better. On Node, signing a plain S3 GET takes 1.31 µs with sigflint and 5.56 µs with `aws4`, the fastest of the other libraries.
 
 Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed, memory and import figures were measured on the code in this release and are re-run before each release.
 
