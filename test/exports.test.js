@@ -22,9 +22,7 @@ const resolves = (condition) =>
 
 const skip = 'Deno' in globalThis ? 'Deno takes conditions through a different flag' : false;
 
-void test('the default import is synchronous', { skip }, () =>
-  assert.equal(resolves(null), 'sync'),
-);
+test('the default import is synchronous', { skip }, () => assert.equal(resolves(null), 'sync'));
 
 // Node and Bun load one file instead of six modules (import time); bundlers and the WebCrypto conditions keep src/, which they can tree-shake per signer.
 /** @param {string | null} condition */
@@ -42,7 +40,7 @@ const where = (condition) =>
       encoding: 'utf8',
     },
   ).trim();
-void test(
+test(
   'Node and Bun resolve the package to the one-file build, the web conditions to src/',
   { skip },
   () => {
@@ -56,12 +54,12 @@ void test(
   },
 );
 for (const condition of ['workerd', 'worker', 'browser']) {
-  void test(`the ${condition} condition selects the WebCrypto entry`, { skip }, () =>
+  test(`the ${condition} condition selects the WebCrypto entry`, { skip }, () =>
     assert.equal(resolves(condition), 'promise'),
   );
 }
 
-void test('every signer is exported by the node, bun and web entries', async () => {
+test('every signer is exported by the node, bun and web entries', async () => {
   const names = [
     'getAuthHeaders',
     'presign',

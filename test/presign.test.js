@@ -8,7 +8,7 @@ import { credentials, now, toMs } from './helpers.js';
 const corpus = JSON.parse(readFileSync(new URL('./corpus-presign.json', import.meta.url), 'utf8'));
 
 for (const [name, { presign }] of entries) {
-  void test(`${name}: matches the botocore reference signature and parameters for every case`, async () => {
+  test(`${name}: matches the botocore reference signature and parameters for every case`, async () => {
     const failures = [];
     for (const c of corpus) {
       const out = new URL(
@@ -51,7 +51,7 @@ for (const [name, { presign }] of entries) {
   });
 }
 
-void test('the lifetime defaults to an hour, and the URL keeps its path and original query', async () => {
+test('the lifetime defaults to an hour, and the URL keeps its path and original query', async () => {
   const [, { presign }] = entries[0];
   const link = new URL(
     await presign(

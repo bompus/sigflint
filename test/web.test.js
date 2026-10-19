@@ -9,7 +9,7 @@ import { credentials, now, signCase } from './helpers.js';
 /** @type {import('./helpers.js').CorpusCase[]} */
 const corpus = JSON.parse(readFileSync(new URL('./corpus.json', import.meta.url), 'utf8'));
 
-void test('returns the same headers as the synchronous entry, session token included', async () => {
+test('returns the same headers as the synchronous entry, session token included', async () => {
   const request = {
     method: 'PUT',
     url: new URL('https://bucket.example.com/a b?x=1'),
@@ -25,13 +25,13 @@ void test('returns the same headers as the synchronous entry, session token incl
   );
 });
 
-void test('many requests in flight at once all sign correctly', async () => {
+test('many requests in flight at once all sign correctly', async () => {
   const cases = corpus.filter((c) => c.kind !== 'extra').slice(0, 200);
   const results = await Promise.all(cases.map((c) => signCase(getAuthHeaders, c)));
   cases.forEach((c, i) => assert.equal(results[i]?.authorization?.slice(-64), c.sig, c.id));
 });
 
-void test('the signing key follows the date and the region', async () => {
+test('the signing key follows the date and the region', async () => {
   const url = new URL('https://bucket.example.com/key');
   /**
    * @param {string} region

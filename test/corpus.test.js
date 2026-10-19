@@ -12,7 +12,7 @@ const corpus = JSON.parse(readFileSync(new URL('./corpus.json', import.meta.url)
 
 // Each entry runs the corpus: the synchronous source, the built file Node and Bun load, and the WebCrypto entry (its results are promises; awaiting a value is harmless).
 for (const [name, { getAuthHeaders }] of entries) {
-  void test(`${name}: matches the botocore reference signature for every case`, async () => {
+  test(`${name}: matches the botocore reference signature for every case`, async () => {
     const failures = [];
     let checked = 0;
     for (const c of corpus) {
@@ -58,7 +58,7 @@ const awsExamples = [
   ],
 ];
 for (const [name, id, signedHeaders, signature] of awsExamples) {
-  void test(`AWS documentation example: ${name}`, async () => {
+  test(`AWS documentation example: ${name}`, async () => {
     const headers = await signCase(
       entries[0][1].getAuthHeaders,
       /** @type {import('./helpers.js').CorpusCase} */ (corpus.find((c) => c.id === id)),

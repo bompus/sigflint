@@ -48,7 +48,7 @@ const verifies = (text, signatureHex) =>
   );
 
 for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
-  void test(`${name}: the reference signatures verify and ours verify and carry the same parameters`, async () => {
+  test(`${name}: the reference signatures verify and ours verify and carry the same parameters`, async () => {
     const failures = [];
     for (const c of corpus) {
       const creds = c.token ? { ...credentials, sessionToken: c.token } : credentials;
@@ -122,7 +122,7 @@ for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
   });
 }
 
-void test('the scope has no region, and the region set is signed (header) or a query parameter (presigned)', async () => {
+test('the scope has no region, and the region set is signed (header) or a query parameter (presigned)', async () => {
   const [, { getAuthHeadersV4a, presignV4a }] = entries[0];
   const request = {
     method: 'GET',
@@ -142,7 +142,7 @@ void test('the scope has no region, and the region set is signed (header) or a q
 });
 
 for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
-  void test(`${name}: a missing region set is an error, not a signature`, async () => {
+  test(`${name}: a missing region set is an error, not a signature`, async () => {
     const request = { method: 'GET', url: new URL('https://bucket.s3.amazonaws.com/key'), now };
     await assert.rejects(async () => getAuthHeadersV4a(request, credentials), TypeError);
     await assert.rejects(

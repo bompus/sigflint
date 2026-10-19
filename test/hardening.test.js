@@ -37,7 +37,7 @@ for (const [
       credentials,
     );
 
-  void test(`${name}: a trailer name in capitals is signed with its value`, async () => {
+  test(`${name}: a trailer name in capitals is signed with its value`, async () => {
     const lower = text(
       await (
         await chunkSigner(await chunkedHeaders(), credentials)
@@ -52,7 +52,7 @@ for (const [
     assert.match(upper, /\r\nx-amz-checksum-crc32c:sOO8\/Q==\r\n/);
   });
 
-  void test(`${name}: signHeaders cannot replace the date or the authorization, or be named __proto__`, async () => {
+  test(`${name}: signHeaders cannot replace the date or the authorization, or be named __proto__`, async () => {
     for (const header of ['x-amz-date', 'X-Amz-Date', 'authorization', '__proto__']) {
       const signHeaders = JSON.parse(`{"${header}":"v"}`); // an own property, even for __proto__
       await rejects(
@@ -68,7 +68,7 @@ for (const [
     }
   });
 
-  void test(`${name}: a line break in a signed header value is refused`, async () => {
+  test(`${name}: a line break in a signed header value is refused`, async () => {
     await rejects(
       () =>
         getAuthHeaders(
@@ -85,7 +85,7 @@ for (const [
     );
   });
 
-  void test(`${name}: a lowercase method signs as the uppercase one, as botocore does`, async () => {
+  test(`${name}: a lowercase method signs as the uppercase one, as botocore does`, async () => {
     for (const method of ['get', 'Put', 'delete']) {
       const lower = { ...request, method };
       const upper = { ...request, method: method.toUpperCase() };
@@ -97,7 +97,7 @@ for (const [
     }
   });
 
-  void test(`${name}: a line break in a trailer name or value is refused`, async () => {
+  test(`${name}: a line break in a trailer name or value is refused`, async () => {
     for (const trailers of [
       { 'x-amz-checksum-crc32c': 'a\nx-evil:1' },
       { 'x-amz-checksum-crc32c': 'a\r\nx-evil:1' },
@@ -108,7 +108,7 @@ for (const [
     }
   });
 
-  void test(`${name}: a refused trailer does not move the chunk chain, so end() can be retried`, async () => {
+  test(`${name}: a refused trailer does not move the chunk chain, so end() can be retried`, async () => {
     const good = { 'x-amz-checksum-crc32c': 'sOO8/Q==' };
     const signer = await chunkSigner(await chunkedHeaders(), credentials);
     await signer.chunk(new Uint8Array([1, 2, 3]));
@@ -119,7 +119,7 @@ for (const [
     assert.deepEqual(retried, await fresh.end(good));
   });
 
-  void test(`${name}: presign signs own signHeaders only and refuses a URL it cannot sign`, async () => {
+  test(`${name}: presign signs own signHeaders only and refuses a URL it cannot sign`, async () => {
     const inherited = Object.create({ 'x-inherited': 'yes' });
     inherited['x-own'] = '1';
     const signed = new URL(
@@ -139,7 +139,7 @@ for (const [
     );
   });
 
-  void test(`${name}: expires must be a whole number of seconds up to seven days`, async () => {
+  test(`${name}: expires must be a whole number of seconds up to seven days`, async () => {
     for (const expires of ['60&x-evil=1', 0, -1, 1.5, 604801, NaN]) {
       await rejects(() => presign({ ...request, expires }, credentials), RangeError, /expires/);
     }
@@ -151,7 +151,7 @@ for (const [
     }
   });
 
-  void test(`${name}: a region and service with slashes do not share a cached signing key`, async () => {
+  test(`${name}: a region and service with slashes do not share a cached signing key`, async () => {
     /**
      * @param {string} region
      * @param {string} service
@@ -169,13 +169,13 @@ for (const [
     assert.equal(await sign('a/b', 'c'), first);
   });
 
-  void test(`${name}: a SigV4a authorization cannot start a chunk or event stream`, async () => {
+  test(`${name}: a SigV4a authorization cannot start a chunk or event stream`, async () => {
     const v4a = await getAuthHeadersV4a({ ...request, regionSet: '*' }, credentials);
     await rejects(() => chunkSigner(v4a, credentials), TypeError, /getAuthHeaders/);
     await rejects(() => eventSigner(v4a, credentials), TypeError, /getAuthHeaders/);
   });
 
-  void test(`${name}: an empty chunk is not sent and does not end the upload`, async () => {
+  test(`${name}: an empty chunk is not sent and does not end the upload`, async () => {
     const signer = await chunkSigner(await chunkedHeaders(), credentials);
     const empty = await signer.chunk(new Uint8Array(0));
     assert.equal(empty.length, 0);
@@ -185,7 +185,7 @@ for (const [
     assert.deepEqual(await signer.chunk(new Uint8Array([1, 2, 3])), reference);
   });
 
-  void test(`${name}: an event signed at a fractional millisecond time is the same as at the whole millisecond`, async () => {
+  test(`${name}: an event signed at a fractional millisecond time is the same as at the whole millisecond`, async () => {
     const message = new Uint8Array([1, 2, 3]);
     const a = await (
       await eventSigner(
@@ -202,7 +202,7 @@ for (const [
     assert.deepEqual(a, b);
   });
 
-  void test(`${name}: SigV4a still needs a region set`, async () => {
+  test(`${name}: SigV4a still needs a region set`, async () => {
     await rejects(() => getAuthHeadersV4a(request, credentials), TypeError, /regionSet/);
   });
 }

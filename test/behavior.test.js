@@ -13,8 +13,8 @@ const byId = (id) =>
 const sigOf = (headers) => headers.authorization.slice(-64);
 const awsRange = byId('aws-get-object-range');
 
-void describe('result', () => {
-  void test('returns the headers to send, without host', () => {
+describe('result', () => {
+  test('returns the headers to send, without host', () => {
     const headers = getAuthHeaders(
       {
         method: 'PUT',
@@ -40,7 +40,7 @@ void describe('result', () => {
     );
   });
 
-  void test('hashes the body; an empty or missing body is the hash of an empty string', () => {
+  test('hashes the body; an empty or missing body is the hash of an empty string', () => {
     const url = new URL('https://bucket.example.com/key');
     assert.equal(
       getAuthHeaders({ method: 'GET', url, now }, credentials)['x-amz-content-sha256'],
@@ -58,7 +58,7 @@ void describe('result', () => {
     );
   });
 
-  void test('a session token is signed and returned as x-amz-security-token', () => {
+  test('a session token is signed and returned as x-amz-security-token', () => {
     const headers = signCase(getAuthHeaders, byId('session-token-get'));
     assert.equal(headers['x-amz-security-token'], byId('session-token-get').token);
     assert.match(
@@ -67,7 +67,7 @@ void describe('result', () => {
     );
   });
 
-  void test('unsignedPayload and an explicit x-amz-content-sha256 header give the same signature', () => {
+  test('unsignedPayload and an explicit x-amz-content-sha256 header give the same signature', () => {
     const base = {
       method: 'PUT',
       url: new URL('https://bucket.example.com/key'),
@@ -84,7 +84,7 @@ void describe('result', () => {
     assert.equal(header['x-amz-content-sha256'], 'UNSIGNED-PAYLOAD');
   });
 
-  void test('header names are matched without regard to case, a later header replaces an earlier one, and order does not matter', () => {
+  test('header names are matched without regard to case, a later header replaces an earlier one, and order does not matter', () => {
     const url = new URL('https://bucket.example.com/key');
     /** @param {Record<string, string>} signHeaders */
     const sign = (signHeaders) =>
@@ -106,7 +106,7 @@ void describe('result', () => {
     );
   });
 
-  void test('does not modify the request', () => {
+  test('does not modify the request', () => {
     const url = new URL('https://bucket.example.com/a%20b?z=1&a=2&=x');
     const signHeaders = { 'X-Amz-Acl': ' private ' };
     const request = { method: 'GET', url, region: 'us-east-1', signHeaders, now };
@@ -117,7 +117,7 @@ void describe('result', () => {
     assert.deepEqual({ ...request, url: undefined }, copy);
   });
 
-  void test('region, body and signHeaders are optional, and the time defaults to now', () => {
+  test('region, body and signHeaders are optional, and the time defaults to now', () => {
     const before = Math.floor(Date.now() / 1000);
     const headers = getAuthHeaders(
       { method: 'GET', url: new URL('https://bucket.example.com/key') },
@@ -134,23 +134,23 @@ void describe('result', () => {
   });
 });
 
-void describe('signing key cache', () => {
+describe('signing key cache', () => {
   const nextDay = byId('extra-next-day');
   const otherRegion = byId('extra-other-region');
 
-  void test('matches the AWS example on a cold and a warm cache', () => {
+  test('matches the AWS example on a cold and a warm cache', () => {
     assert.equal(sigOf(signCase(getAuthHeaders, awsRange)), awsRange.sig);
     assert.equal(sigOf(signCase(getAuthHeaders, awsRange)), awsRange.sig);
   });
 
-  void test('uses the right key for another date and another region, and again for the first after they are cached', () => {
+  test('uses the right key for another date and another region, and again for the first after they are cached', () => {
     assert.equal(sigOf(signCase(getAuthHeaders, nextDay)), nextDay.sig);
     assert.equal(sigOf(signCase(getAuthHeaders, otherRegion)), otherRegion.sig);
     assert.equal(sigOf(signCase(getAuthHeaders, awsRange)), awsRange.sig);
     assert.equal(sigOf(signCase(getAuthHeaders, nextDay)), nextDay.sig);
   });
 
-  void test('does not reuse the signing key of another secret', () => {
+  test('does not reuse the signing key of another secret', () => {
     const request = {
       method: 'GET',
       url: new URL(awsRange.href),
@@ -163,7 +163,7 @@ void describe('signing key cache', () => {
     assert.equal(sigOf(signCase(getAuthHeaders, awsRange)), awsRange.sig);
   });
 
-  void test('stays correct when more keys than the cache holds are used', () => {
+  test('stays correct when more keys than the cache holds are used', () => {
     for (let i = 0; i < 1100; i++) {
       getAuthHeaders(
         { method: 'GET', url: new URL(awsRange.href), region: `r${i}`, now },

@@ -42,7 +42,7 @@ const crc32 = (bytes) => {
 };
 
 for (const [name, { chunkSigner, eventSigner }] of entries) {
-  void test(`${name}: the AWS documentation example for a chunked upload`, async () => {
+  test(`${name}: the AWS documentation example for a chunked upload`, async () => {
     const signer = chunkSigner(
       authFor('4f232c4386841ef735655705268965c44a0e4690baa4adea153f7db9fa80a0a9'),
       credentials,
@@ -71,7 +71,7 @@ for (const [name, { chunkSigner, eventSigner }] of entries) {
     assert.equal(text(first.subarray(first.length - 2)), '\r\n');
   });
 
-  void test(`${name}: the AWS documentation example for a chunked upload with a signed trailing checksum`, async () => {
+  test(`${name}: the AWS documentation example for a chunked upload with a signed trailing checksum`, async () => {
     const signer = chunkSigner(
       authFor('106e2a8a18243abcf37539882f36619c00e2dfc72633413f02d3b74544bfeb8e'),
       credentials,
@@ -95,7 +95,7 @@ for (const [name, { chunkSigner, eventSigner }] of entries) {
     );
   });
 
-  void test(`${name}: every chunk in every smithy chain has the same signature`, async () => {
+  test(`${name}: every chunk in every smithy chain has the same signature`, async () => {
     const failures = [];
     let chunks = 0;
     for (const chain of corpus.chunks) {
@@ -128,7 +128,7 @@ for (const [name, { chunkSigner, eventSigner }] of entries) {
     assert.deepEqual(failures.slice(0, 5), []);
   });
 
-  void test(`${name}: every event in every smithy chain has the same signature, and the frame is well formed`, async () => {
+  test(`${name}: every event in every smithy chain has the same signature, and the frame is well formed`, async () => {
     const failures = [];
     let events = 0;
     for (const chain of corpus.events) {

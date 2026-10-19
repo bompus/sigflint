@@ -9,7 +9,7 @@ import { credentials, toMs } from './helpers.js';
 const corpus = JSON.parse(readFileSync(new URL('./corpus-general.json', import.meta.url), 'utf8'));
 
 for (const [name, { getAuthHeaders }] of entries) {
-  void test(`${name}: matches the botocore reference authorization for every case`, async () => {
+  test(`${name}: matches the botocore reference authorization for every case`, async () => {
     const failures = [];
     for (const c of corpus) {
       const headers = await getAuthHeaders(
@@ -43,7 +43,7 @@ for (const [name, { getAuthHeaders }] of entries) {
   });
 }
 
-void test('the service defaults to s3, and other services send x-amz-content-sha256 only for an unsigned payload', async () => {
+test('the service defaults to s3, and other services send x-amz-content-sha256 only for an unsigned payload', async () => {
   const [, { getAuthHeaders }] = entries[0];
   const request = {
     method: 'POST',
