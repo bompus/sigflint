@@ -3,6 +3,9 @@
   "options": {
     "typeAware": true
   },
+  "categories": {
+    "correctness": "error"
+  },
   "rules": {
     "no-unused-vars": [
       "error",
@@ -44,6 +47,8 @@
     "import/no-duplicates": "error",
     "import/no-self-import": "error",
     "promise/no-return-in-finally": "error",
+    "promise/no-callback-in-promise": "off",
+    "typescript/no-useless-default-assignment": "off",
     "typescript/no-extra-non-null-assertion": "error",
     "typescript/no-non-null-asserted-nullish-coalescing": "error",
     "typescript/prefer-ts-expect-error": "error",
