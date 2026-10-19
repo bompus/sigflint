@@ -1,24 +1,24 @@
 {
  "sigflint-node": {
-  "bundledBytes": 12081,
-  "minifiedBytes": 5667,
-  "gzipBytes": 2774,
-  "brotliBytes": 2557,
+  "bundledBytes": 12361,
+  "minifiedBytes": 5675,
+  "gzipBytes": 2777,
+  "brotliBytes": 2558,
   "source": {
-   "bytes": 35051,
-   "lines": 722
+   "bytes": 42041,
+   "lines": 1170
   },
   "directDependencies": 0,
   "dependencyNames": []
  },
  "sigflint-bun": {
-  "bundledBytes": 10943,
+  "bundledBytes": 11197,
   "minifiedBytes": 5034,
   "gzipBytes": 2535,
   "brotliBytes": 2330,
   "source": {
-   "bytes": 33571,
-   "lines": 698
+   "bytes": 40248,
+   "lines": 1131
   },
   "directDependencies": 0,
   "dependencyNames": []

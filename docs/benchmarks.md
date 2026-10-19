@@ -226,7 +226,7 @@ All figures in this section were measured again on the single built file that No
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 35,051 | 5,667 | 2,774 | 2,557 | 0 |  |
+| **sigflint** | 42,041 | 5,675 | 2,777 | 2,558 | 0 |  |
 | aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
 | @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
@@ -246,13 +246,13 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 
 | Imports | Minified | gzip |
 |---|--:|--:|
-| `getAuthHeaders` | 5,667 | 2,774 |
-| `getAuthHeaders`, `presign` | 7,291 | 3,352 |
+| `getAuthHeaders` | 5,675 | 2,777 |
+| `getAuthHeaders`, `presign` | 7,299 | 3,356 |
 | `getAuthHeadersV4a` | 6,118 | 2,980 |
 | `presignV4a` | 6,142 | 3,026 |
-| `chunkSigner` | 2,906 | 1,516 |
-| `eventSigner` | 3,117 | 1,613 |
-| all six | 12,253 | 5,128 |
+| `chunkSigner` | 2,914 | 1,522 |
+| `eventSigner` | 3,125 | 1,615 |
+| all six | 12,261 | 5,131 |
 
 The Bun and web entries are 5,034 / 2,535 and 5,233 / 2,608 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules: on Node that imports in about 1.2 ms (the import figure in the memory section, measured on `dist/`). The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 

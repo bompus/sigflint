@@ -1,14 +1,14 @@
 {
  "node": {
   "headers": {
-   "minifiedBytes": 5667,
-   "gzipBytes": 2774,
-   "brotliBytes": 2557
+   "minifiedBytes": 5675,
+   "gzipBytes": 2777,
+   "brotliBytes": 2558
   },
   "headers + presign": {
-   "minifiedBytes": 7291,
-   "gzipBytes": 3352,
-   "brotliBytes": 3053
+   "minifiedBytes": 7299,
+   "gzipBytes": 3356,
+   "brotliBytes": 3063
   },
   "SigV4a headers": {
    "minifiedBytes": 6118,
@@ -21,19 +21,19 @@
    "brotliBytes": 2742
   },
   "chunked uploads": {
-   "minifiedBytes": 2906,
-   "gzipBytes": 1516,
-   "brotliBytes": 1369
+   "minifiedBytes": 2914,
+   "gzipBytes": 1522,
+   "brotliBytes": 1373
   },
   "event streams": {
-   "minifiedBytes": 3117,
-   "gzipBytes": 1613,
-   "brotliBytes": 1466
+   "minifiedBytes": 3125,
+   "gzipBytes": 1615,
+   "brotliBytes": 1470
   },
   "everything": {
-   "minifiedBytes": 12253,
-   "gzipBytes": 5128,
-   "brotliBytes": 4678
+   "minifiedBytes": 12261,
+   "gzipBytes": 5131,
+   "brotliBytes": 4670
   }
  },
  "bun": {
