@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
-"""Reference signatures for the conformance cases, per the SigV4 specification, computed with botocore's own signing steps.
+"""Reference signatures for the conformance cases, per the SigV4 specification, computed with
+botocore's own signing steps.
 
-botocore signs the query string exactly as written, so this script first normalizes each request the way the
-specification (and every spec-following server) does, then lets botocore build the canonical request, the string
-to sign and the signature:
-  path   : '+' is a space (as S3 reads it; an encoded plus is %2B), percent-decode to bytes, then encode every byte outside A-Za-z0-9-._~ and '/'
-  query  : split on '&', split name/value on the first '=', form-decode ('+' is a space, then percent-decode to bytes),
-           encode every byte outside A-Za-z0-9-._~, sort by encoded name then encoded value, join as name=value
+botocore signs the query string exactly as written, so this script first normalizes each request
+the way the specification (and every spec-following server) does, then lets botocore build the
+canonical request, the string to sign and the signature:
+  path   : '+' is a space (as S3 reads it; an encoded plus is %2B), percent-decode to bytes, then
+           encode every byte outside A-Za-z0-9-._~ and '/'
+  query  : split on '&', split name/value on the first '=', form-decode ('+' is a space, then
+           percent-decode to bytes), encode every byte outside A-Za-z0-9-._~, sort by encoded name
+           then encoded value, join as name=value
   headers: lowercase names, trim and collapse runs of whitespace in values, sort by name
 Fixed clock 20130524T000000Z, region us-east-1, the AWS documentation example credentials.
 Credentials get a session token when a case has a `token` field.
 Usage: oracle.py cases.json expected.json
 """
+
 import hashlib
 import json
 import sys
+from pathlib import Path
 from urllib.parse import quote_from_bytes, unquote_to_bytes, urlsplit
 
 from botocore.auth import S3SigV4Auth
@@ -71,9 +76,9 @@ def sign(case):
 
 
 def main():
-    cases = json.load(open(sys.argv[1]))
+    cases = json.loads(Path(sys.argv[1]).read_text())
     out = {c["id"]: sign(c) for c in cases}
-    json.dump(out, open(sys.argv[2], "w"))
+    Path(sys.argv[2]).write_text(json.dumps(out))
     print(f"{len(out)} reference signatures written")
 
 

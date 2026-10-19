@@ -100,7 +100,27 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             conformance/streams/package-lock.json
+            bench/package-lock.json
       - run: npm ci
+      # the same pinned ruff, ShellCheck and shfmt releases as CONTRIBUTING.md names, checked against GitHub's digests
+      - name: Install ruff, ShellCheck and shfmt
+        run: |
+          set -euo pipefail
+          bin="$RUNNER_TEMP/bin"
+          mkdir -p "$bin"
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o ruff.tar.gz https://github.com/astral-sh/ruff/releases/download/0.17.1/ruff-x86_64-unknown-linux-gnu.tar.gz
+          echo 'a293ac937715ae6fb6b64da86761598379e6149f40fbc00fde9ba8a2a562ac65  ruff.tar.gz' | sha256sum -c
+          tar -xzf ruff.tar.gz --strip-components=1 -C "$bin" ruff-x86_64-unknown-linux-gnu/ruff
+          curl -fsSL -o shellcheck.tar.gz https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.gz
+          echo 'b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6  shellcheck.tar.gz' | sha256sum -c
+          tar -xzf shellcheck.tar.gz --strip-components=1 -C "$bin" shellcheck-v0.11.0/shellcheck
+          curl -fsSL -o "$bin/shfmt" https://github.com/mvdan/sh/releases/download/v3.14.1/shfmt_v3.14.1_linux_amd64
+          echo "76e77641faa025814b77f153b29796b8e6fa2fca03e0c76a691608b86c7ea7bf  $bin/shfmt" | sha256sum -c
+          chmod +x "$bin/shfmt"
+          echo "$bin" >> "$GITHUB_PATH"
       - run: npm run check:style
       - run: npm ci --prefix conformance/streams
       - run: npm run types:streams
+      - run: npm ci --prefix bench
+      - run: npm run types:bench

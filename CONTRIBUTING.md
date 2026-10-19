@@ -10,9 +10,12 @@ npm test            # builds dist/ first, then the corpus test and the behavior 
 npm run build       # dist/node.js and dist/bun.js, the one-file builds Node and Bun load (esbuild)
 npm run types       # type-checks src/, test/ and conformance/, then the generated .d.ts and the consumer type test
 npm run types:streams  # type-checks conformance/streams/ (needs npm ci in that folder first)
+npm run types:bench    # type-checks bench/ (needs npm ci in bench/ first)
 npm run check:package
 npm run check       # format, lint and all of the above (oxfmt, oxlint; npm run format fixes the format)
 ```
+
+`npm run check` also checks the Python and shell scripts with [ruff](https://docs.astral.sh/ruff/) 0.17.1, [ShellCheck](https://www.shellcheck.net/) 0.11.0 and [shfmt](https://github.com/mvdan/sh) 3.14.1, which are not npm packages: install those versions and put them on your `PATH`. CI installs the same versions.
 
 The tests also run on Bun (`bun test test/`) and Deno (`deno test -A --no-check test/`; `npm run types` does the type checking); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.
 

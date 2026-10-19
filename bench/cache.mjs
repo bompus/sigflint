@@ -7,37 +7,90 @@
 import { readFileSync } from 'node:fs';
 import v8 from 'node:v8';
 
-const [, , oursPath] = process.argv;
+const [oursPath] = process.argv.slice(2);
 const isBun = typeof Bun !== 'undefined';
-const jsc = isBun ? await import('bun:jsc') : null;
-const forceGC = () => (isBun ? Bun.gc(true) : globalThis.gc());
+// read only on Bun (the cast drops the null of the Node branch)
+const jsc = /** @type {typeof import('bun:jsc')} */ (isBun ? await import('bun:jsc') : null);
+// Node runs this with --expose-gc
+const forceGC = () => (isBun ? Bun.gc(true) : /** @type {() => void} */ (globalThis.gc)());
 const heap = () => (isBun ? jsc.heapSize() : v8.getHeapStatistics().used_heap_size);
 const rss = () => process.memoryUsage.rss();
 const runtime = isBun ? `bun ${Bun.version}` : `node ${process.versions.node}`;
 const arm = process.env.ARM ?? 'sigflint';
-const corpus = JSON.parse(readFileSync(new URL('../test/corpus.json', import.meta.url)));
-const c = corpus.find((x) => x.id === 'bench-download');
-const { getAuthHeaders } = await import(oursPath);
-const CREDS = { accessKeyId: 'AKIAIOSFODNN7EXAMPLE', secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' };
+// JSON.parse reads the Buffer as UTF-8 text (the casts are for the type checker only)
+/** @type {import('./adapters.mjs').Case[]} */
+const corpus = JSON.parse(
+  /** @type {string} */ (
+    /** @type {unknown} */ (readFileSync(new URL('../test/corpus.json', import.meta.url)))
+  ),
+);
+const c = /** @type {import('./adapters.mjs').Case} */ (
+  corpus.find((x) => x.id === 'bench-download')
+);
+const { getAuthHeaders } = await import(/** @type {string} */ (oursPath));
+const CREDS = {
+  accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
+  secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+};
 const url = new URL(c.href);
-const DAY = 86400000, T0 = Date.UTC(2013, 4, 24);
-const sign = (now) => getAuthHeaders({ method: c.method, url, region: 'us-east-1', body: c.body, signHeaders: { ...c.headers }, now }, CREDS);
+const DAY = 86400000,
+  T0 = Date.UTC(2013, 4, 24);
+/** @param {number} now */
+const sign = (now) =>
+  getAuthHeaders(
+    {
+      method: c.method,
+      url,
+      region: 'us-east-1',
+      body: c.body,
+      signHeaders: { ...c.headers },
+      now,
+    },
+    CREDS,
+  );
 
-for (let i = 0; i < 3000; i++) sign(T0); // warm-up on one day, outside both phases
+for (let i = 0; i < 3000; i++) {
+  sign(T0);
+} // warm-up on one day, outside both phases
 const counts = [0, 250, 500, 1000, 1500, 2000];
+/**
+ * @param {string} name
+ * @param {(i: number) => number} dayOf
+ */
 const phase = (name, dayOf) => {
-  forceGC(); forceGC();
-  const h0 = heap(), r0 = rss();
+  forceGC();
+  forceGC();
+  const h0 = heap(),
+    r0 = rss();
+  /** @type {{ entries: number, heapBytes: number, rssBytes: number }[]} */
   const rows = [];
   let done = 0;
   for (const n of counts) {
-    for (; done < n; done++) sign(T0 + dayOf(done + 1) * DAY);
-    forceGC(); forceGC();
+    for (; done < n; done++) {
+      sign(T0 + dayOf(done + 1) * DAY);
+    }
+    forceGC();
+    forceGC();
     rows.push({ entries: n, heapBytes: heap() - h0, rssBytes: rss() - r0 });
   }
   return { name, rows };
 };
 const distinct = phase('distinct-days', (i) => i);
 const same = phase('same-day', () => 0);
-const at = (p, n) => p.rows.find((r) => r.entries === n).heapBytes;
-console.log(JSON.stringify({ arm, runtime, status: 'ok', phases: [distinct, same], bytesPerEntry1000: (at(distinct, 1000) - at(distinct, 0)) / 1000, plateauGrowth1000to2000: at(distinct, 2000) - at(distinct, 1000), sameDayGrowth2000: at(same, 2000) }));
+/**
+ * @param {ReturnType<typeof phase>} p
+ * @param {number} n
+ */
+const at = (p, n) =>
+  /** @type {{ heapBytes: number }} */ (p.rows.find((r) => r.entries === n)).heapBytes;
+console.log(
+  JSON.stringify({
+    arm,
+    runtime,
+    status: 'ok',
+    phases: [distinct, same],
+    bytesPerEntry1000: (at(distinct, 1000) - at(distinct, 0)) / 1000,
+    plateauGrowth1000to2000: at(distinct, 2000) - at(distinct, 1000),
+    sameDayGrowth2000: at(same, 2000),
+  }),
+);

@@ -9,22 +9,58 @@
 import { readFileSync } from 'node:fs';
 import { performance } from 'node:perf_hooks';
 import { loadAdapters, freezeClock } from './adapters.mjs';
+/** @typedef {import('./adapters.mjs').Case & { sig: string }} CorpusCase */
 
-const [, , candidate, oursPath] = process.argv;
-const corpus = JSON.parse(readFileSync(new URL('../test/corpus.json', import.meta.url)));
-const c = corpus.find((x) => x.id === 'bench-download');
+const [candidate, oursPath] = process.argv.slice(2);
+// JSON.parse reads the Buffer as UTF-8 text (the casts are for the type checker only)
+/** @type {CorpusCase[]} */
+const corpus = JSON.parse(
+  /** @type {string} */ (
+    /** @type {unknown} */ (readFileSync(new URL('../test/corpus.json', import.meta.url)))
+  ),
+);
+const c = /** @type {CorpusCase} */ (corpus.find((x) => x.id === 'bench-download'));
 const runtime = typeof Bun !== 'undefined' ? `bun ${Bun.version}` : `node ${process.versions.node}`;
 const arm = process.env.ARM ?? candidate;
 const startMs = performance.now();
 if (candidate === 'none') {
   const t1 = performance.now();
-  console.log(JSON.stringify({ arm, candidate, runtime, status: 'ok', startMs, importMs: t1 - startMs, firstSignMs: 0, totalMs: t1, ok: true }));
+  console.log(
+    JSON.stringify({
+      arm,
+      candidate,
+      runtime,
+      status: 'ok',
+      startMs,
+      importMs: t1 - startMs,
+      firstSignMs: 0,
+      totalMs: t1,
+      ok: true,
+    }),
+  );
 } else {
   freezeClock();
-  const adapters = await loadAdapters(oursPath, null, [candidate]);
+  const adapters = await loadAdapters(/** @type {string} */ (oursPath), null, [
+    /** @type {string} */ (candidate),
+  ]);
   const t1 = performance.now();
-  const a = adapters.find((x) => x.id === candidate);
+  // the candidate was loaded by name above (an unknown name throws in the next line, as before)
+  const a = /** @type {import('./adapters.mjs').Adapter} */ (
+    adapters.find((x) => x.id === candidate)
+  );
   const got = a.kind === 'sync' ? a.sign(c) : await a.sign(c);
   const t2 = performance.now();
-  console.log(JSON.stringify({ arm, candidate, runtime, status: 'ok', startMs, importMs: t1 - startMs, firstSignMs: t2 - t1, totalMs: t2, ok: got === c.sig }));
+  console.log(
+    JSON.stringify({
+      arm,
+      candidate,
+      runtime,
+      status: 'ok',
+      startMs,
+      importMs: t1 - startMs,
+      firstSignMs: t2 - t1,
+      totalMs: t2,
+      ok: got === c.sig,
+    }),
+  );
 }

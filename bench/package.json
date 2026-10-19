@@ -1,8 +1,8 @@
 {
   "name": "sigflint-bench",
   "private": true,
-  "type": "module",
   "description": "Benchmarks and comparisons for sigflint. Not published.",
+  "type": "module",
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@smithy/hash-node": "^4.5.2",

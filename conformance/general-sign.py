@@ -1,32 +1,48 @@
-"""Stage 3: botocore's generic SigV4Auth signs each normalized case with a fixed clock -> corpus-general.json
-(adds sig = last 64 hex chars of Authorization, canonical = canonical request, authorization)."""
-import json, sys, datetime
+"""Stage 3: botocore's generic SigV4Auth signs each normalized case with a fixed clock
+-> corpus-general.json (adds sig = last 64 hex chars of Authorization, canonical = canonical
+request, authorization)."""
+
+import datetime
+import json
+import sys
+from pathlib import Path
+
 import botocore.auth as A
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import Credentials
 
-creds = ('AKIAIOSFODNN7EXAMPLE', 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY')
-cases = json.load(open(sys.argv[1]))
+creds = ("AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY")
+cases = json.loads(Path(sys.argv[1]).read_text())
 out = []
 for c in cases:
-    now = datetime.datetime.strptime(c['stamp'], '%Y%m%dT%H%M%SZ')
+    now = datetime.datetime.strptime(c["stamp"], "%Y%m%dT%H%M%SZ")
     A.get_current_datetime = lambda remove_tzinfo=True, now=now: now
-    cr = Credentials(creds[0], creds[1], c['token'])
-    body = c['body'].encode('utf-8') if c['body'] else None
-    req = AWSRequest(method=c['method'], url=c['pathHref'], data=body, headers=dict(c['headers']), params=[tuple(p) for p in c['pairs']] or None)
-    if c['unsigned']:
-        req.context['payload_signing_enabled'] = False
-    signer = A.SigV4Auth(cr, c['service'], c['region'])
+    cr = Credentials(creds[0], creds[1], c["token"])
+    body = c["body"].encode("utf-8") if c["body"] else None
+    req = AWSRequest(
+        method=c["method"],
+        url=c["pathHref"],
+        data=body,
+        headers=dict(c["headers"]),
+        params=[tuple(p) for p in c["pairs"]] or None,
+    )
+    if c["unsigned"]:
+        req.context["payload_signing_enabled"] = False
+    signer = A.SigV4Auth(cr, c["service"], c["region"])
     cap = {}
     orig = signer.canonical_request
-    def spy(request, orig=orig):
-        r = orig(request); cap['cr'] = r; return r
+
+    def spy(request, orig=orig, cap=cap):
+        r = orig(request)
+        cap["cr"] = r
+        return r
+
     signer.canonical_request = spy
     signer.add_auth(req)
-    auth = req.headers['Authorization']
-    c['sig'] = auth.split('Signature=')[1]
-    c['canonical'] = cap['cr']
-    c['authorization'] = auth
+    auth = req.headers["Authorization"]
+    c["sig"] = auth.split("Signature=")[1]
+    c["canonical"] = cap["cr"]
+    c["authorization"] = auth
     out.append(c)
-json.dump(out, open(sys.argv[2], 'w'), ensure_ascii=False)
-print(len(out), 'signed')
+Path(sys.argv[2]).write_text(json.dumps(out, ensure_ascii=False))
+print(len(out), "signed")
