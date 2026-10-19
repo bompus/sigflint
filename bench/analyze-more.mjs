@@ -1,11 +1,14 @@
 // node analyze-more.mjs : summarizes results/speed-regression.jsonl (part A) and results/speed-more.jsonl (part B) as protocol-more.md describes;
-// writes results/speed-more-summary.json and prints Markdown tables.
-import { readFileSync, writeFileSync } from 'node:fs';
+// writes results/speed-more-summary.json and prints Markdown tables. RESULTS=<dir> reads and writes that directory instead; a directory with no
+// speed-more.jsonl gets part A only (protocol-minified.md).
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const here = new URL('.', import.meta.url).pathname;
+const dir = process.env.RESULTS ?? `${here}results`;
+const hasB = existsSync(`${dir}/speed-more.jsonl`);
 /** @param {string} name */
 const load = (name) =>
-  readFileSync(`${here}results/${name}`, 'utf8')
+  readFileSync(`${dir}/${name}`, 'utf8')
     .trim()
     .split('\n')
     .map((line) => JSON.parse(line));
@@ -79,7 +82,7 @@ function summarize(rows, controls) {
 }
 
 const A = summarize(load('speed-regression.jsonl'), ['final-1', 'final-2']);
-const B = summarize(load('speed-more.jsonl'), ['final-1', 'final-2']);
+const B = summarize(hasB ? load('speed-more.jsonl') : [], ['final-1', 'final-2']);
 /**
  * @type {{ regression: Record<string, unknown>[], more: Record<string, unknown>[], versions: Record<string, string>, rejected: number, errors: number, maxBusy: number, alone?: Record<string, { nodeNs: number, bunNs: number }> }}
  */
@@ -119,6 +122,10 @@ for (const [key, cell] of Object.entries(A.cells)) {
   console.log(
     `| ${runtime} | ${workload} | ${frozen} | ${Math.round(cell.pooled)} (${/** @type {{ ns: number }} */ (cell.arms['final-1']).ns}, ${/** @type {{ ns: number }} */ (cell.arms['final-2']).ns}) | ${change.toFixed(1)}% | ${cell.band.toFixed(1)}% | ${verdict} |`,
   );
+}
+if (!hasB) {
+  writeFileSync(`${dir}/speed-more-summary.json`, JSON.stringify(summary, null, 1));
+  process.exit(0);
 }
 
 const libraries = ['aws4', 'aws4fetch', 'smithy', 'aws-sig', 'wdl', 'minio'];
@@ -179,4 +186,4 @@ for (const workload of [
     `| ${workload} | ${(/** @type {number} */ (values[0]) / 1000).toFixed(2)} | ${(/** @type {number} */ (values[1]) / 1000).toFixed(2)} |`,
   );
 }
-writeFileSync(`${here}results/speed-more-summary.json`, JSON.stringify(summary, null, 1));
+writeFileSync(`${dir}/speed-more-summary.json`, JSON.stringify(summary, null, 1));

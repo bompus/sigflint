@@ -7,7 +7,7 @@
 # Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet> [BENCH_LOCK=<lock file>] [FROM_ROUND=n]
 #        run-admitted.sh <A|R|B|C|D> <dir with node.js, bun.js and SHA256SUMS> [rounds=3]
 #   A  S3 header matrix, 8 arms                       -> results/speed-raw.jsonl
-#   R  regression check against frozen/               -> results/speed-regression.jsonl
+#   R  regression check against frozen/ (BASE=<dir> compares against that build instead) -> results/speed-regression.jsonl
 #   B  other services and presigned URLs, 8 arms      -> results/speed-more.jsonl
 #   C  memory: allocation, GC / CPU / growth / peak RSS, key-cache retention -> results/memory-raw.jsonl
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
@@ -29,7 +29,8 @@ case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B
   exit 2
   ;;
 esac
-(cd "$NEW" && sha256sum -c --quiet SHA256SUMS) || {
+BASE=${BASE:-$HERE/frozen}
+(cd "$NEW" && sha256sum -c --quiet SHA256SUMS && cd "$BASE" && sha256sum -c --quiet SHA256SUMS) || {
   echo "artifact hashes differ; refusing to run"
   exit 4
 }
@@ -183,7 +184,7 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
     A) speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$rt" "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$rt.js" 1 ;;
     R)
       local F=$NEW/$rt.js
-      [ "$arm" = frozen ] && F=$HERE/frozen/$rt.js
+      [ "$arm" = frozen ] && F=$BASE/$rt.js
       speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$rt" "$HERE/speed.mjs" sigflint "$F" 1
       ;;
     B)

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `dist/node.js` and `dist/bun.js` are bundled by Bun's bundler (`bun build --target=node` and `--target=bun`) instead of esbuild, still unminified. Both come from the same `src/` and are smaller: 24,712 and 23,540 bytes, from 26,959 and 25,710. `dist/bun.js` imports `crypto` rather than `node:crypto`; Bun loads the same module for both. The tests run against both builds on Node, Bun and Deno. The speed, memory and import figures in `docs/benchmarks.md` were measured on the 1.0.1 build, which esbuild made, and are measured again before the next release, as for every release. Building from source needs Bun (`CONTRIBUTING.md`).
 - The code is formatted with oxfmt, linted with oxlint and type-checked by `tsc` in strict mode, and `npm run check` runs all three. Signing does not change: built without whitespace, the Bun build and the WebCrypto entry are the same code as before, and the Node build differs in the two statements of the HMAC key XOR, written as `a[i] = a[i] ^ b[i]` instead of `a[i] ^= b[i]`, which makes a minified bundle of the Node entry 8 bytes larger (`getAuthHeaders` alone: 5,675 bytes, 2,777 gzipped, up from 5,667 and 2,774). The published files in `src/` and `dist/` differ in formatting and braces, and `src/` has more JSDoc type comments. The public types (`index.d.ts` and `sigflint/web`) are unchanged; the generated declarations of internal helpers in `types/` have parameter types instead of `any`.
 
 ## 1.0.1 - 2026-10-18

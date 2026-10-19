@@ -55,7 +55,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "esbuild src/node.js src/bun.js --bundle --format=esm --platform=node --target=es2022 --outdir=dist --log-level=warning",
+    "build": "bun build src/node.js --target=node --outfile=dist/node.js && bun build src/bun.js --target=bun --outfile=dist/bun.js",
     "pretest": "npm run build",
     "test": "node --test \"test/*.test.js\"",
     "pretest:bun": "npm run build",
@@ -78,7 +78,6 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@types/bun": "1.4.3",
     "@types/node": "^26.6.5",
-    "esbuild": "^0.28.2",
     "oxfmt": "0.73.0",
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "7.0.2004",

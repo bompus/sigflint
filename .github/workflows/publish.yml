@@ -32,6 +32,10 @@ jobs:
         run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
       - name: Benchmarks were re-run on this code
         run: node bench/check-benchmarked.mjs
+      # npm run build bundles dist/ with bun build, pinned so every build makes the same dist/
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.3
       - run: npm ci
       - run: npm test
       - run: npm run types
