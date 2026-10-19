@@ -3,7 +3,7 @@
 - `banner-dark.png` and `banner-light.png` (2560 × 640) are the banner at the top of the README, in dark and light.
 - `social-preview.png` (1280 × 640) is the image GitHub shows when the repository is linked elsewhere. GitHub does not read it from this folder: it is uploaded by hand in the repository's Settings, under Social preview. Remake and upload it again whenever the banner changes.
 
-`social-preview.png` is made from `banner-dark.png` with ImageMagick: cut 44 px from each side and scale it to 1280 px wide, then center it on a 1280 × 640 background made from the banner's top and bottom 120 px rows, with the top and bottom 60 px of the banner faded into that background.
+`social-preview.png` is made from `banner-dark.png` with ImageMagick: keep a 2,176 px wide slice starting 44 px from the left (so 340 px of empty background go from the right, which centers the logo and text) and scale it to 1280 px wide, then center it on a 1280 × 640 background made from the banner's top and bottom 120 px rows, with the top and bottom 60 px of the banner faded into that background.
 
 ```sh
 magick banner-dark.png -crop 2560x120+0+0 +repage -resize '1280x320!' top.png
