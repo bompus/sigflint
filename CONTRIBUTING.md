@@ -10,7 +10,7 @@ The build uses [Bun](https://bun.sh)'s bundler (`bun build`), so install Bun as 
 npm ci
 npm test            # builds dist/ first, then the corpus test and the behavior tests (src/ and dist/)
 npm run build       # dist/node.js and dist/bun.js, the one-file builds Node and Bun load (bun build)
-npm run types       # emits the .d.ts files, then type-checks src/, test/ and conformance/ and the consumer type test
+npm run types       # emits the .d.ts files, then type-checks src/, test/ and conformance/ (not conformance/streams/) and the consumer type test
 npm run types:streams  # type-checks conformance/streams/ (needs npm ci in that folder first)
 npm run types:bench    # type-checks bench/ (needs npm ci in bench/ first)
 npm run check:package
