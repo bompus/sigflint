@@ -136,7 +136,5 @@ jobs:
           chmod +x "$bin/shfmt"
           echo "$bin" >> "$GITHUB_PATH"
       - run: npm run check:style
-      - run: npm ci --prefix conformance/streams
       - run: npm run types:streams
-      - run: npm ci --prefix bench
       - run: npm run types:bench
