@@ -113,6 +113,10 @@ jobs:
             package-lock.json
             conformance/streams/package-lock.json
             bench/package-lock.json
+      # the type checks run on bun check
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.3
       - run: npm ci
       # the same pinned ruff, ShellCheck and shfmt releases as CONTRIBUTING.md names, checked against GitHub's digests
       - name: Install ruff, ShellCheck and shfmt
@@ -132,7 +136,5 @@ jobs:
           chmod +x "$bin/shfmt"
           echo "$bin" >> "$GITHUB_PATH"
       - run: npm run check:style
-      - run: npm ci --prefix conformance/streams
       - run: npm run types:streams
-      - run: npm ci --prefix bench
       - run: npm run types:bench
