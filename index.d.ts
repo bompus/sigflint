@@ -26,13 +26,19 @@ export interface EventSigner {
  * Node.js, Bun and Deno return the headers directly. Cloudflare Workers and browsers have only promise-based
  * WebCrypto and return a promise. Always `await` the result and the same code runs everywhere.
  */
-export function getAuthHeaders(request: SignRequest, credentials: Credentials): MaybePromise<AuthHeaders>;
+export function getAuthHeaders(
+  request: SignRequest,
+  credentials: Credentials,
+): MaybePromise<AuthHeaders>;
 
 /** A presigned URL: the original URL with the authentication parameters and the signature added. `request.expires` is the lifetime in seconds (default 3600). */
 export function presign(request: SignRequest, credentials: Credentials): MaybePromise<string>;
 
 /** SigV4a (multi-region) headers; `request.regionSet` is required, for example 'us-east-1,us-west-2' or '*'. */
-export function getAuthHeadersV4a(request: SignRequestV4a, credentials: Credentials): MaybePromise<AuthHeaders>;
+export function getAuthHeadersV4a(
+  request: SignRequestV4a,
+  credentials: Credentials,
+): MaybePromise<AuthHeaders>;
 
 /** A SigV4a presigned URL; `request.regionSet` is required. */
 export function presignV4a(request: SignRequestV4a, credentials: Credentials): MaybePromise<string>;

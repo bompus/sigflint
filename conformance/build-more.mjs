@@ -13,11 +13,27 @@ import { join } from 'node:path';
 const here = new URL('.', import.meta.url).pathname;
 const test = `${here}../test/`;
 const python = process.env.PYTHON ?? 'python3';
-const wanted = process.argv.length > 2 ? process.argv.slice(2) : ['general', 'presign', 'v4a', 'stream'];
+const wanted =
+  process.argv.length > 2 ? process.argv.slice(2) : ['general', 'presign', 'v4a', 'stream'];
 const tmp = mkdtempSync(join(tmpdir(), 'sigflint-'));
-const run = (command, args, options = {}) => execFileSync(command, args, { stdio: 'inherit', ...options });
+/**
+ * @param {string} command
+ * @param {string[]} args
+ * @param {import('node:child_process').ExecFileSyncOptions} [options]
+ */
+const run = (command, args, options = {}) =>
+  execFileSync(command, args, { stdio: 'inherit', ...options });
+/**
+ * @param {string} script
+ * @param {...string} args
+ */
 const py = (script, ...args) => run(python, ['-I', `${here}${script}`, ...args]);
+/**
+ * @param {string} script
+ * @param {...string} args
+ */
 const node = (script, ...args) => run(process.execPath, [`${here}${script}`, ...args]);
+/** @param {string} name */
 const read = (name) => JSON.parse(readFileSync(`${test}${name}`, 'utf8'));
 try {
   if (wanted.includes('general')) {
@@ -30,15 +46,31 @@ try {
     node('normalize.mjs', join(tmp, 'raw-pre.json'), join(tmp, 'norm-pre.json'));
     py('presign.py', 'sign', join(tmp, 'norm-pre.json'), `${test}corpus-presign.json`);
   }
-  if (wanted.includes('v4a')) py('v4a.py', `${test}corpus-general.json`, `${test}corpus-presign.json`, `${test}corpus-v4a.json`);
+  if (wanted.includes('v4a')) {
+    py(
+      'v4a.py',
+      `${test}corpus-general.json`,
+      `${test}corpus-presign.json`,
+      `${test}corpus-v4a.json`,
+    );
+  }
   if (wanted.includes('stream')) {
-    if (!existsSync(`${here}streams/node_modules`)) run('npm', ['ci', '--ignore-scripts'], { cwd: `${here}streams` });
+    if (!existsSync(`${here}streams/node_modules`)) {
+      run('npm', ['ci', '--ignore-scripts'], { cwd: `${here}streams` });
+    }
     node('streams/gen-stream.mjs', join(tmp, 'stream.json'));
     // 60 chains of each kind keep the committed file small; the long ones carry the 64 KiB payloads
     const full = JSON.parse(readFileSync(join(tmp, 'stream.json'), 'utf8'));
-    writeFileSync(`${test}corpus-stream.json`, JSON.stringify({ chunks: full.chunks.slice(0, 60), events: full.events.slice(0, 60) }));
+    writeFileSync(
+      `${test}corpus-stream.json`,
+      JSON.stringify({ chunks: full.chunks.slice(0, 60), events: full.events.slice(0, 60) }),
+    );
   }
-  for (const name of ['general', 'presign', 'v4a']) if (wanted.includes(name)) console.log(`test/corpus-${name}.json: ${read(`corpus-${name}.json`).length} cases`);
+  for (const name of ['general', 'presign', 'v4a']) {
+    if (wanted.includes(name)) {
+      console.log(`test/corpus-${name}.json: ${read(`corpus-${name}.json`).length} cases`);
+    }
+  }
 } finally {
   rmSync(tmp, { recursive: true, force: true });
 }

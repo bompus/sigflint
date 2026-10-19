@@ -4,39 +4,69 @@ import { emptyBodyHash as emptyHash } from './base.js';
 
 export const utf8 = /* @__PURE__ */ new TextEncoder();
 
-/** The seed signature, timestamp and scope of a signed request, from the headers getAuthHeaders returned. */
+/**
+ * The seed signature, timestamp and scope of a signed request, from the headers getAuthHeaders returned.
+ * @param {import('./base.js').AuthHeaders} authHeaders
+ */
 export function seedOf(authHeaders) {
   const auth = authHeaders.authorization;
-  if (typeof auth !== 'string' || !auth.startsWith('AWS4-HMAC-SHA256 '))
-    throw new TypeError('authHeaders must be the headers getAuthHeaders returned (a SigV4a signature cannot start a chunk or event stream)');
+  if (typeof auth !== 'string' || !auth.startsWith('AWS4-HMAC-SHA256 ')) {
+    throw new TypeError(
+      'authHeaders must be the headers getAuthHeaders returned (a SigV4a signature cannot start a chunk or event stream)',
+    );
+  }
   const scope = auth.slice(auth.indexOf('Credential=') + 11, auth.indexOf(',')).split('/'); // access key, date, region, service, aws4_request
   return {
     signature: auth.slice(auth.lastIndexOf('Signature=') + 10),
-    datetime: authHeaders['x-amz-date'],
-    date: scope[1],
-    region: scope[2],
-    service: scope[3],
+    datetime: /** @type {string} */ (authHeaders['x-amz-date']),
+    date: /** @type {string} */ (scope[1]),
+    region: /** @type {string} */ (scope[2]),
+    service: /** @type {string} */ (scope[3]),
     scope: scope.slice(1).join('/'),
   };
 }
 
-export const chunkStringToSign = (datetime, scope, previous, payloadHash) => `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${emptyHash}\n${payloadHash}`;
-export const trailerStringToSign = (datetime, scope, previous, trailerHash) => `AWS4-HMAC-SHA256-TRAILER\n${datetime}\n${scope}\n${previous}\n${trailerHash}`;
+/**
+ * @param {string} datetime
+ * @param {string} scope
+ * @param {string} previous
+ * @param {string} payloadHash
+ */
+export const chunkStringToSign = (datetime, scope, previous, payloadHash) =>
+  `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${emptyHash}\n${payloadHash}`;
+/**
+ * @param {string} datetime
+ * @param {string} scope
+ * @param {string} previous
+ * @param {string} trailerHash
+ */
+export const trailerStringToSign = (datetime, scope, previous, trailerHash) =>
+  `AWS4-HMAC-SHA256-TRAILER\n${datetime}\n${scope}\n${previous}\n${trailerHash}`;
 
-/** Trailing headers in canonical form: lowercase names in name order, each line ending in a newline. A line break in a name or value would start another trailer line, so it throws. */
+/** Trailing headers in canonical form: lowercase names in name order, each line ending in a newline. A line break in a name or value would start another trailer line, so it throws.
+ * @param {Record<string, string>} trailers
+ */
 export function canonicalTrailers(trailers) {
   return Object.keys(trailers)
-    .map((name) => {
-      const value = String(trailers[name]);
-      if (/[\r\n]/.test(name) || /[\r\n]/.test(value)) throw new TypeError('a trailer name or value cannot hold a line break');
-      return [name.toLowerCase(), value.trim()];
-    })
+    .map(
+      /** @returns {[string, string]} */ (name) => {
+        const value = String(trailers[name]);
+        if (/[\r\n]/.test(name) || /[\r\n]/.test(value)) {
+          throw new TypeError('a trailer name or value cannot hold a line break');
+        }
+        return [name.toLowerCase(), value.trim()];
+      },
+    )
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
     .map(([name, value]) => `${name}:${value}\n`)
     .join('');
 }
 
-/** The bytes of one chunk on the wire: size in hex, signature, the data. */
+/**
+ * The bytes of one chunk on the wire: size in hex, signature, the data.
+ * @param {string} signature
+ * @param {Uint8Array} data
+ */
 export function frameChunk(signature, data) {
   const head = utf8.encode(`${data.length.toString(16)};chunk-signature=${signature}\r\n`);
   const out = new Uint8Array(head.length + data.length + 2);
@@ -47,7 +77,12 @@ export function frameChunk(signature, data) {
   return out;
 }
 
-/** The last chunk (no data), with the signed trailing headers when there are any. */
+/**
+ * The last chunk (no data), with the signed trailing headers when there are any.
+ * @param {string} signature
+ * @param {string} [trailers] - canonical trailing headers
+ * @param {string} [trailerSignature]
+ */
 export function frameEnd(signature, trailers, trailerSignature) {
   return utf8.encode(
     trailers === undefined
@@ -71,14 +106,24 @@ export function createChunkSigner({ hexHash, hmacHex, getSigningKey }) {
     const seed = seedOf(authHeaders);
     const key = getSigningKey(credentials.secretAccessKey, seed.date, seed.region, seed.service);
     let previous = seed.signature;
-    const sign = (data) => (previous = hmacHex(key, chunkStringToSign(seed.datetime, seed.scope, previous, hexHash(data))));
+    /** @param {Uint8Array} data */
+    const sign = (data) =>
+      (previous = hmacHex(
+        key,
+        chunkStringToSign(seed.datetime, seed.scope, previous, hexHash(data)),
+      ));
     return {
       chunk: (data) => (data.length === 0 ? data : frameChunk(sign(data), data)), // a zero-length chunk would end the upload; it is not sent
       end(trailers) {
         const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was
         const signature = sign(new Uint8Array(0));
-        if (text === undefined) return frameEnd(signature);
-        const trailerSignature = hmacHex(key, trailerStringToSign(seed.datetime, seed.scope, signature, hexHash(text)));
+        if (text === undefined) {
+          return frameEnd(signature);
+        }
+        const trailerSignature = hmacHex(
+          key,
+          trailerStringToSign(seed.datetime, seed.scope, signature, hexHash(text)),
+        );
         return frameEnd(signature, text, trailerSignature);
       },
     };

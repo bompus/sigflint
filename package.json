@@ -3,25 +3,39 @@
   "version": "1.0.1",
   "description": "Fast, dependency-free AWS Signature Version 4 signing for every AWS service: headers, presigned URLs, SigV4a, chunked uploads and event streams. Node.js, Bun, Deno, Cloudflare Workers and browsers.",
   "keywords": [
+    "authorization",
     "aws",
-    "s3",
-    "sigv4",
-    "sigv4a",
+    "bun",
+    "cloudflare-workers",
+    "deno",
     "presigned-url",
+    "s3",
     "signature",
     "signing",
-    "authorization",
-    "bun",
-    "deno",
-    "cloudflare-workers"
+    "sigv4",
+    "sigv4a"
   ],
+  "homepage": "https://github.com/bompus/sigflint#readme",
+  "bugs": {
+    "url": "https://github.com/bompus/sigflint/issues"
+  },
   "license": "MIT",
   "author": "bompus",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bompus/sigflint.git"
+  },
+  "files": [
+    "src",
+    "dist",
+    "types",
+    "index.d.ts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "type": "module",
   "sideEffects": false,
-  "engines": {
-    "node": ">=22.12.0"
-  },
   "main": "./dist/node.js",
   "types": "./index.d.ts",
   "exports": {
@@ -40,44 +54,34 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "src",
-    "dist",
-    "types",
-    "index.d.ts",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
   "scripts": {
     "build": "esbuild src/node.js src/bun.js --bundle --format=esm --platform=node --target=es2022 --outdir=dist --log-level=warning",
     "pretest": "npm run build",
     "test": "node --test \"test/*.test.js\"",
     "pretest:bun": "npm run build",
     "test:bun": "bun test test/",
-    "types": "tsc && tsc -p test/types",
+    "types": "tsc -p tsconfig.json && tsc -p tsconfig.build.json && tsc -p test/types",
     "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
-    "prepack": "tsc && npm run build",
-    "lint": "npx --yes oxlint@1.85.0 --deny-warnings src test conformance index.d.ts",
-    "format": "npx --yes oxfmt@0.70.0 .",
-    "check:style": "npm run lint && npx --yes oxfmt@0.70.0 --check .",
-    "check": "npm test && npm run types && npm run check:package && npm run check:style",
+    "prepack": "tsc -p tsconfig.build.json && npm run build",
+    "lint": "oxlint --deny-warnings",
+    "format": "oxfmt .",
+    "check:style": "oxfmt --check . && npm run lint",
+    "check": "npm run check:style && npm run types && npm test && npm run check:package",
     "check:benchmarked": "node bench/check-benchmarked.mjs",
-    "check:package": "tsc && npm run build && publint && attw --pack . --profile esm-only"
+    "check:package": "tsc -p tsconfig.build.json && npm run build && publint && attw --pack . --profile esm-only"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@types/bun": "1.4.3",
     "@types/node": "^26.6.5",
     "esbuild": "^0.28.2",
+    "oxfmt": "0.73.0",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
     "publint": "^0.3.25",
-    "typescript": "^7.0.2"
+    "typescript": "7.0.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bompus/sigflint.git"
-  },
-  "bugs": {
-    "url": "https://github.com/bompus/sigflint/issues"
-  },
-  "homepage": "https://github.com/bompus/sigflint#readme"
+  "engines": {
+    "node": ">=22.12.0"
+  }
 }

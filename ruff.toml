@@ -1,0 +1,12 @@
+# Shared ruff settings (format and lint). Same line width as oxfmt's printWidth.
+line-length = 100
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[lint]
+# pycodestyle errors and warnings, pyflakes, import order, bugbear, pyupgrade,
+# simplify and comprehensions.
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "C4"]

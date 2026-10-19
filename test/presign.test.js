@@ -8,7 +8,7 @@ import { credentials, now, toMs } from './helpers.js';
 const corpus = JSON.parse(readFileSync(new URL('./corpus-presign.json', import.meta.url), 'utf8'));
 
 for (const [name, { presign }] of entries) {
-  test(`${name}: matches the botocore reference signature and parameters for every case`, async () => {
+  void test(`${name}: matches the botocore reference signature and parameters for every case`, async () => {
     const failures = [];
     for (const c of corpus) {
       const out = new URL(
@@ -26,19 +26,44 @@ for (const [name, { presign }] of entries) {
           c.token ? { ...credentials, sessionToken: c.token } : credentials,
         ),
       );
-      const params = Object.entries(Object.fromEntries([...out.searchParams].filter(([k]) => k.startsWith('X-Amz-') && k !== 'X-Amz-Signature'))).sort();
-      const kept = [...new URL(c.href).searchParams].every(([k, v]) => out.searchParams.get(k) === v);
-      if (out.searchParams.get('X-Amz-Signature') !== c.sig || JSON.stringify(params) !== JSON.stringify(Object.entries(c.authParams).sort()) || !kept)
+      const params = Object.entries(
+        Object.fromEntries(
+          [...out.searchParams].filter(([k]) => k.startsWith('X-Amz-') && k !== 'X-Amz-Signature'),
+        ),
+      ).sort();
+      const kept = [...new URL(c.href).searchParams].every(
+        ([k, v]) => out.searchParams.get(k) === v,
+      );
+      if (
+        out.searchParams.get('X-Amz-Signature') !== c.sig ||
+        JSON.stringify(params) !== JSON.stringify(Object.entries(c.authParams).sort()) ||
+        !kept
+      ) {
         failures.push({ id: c.id, href: c.href, expected: c.sig });
+      }
     }
     assert.ok(corpus.length >= 1600, `only ${corpus.length} cases`);
-    assert.deepEqual(failures.slice(0, 5), [], `${failures.length} of ${corpus.length} cases differ`);
+    assert.deepEqual(
+      failures.slice(0, 5),
+      [],
+      `${failures.length} of ${corpus.length} cases differ`,
+    );
   });
 }
 
-test('the lifetime defaults to an hour, and the URL keeps its path and original query', async () => {
+void test('the lifetime defaults to an hour, and the URL keeps its path and original query', async () => {
   const [, { presign }] = entries[0];
-  const link = new URL(await presign({ method: 'GET', url: new URL('https://bucket.s3.us-east-1.amazonaws.com/a/b?versionId=3'), region: 'us-east-1', now }, credentials));
+  const link = new URL(
+    await presign(
+      {
+        method: 'GET',
+        url: new URL('https://bucket.s3.us-east-1.amazonaws.com/a/b?versionId=3'),
+        region: 'us-east-1',
+        now,
+      },
+      credentials,
+    ),
+  );
   assert.equal(link.origin + link.pathname, 'https://bucket.s3.us-east-1.amazonaws.com/a/b');
   assert.equal(link.searchParams.get('versionId'), '3');
   assert.equal(link.searchParams.get('X-Amz-Expires'), '3600');

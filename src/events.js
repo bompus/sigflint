@@ -2,22 +2,37 @@
 import { amzDatetime } from './base.js';
 import { seedOf, utf8 } from './chunks.js';
 
+/** @type {Int32Array | undefined} */
 let crcTable;
+/**
+ * @param {Uint8Array} bytes
+ * @param {number} start
+ * @param {number} end
+ */
 function crc32(bytes, start, end) {
   if (crcTable === undefined) {
     crcTable = new Int32Array(256);
     for (let n = 0; n < 256; n++) {
       let c = n;
-      for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+      for (let k = 0; k < 8; k++) {
+        c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+      }
       crcTable[n] = c;
     }
   }
   let crc = -1;
-  for (let i = start; i < end; i++) crc = crcTable[(crc ^ bytes[i]) & 255] ^ (crc >>> 8);
+  for (let i = start; i < end; i++) {
+    crc =
+      /** @type {number} */ (crcTable[(crc ^ /** @type {number} */ (bytes[i])) & 255]) ^
+      (crc >>> 8);
+  }
   return ~crc >>> 0;
 }
 
-/** The :date header of an event: name, type 8 (timestamp), milliseconds since the epoch as 8 bytes. */
+/**
+ * The :date header of an event: name, type 8 (timestamp), milliseconds since the epoch as 8 bytes.
+ * @param {number} ms
+ */
 export function dateHeader(ms) {
   const out = new Uint8Array(15);
   out[0] = 5;
@@ -27,7 +42,12 @@ export function dateHeader(ms) {
   return out;
 }
 
-/** The signed event: prelude, the :date and :chunk-signature headers, the inner message as payload, checksums. */
+/**
+ * The signed event: prelude, the :date and :chunk-signature headers, the inner message as payload, checksums.
+ * @param {Uint8Array} dateBytes
+ * @param {string} signatureHex
+ * @param {Uint8Array} inner
+ */
 export function frameEvent(dateBytes, signatureHex, inner) {
   const headersLength = dateBytes.length + 52;
   const out = new Uint8Array(16 + headersLength + inner.length);
@@ -43,18 +63,36 @@ export function frameEvent(dateBytes, signatureHex, inner) {
   out[at++] = 6;
   view.setUint16(at, 32);
   at += 2;
-  for (let i = 0; i < 32; i++) out[at + i] = parseInt(signatureHex.slice(2 * i, 2 * i + 2), 16);
+  for (let i = 0; i < 32; i++) {
+    out[at + i] = parseInt(signatureHex.slice(2 * i, 2 * i + 2), 16);
+  }
   at += 32;
   out.set(inner, at);
   view.setUint32(out.length - 4, crc32(out, 0, out.length - 4));
   return out;
 }
 
+/**
+ * @param {string} datetime
+ * @param {string} scope
+ * @param {string} previous
+ * @param {string} headersHash
+ * @param {string} payloadHash
+ */
 export const eventStringToSign = (datetime, scope, previous, headersHash, payloadHash) =>
   `AWS4-HMAC-SHA256-PAYLOAD\n${datetime}\n${scope}\n${previous}\n${headersHash}\n${payloadHash}`;
+/**
+ * @param {number} ms
+ * @param {string} region
+ * @param {string} service
+ */
 export const eventScope = (ms, region, service) => {
   const datetime = amzDatetime(ms);
-  return { datetime, scope: `${datetime.slice(0, 8)}/${region}/${service}/aws4_request`, date: datetime.slice(0, 8) };
+  return {
+    datetime,
+    scope: `${datetime.slice(0, 8)}/${region}/${service}/aws4_request`,
+    date: datetime.slice(0, 8),
+  };
 };
 
 /**

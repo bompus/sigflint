@@ -12,33 +12,51 @@ const maxData = 1024;
 const inner = /* @__PURE__ */ new Uint8Array(64 + maxData); // the ipad block, then the data
 const outer = /* @__PURE__ */ new Uint8Array(64 + 32); // the opad block, then the inner digest
 const data = /* @__PURE__ */ inner.subarray(64);
+/** @type {Uint8Array[]} */
 const innerViews = [];
+/** @type {Uint8Array | undefined} */
 let blockKey;
+/** @param {number} c */
 const nibble = (c) => (c > 96 ? c - 87 : c - 48);
 
 // HMAC-SHA-256 as two one-shot hashes over preallocated buffers: it avoids creating a Hmac object per signature.
 // Only a key of at most 64 bytes is handled; the signing key is always 32 bytes.
+/**
+ * @param {Uint8Array} key
+ * @param {string} text
+ */
 function hmacHexOneShot(key, text) {
   if (key !== blockKey) {
     blockKey = key;
     inner.fill(0x36, 0, 64);
     outer.fill(0x5c, 0, 64);
     for (let i = 0; i < key.length; i++) {
-      inner[i] ^= key[i];
-      outer[i] ^= key[i];
+      inner[i] = /** @type {number} */ (inner[i]) ^ /** @type {number} */ (key[i]);
+      outer[i] = /** @type {number} */ (outer[i]) ^ /** @type {number} */ (key[i]);
     }
   }
   const end = 64 + utf8.encodeInto(text, data).written;
   const hex = crypto.hash('sha256', (innerViews[end] ??= inner.subarray(0, end)), 'hex');
-  for (let i = 0; i < 32; i++) outer[64 + i] = (nibble(hex.charCodeAt(2 * i)) << 4) | nibble(hex.charCodeAt(2 * i + 1));
+  for (let i = 0; i < 32; i++) {
+    outer[64 + i] = (nibble(hex.charCodeAt(2 * i)) << 4) | nibble(hex.charCodeAt(2 * i + 1));
+  }
   return crypto.hash('sha256', outer, 'hex');
 }
 
+/**
+ * @param {Uint8Array} key
+ * @param {string} text
+ */
 const hmacHexStreaming = (key, text) => crypto.createHmac('sha256', key).update(text).digest('hex');
 
+/**
+ * @param {string | Uint8Array} key
+ * @param {string} text
+ */
 const hmac = (key, text) => crypto.createHmac('sha256', key).update(text).digest();
 
 // The one-shot form is used only when it agrees with the streaming one on a sample, and only for short data. The sample is checked on first use.
+/** @type {boolean | undefined} */
 let oneShotWorks;
 function probe() {
   const key = hmac('probe', 'key');
@@ -47,9 +65,17 @@ function probe() {
   blockKey = undefined;
   return works;
 }
-const hmacHex = (key, text) => ((oneShotWorks ??= probe()) && text.length * 3 <= maxData && key.length <= 64 ? hmacHexOneShot(key, text) : hmacHexStreaming(key, text));
+/**
+ * @param {Uint8Array} key
+ * @param {string} text
+ */
+const hmacHex = (key, text) =>
+  (oneShotWorks ??= probe()) && text.length * 3 <= maxData && key.length <= 64
+    ? hmacHexOneShot(key, text)
+    : hmacHexStreaming(key, text);
 
 const getSigningKey = /* @__PURE__ */ createKeys(hmac);
+/** @param {string | Uint8Array} text */
 const hexHash = (text) => crypto.hash('sha256', text, 'hex');
 const primitives = { hexHash, hmac, hmacHex, getSigningKey };
 

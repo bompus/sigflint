@@ -1,6 +1,19 @@
 {
-  "printWidth": 180,
-  "singleQuote": true,
-  "ignorePatterns": ["bench/**", "**/*.md", "docs/**", "test/corpus*.json", "package-lock.json", "conformance/streams/**", "types/**", "dist/**"],
-  "sortPackageJson": false
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "ignorePatterns": [
+    "bun.lock",
+    "**/*.md",
+    "docs/**",
+    "dist/**",
+    "types/**",
+    "test/corpus*.json",
+    "package-lock.json",
+    "**/package-lock.json",
+    "bench/frozen/**",
+    "bench/results/**",
+    "conformance/*.json"
+  ],
+  "sortPackageJson": true,
+  "singleQuote": true
 }

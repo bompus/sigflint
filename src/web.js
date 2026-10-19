@@ -3,41 +3,91 @@
 import { payloadHashOf, prepare, stringToSign, authorize } from './base.js';
 import { preparePresign, presignedUrl } from './presign.js';
 import { asymmetric, withRegionSet, regionSetQuery, kdfInput, scalarFrom } from './v4a.js';
-import { seedOf, chunkStringToSign, trailerStringToSign, canonicalTrailers, frameChunk, frameEnd } from './chunks.js';
+import {
+  seedOf,
+  chunkStringToSign,
+  trailerStringToSign,
+  canonicalTrailers,
+  frameChunk,
+  frameEnd,
+} from './chunks.js';
 import { dateHeader, frameEvent, eventStringToSign, eventScope } from './events.js';
 
 const subtle = /* @__PURE__ */ (() => globalThis.crypto.subtle)();
 const utf8 = /* @__PURE__ */ new TextEncoder();
 
-const hexOfByte = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
+const hexOfByte = /* @__PURE__ */ Array.from({ length: 256 }, (_, i) =>
+  i.toString(16).padStart(2, '0'),
+);
+/** @param {ArrayBuffer | Uint8Array} buffer */
 function toHex(buffer) {
   const bytes = new Uint8Array(buffer);
   let out = '';
-  for (let i = 0; i < bytes.length; i++) out += hexOfByte[bytes[i]];
+  for (let i = 0; i < bytes.length; i++) {
+    out += hexOfByte[/** @type {number} */ (bytes[i])];
+  }
   return out;
 }
 
-const hexHash = async (data) => toHex(await subtle.digest('SHA-256', typeof data === 'string' ? utf8.encode(data) : data));
-const importKey = (raw) => subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+/** @param {string | Uint8Array} data */
+const hexHash = async (data) =>
+  toHex(
+    await subtle.digest(
+      'SHA-256',
+      typeof data === 'string' ? utf8.encode(data) : /** @type {Uint8Array<ArrayBuffer>} */ (data),
+    ),
+  );
+/** @param {Uint8Array<ArrayBuffer> | ArrayBuffer} raw */
+const importKey = (raw) =>
+  subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 // the next key in the derivation chain: the HMAC of data, as a key
+/**
+ * @param {CryptoKey} key
+ * @param {string} data
+ */
 const deriveKey = async (key, data) => importKey(await subtle.sign('HMAC', key, utf8.encode(data)));
 
+/** @type {Map<string, CryptoKey>} */
 const signingKeys = new Map();
 const maxSigningKeys = 1000;
+/** @type {string | undefined} */
 let lastSecret;
+/** @type {string | undefined} */
 let lastDate;
+/** @type {string | undefined} */
 let lastRegion;
+/** @type {string | undefined} */
 let lastService;
+/** @type {CryptoKey | undefined} */
 let lastKey;
 
+/**
+ * @param {string} secretAccessKey
+ * @param {string} date
+ * @param {string} region
+ * @param {string} service
+ * @returns {Promise<CryptoKey>}
+ */
 async function getSigningKey(secretAccessKey, date, region, service) {
-  if (secretAccessKey === lastSecret && date === lastDate && region === lastRegion && service === lastService) return lastKey;
+  if (
+    secretAccessKey === lastSecret &&
+    date === lastDate &&
+    region === lastRegion &&
+    service === lastService
+  ) {
+    return /** @type {CryptoKey} */ (lastKey);
+  }
   const cacheKey = `${date}\n${region}\n${service}\n${secretAccessKey}`;
   let signingKey = signingKeys.get(cacheKey);
   if (signingKey === undefined) {
     const dateKey = await deriveKey(await importKey(utf8.encode('AWS4' + secretAccessKey)), date);
-    signingKey = await deriveKey(await deriveKey(await deriveKey(dateKey, region), service), 'aws4_request');
-    if (signingKeys.size >= maxSigningKeys) signingKeys.delete(signingKeys.keys().next().value);
+    signingKey = await deriveKey(
+      await deriveKey(await deriveKey(dateKey, region), service),
+      'aws4_request',
+    );
+    if (signingKeys.size >= maxSigningKeys) {
+      signingKeys.delete(/** @type {string} */ (signingKeys.keys().next().value));
+    }
     signingKeys.set(cacheKey, signingKey);
   }
   lastSecret = secretAccessKey;
@@ -48,44 +98,88 @@ async function getSigningKey(secretAccessKey, date, region, service) {
   return signingKey;
 }
 
+/**
+ * @param {import('./base.js').Credentials} credentials
+ * @param {{ date: string, region: string, service: string }} prepared
+ * @param {string} text
+ */
 const signSymmetric = async (credentials, prepared, text) =>
-  toHex(await subtle.sign('HMAC', await getSigningKey(credentials.secretAccessKey, prepared.date, prepared.region, prepared.service), utf8.encode(text)));
+  toHex(
+    await subtle.sign(
+      'HMAC',
+      await getSigningKey(
+        credentials.secretAccessKey,
+        prepared.date,
+        prepared.region,
+        prepared.service,
+      ),
+      utf8.encode(text),
+    ),
+  );
 
 // SigV4a: the derived scalar goes in as a PKCS#8 private key without the public point, which WebCrypto computes itself
 const pkcs8 = /* @__PURE__ */ Uint8Array.from([
-  0x30, 0x41, 0x02, 0x01, 0x00, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x04, 0x27, 0x30,
-  0x25, 0x02, 0x01, 0x01, 0x04, 0x20,
+  0x30, 0x41, 0x02, 0x01, 0x00, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02, 0x01,
+  0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x04, 0x27, 0x30, 0x25, 0x02, 0x01,
+  0x01, 0x04, 0x20,
 ]);
+/** @type {Map<string, CryptoKey>} */
 const asymmetricKeys = new Map();
+/** @param {import('./base.js').Credentials} credentials */
 async function getAsymmetricKey({ accessKeyId, secretAccessKey }) {
   const id = `${accessKeyId}/${secretAccessKey}`;
   let key = asymmetricKeys.get(id);
   if (key === undefined) {
     const root = await importKey(utf8.encode('AWS4A' + secretAccessKey));
     for (let counter = 1; key === undefined; counter++) {
-      if (counter > 127) throw new Error('no SigV4a key for these credentials');
-      const d = scalarFrom(new Uint8Array(await subtle.sign('HMAC', root, utf8.encode(kdfInput(accessKeyId, counter)))));
+      if (counter > 127) {
+        throw new Error('no SigV4a key for these credentials');
+      }
+      const d = scalarFrom(
+        new Uint8Array(
+          await subtle.sign('HMAC', root, utf8.encode(kdfInput(accessKeyId, counter))),
+        ),
+      );
       if (d !== undefined) {
         const der = new Uint8Array(pkcs8.length + 32);
         der.set(pkcs8);
         der.set(d, pkcs8.length);
-        key = await subtle.importKey('pkcs8', der, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+        key = await subtle.importKey('pkcs8', der, { name: 'ECDSA', namedCurve: 'P-256' }, false, [
+          'sign',
+        ]);
       }
     }
-    if (asymmetricKeys.size >= 1000) asymmetricKeys.delete(asymmetricKeys.keys().next().value);
+    if (asymmetricKeys.size >= 1000) {
+      asymmetricKeys.delete(/** @type {string} */ (asymmetricKeys.keys().next().value));
+    }
     asymmetricKeys.set(id, key);
   }
   return key;
 }
 // r and s as DER integers: leading zeros dropped, a zero byte in front when the top bit is set
+/** @param {Uint8Array} bytes */
 function derInteger(bytes) {
   let start = 0;
-  while (start < bytes.length - 1 && bytes[start] === 0) start++;
+  while (start < bytes.length - 1 && bytes[start] === 0) {
+    start++;
+  }
   const body = bytes.subarray(start);
-  return body[0] & 0x80 ? [0x02, body.length + 1, 0, ...body] : [0x02, body.length, ...body];
+  return /** @type {number} */ (body[0]) & 0x80
+    ? [0x02, body.length + 1, 0, ...body]
+    : [0x02, body.length, ...body];
 }
+/**
+ * @param {import('./base.js').Credentials} credentials
+ * @param {string} text
+ */
 async function signAsymmetric(credentials, text) {
-  const raw = new Uint8Array(await subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, await getAsymmetricKey(credentials), utf8.encode(text)));
+  const raw = new Uint8Array(
+    await subtle.sign(
+      { name: 'ECDSA', hash: 'SHA-256' },
+      await getAsymmetricKey(credentials),
+      utf8.encode(text),
+    ),
+  );
   const body = [...derInteger(raw.subarray(0, 32)), ...derInteger(raw.subarray(32))];
   return toHex(Uint8Array.from([0x30, body.length, ...body]));
 }
@@ -98,7 +192,15 @@ async function signAsymmetric(credentials, text) {
  */
 export async function getAuthHeaders(request, credentials) {
   const prepared = prepare(request, credentials, await payloadHashOf(request, hexHash));
-  return authorize(prepared, credentials.accessKeyId, await signSymmetric(credentials, prepared, stringToSign(prepared, await hexHash(prepared.canonicalRequest))));
+  return authorize(
+    prepared,
+    credentials.accessKeyId,
+    await signSymmetric(
+      credentials,
+      prepared,
+      stringToSign(prepared, await hexHash(prepared.canonicalRequest)),
+    ),
+  );
 }
 
 /**
@@ -108,8 +210,20 @@ export async function getAuthHeaders(request, credentials) {
  * @returns {Promise<import('./base.js').AuthHeaders>}
  */
 export async function getAuthHeadersV4a(request, credentials) {
-  const prepared = prepare(withRegionSet(request), credentials, await payloadHashOf(request, hexHash), asymmetric);
-  return authorize(prepared, credentials.accessKeyId, await signAsymmetric(credentials, stringToSign(prepared, await hexHash(prepared.canonicalRequest))));
+  const prepared = prepare(
+    withRegionSet(request),
+    credentials,
+    await payloadHashOf(request, hexHash),
+    asymmetric,
+  );
+  return authorize(
+    prepared,
+    credentials.accessKeyId,
+    await signAsymmetric(
+      credentials,
+      stringToSign(prepared, await hexHash(prepared.canonicalRequest)),
+    ),
+  );
 }
 
 /**
@@ -120,7 +234,14 @@ export async function getAuthHeadersV4a(request, credentials) {
  */
 export async function presign(request, credentials) {
   const prepared = preparePresign(request, credentials, await payloadHashOf(request, hexHash));
-  return presignedUrl(prepared, await signSymmetric(credentials, prepared, stringToSign(prepared, await hexHash(prepared.canonicalRequest))));
+  return presignedUrl(
+    prepared,
+    await signSymmetric(
+      credentials,
+      prepared,
+      stringToSign(prepared, await hexHash(prepared.canonicalRequest)),
+    ),
+  );
 }
 
 /**
@@ -130,10 +251,26 @@ export async function presign(request, credentials) {
  * @returns {Promise<string>}
  */
 export async function presignV4a(request, credentials) {
-  const prepared = preparePresign(request, credentials, await payloadHashOf(request, hexHash), asymmetric, regionSetQuery(request));
-  return presignedUrl(prepared, await signAsymmetric(credentials, stringToSign(prepared, await hexHash(prepared.canonicalRequest))));
+  const prepared = preparePresign(
+    request,
+    credentials,
+    await payloadHashOf(request, hexHash),
+    asymmetric,
+    regionSetQuery(request),
+  );
+  return presignedUrl(
+    prepared,
+    await signAsymmetric(
+      credentials,
+      stringToSign(prepared, await hexHash(prepared.canonicalRequest)),
+    ),
+  );
 }
 
+/**
+ * @param {CryptoKey} key
+ * @param {string} text
+ */
 const signWith = async (key, text) => toHex(await subtle.sign('HMAC', key, utf8.encode(text)));
 
 /**
@@ -145,18 +282,40 @@ const signWith = async (key, text) => toHex(await subtle.sign('HMAC', key, utf8.
 export function chunkSigner(authHeaders, credentials) {
   const seed = seedOf(authHeaders);
   let previous = seed.signature;
-  const keyPromise = getSigningKey(credentials.secretAccessKey, seed.date, seed.region, seed.service);
+  const keyPromise = getSigningKey(
+    credentials.secretAccessKey,
+    seed.date,
+    seed.region,
+    seed.service,
+  );
   // chunks are signed one after the other: a call waits for the one before it
   /** @type {Promise<any>} */
   let turn = Promise.resolve();
-  const sign = (data) => (turn = turn.then(async () => (previous = await signWith(await keyPromise, chunkStringToSign(seed.datetime, seed.scope, previous, await hexHash(data))))));
+  /** @param {Uint8Array} data */
+  const sign = (data) =>
+    (turn = turn.then(
+      async () =>
+        (previous = await signWith(
+          await keyPromise,
+          chunkStringToSign(seed.datetime, seed.scope, previous, await hexHash(data)),
+        )),
+    ));
   return {
     chunk: async (data) => (data.length === 0 ? data : frameChunk(await sign(data), data)),
     async end(trailers) {
       const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was
       const signature = await sign(new Uint8Array(0));
-      if (text === undefined) return frameEnd(signature);
-      return frameEnd(signature, text, await signWith(await keyPromise, trailerStringToSign(seed.datetime, seed.scope, signature, await hexHash(text))));
+      if (text === undefined) {
+        return frameEnd(signature);
+      }
+      return frameEnd(
+        signature,
+        text,
+        await signWith(
+          await keyPromise,
+          trailerStringToSign(seed.datetime, seed.scope, signature, await hexHash(text)),
+        ),
+      );
     },
   };
 }
@@ -179,7 +338,13 @@ export function eventSigner(authHeaders, credentials) {
         const header = dateHeader(now);
         previous = await signWith(
           await getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service),
-          eventStringToSign(datetime, scope, previous, await hexHash(header), await hexHash(message)),
+          eventStringToSign(
+            datetime,
+            scope,
+            previous,
+            await hexHash(header),
+            await hexHash(message),
+          ),
         );
         return frameEvent(header, previous, message);
       })),

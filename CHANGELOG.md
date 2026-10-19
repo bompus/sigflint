@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The code is formatted with oxfmt, linted with oxlint and type-checked by `tsc` in strict mode, and `npm run check` runs all three. Signing does not change: built without whitespace, the Bun build and the WebCrypto entry are the same code as before, and the Node build differs in one statement, an HMAC key XOR written as `a[i] = a[i] ^ b[i]` instead of `a[i] ^= b[i]`. The published files in `src/` and `dist/` differ in formatting and braces. The public types (`index.d.ts` and `sigflint/web`) are unchanged; the generated declarations of internal helpers in `types/` have parameter types instead of `any`.
+
 ## 1.0.1 - 2026-10-18
 
 - A lowercase `method` (`get`) is signed as upper case (`GET`), as botocore does. `fetch` sends `get`, `put`, `post`, `delete`, `head` and `options` in upper case, so before this the signature did not match and the service answered `SignatureDoesNotMatch`. Node's `fetch` sends `patch` as written, so pass `PATCH` in upper case to both sigflint and `fetch`.

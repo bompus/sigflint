@@ -8,9 +8,9 @@ Bug reports and pull requests are welcome. For a larger change, open an issue fi
 npm ci
 npm test            # builds dist/ first, then the corpus test and the behavior tests (src/ and dist/)
 npm run build       # dist/node.js and dist/bun.js, the one-file builds Node and Bun load (esbuild)
-npm run types       # generated .d.ts and the consumer type test
+npm run types       # type-checks src/, test/ and conformance/, then the generated .d.ts and the consumer type test
 npm run check:package
-npm run check       # all of the above plus lint and format (oxlint, oxfmt; npm run format fixes the format)
+npm run check       # format, lint and all of the above (oxfmt, oxlint; npm run format fixes the format)
 ```
 
 The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.

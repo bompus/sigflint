@@ -1,7 +1,8 @@
 // The entry under test: Bun's entry on Bun, the node:crypto entry everywhere else (Node, Deno). `dist` is the one-file build of the same entry that the
 // package exports give to Node, Bun and Deno (npm run build; npm test builds it first).
 const file = typeof Bun === 'undefined' ? 'node.js' : 'bun.js';
-export const { getAuthHeaders, presign, getAuthHeadersV4a, presignV4a, chunkSigner, eventSigner } = await import(`../src/${file}`);
+export const { getAuthHeaders, presign, getAuthHeadersV4a, presignV4a, chunkSigner, eventSigner } =
+  await import(`../src/${file}`);
 const dist = await import(`../dist/${file}`);
 
 // Both ways of signing: the synchronous entry above and the WebCrypto entry (promises). Tests await every result, so one loop covers both.

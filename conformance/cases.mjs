@@ -6,13 +6,34 @@
 // `token` is a session token (signed as x-amz-security-token).
 import { writeFileSync } from 'node:fs';
 
+/**
+ * @typedef {Object} Case
+ * @property {string} id
+ * @property {string} kind
+ * @property {string} method
+ * @property {string} href
+ * @property {Record<string, string>} headers
+ * @property {string} body
+ * @property {boolean} unsigned
+ * @property {string} [token]
+ * @property {string} [stamp]
+ * @property {string} [region]
+ */
+
 const B = 'https://examplebucket.s3.amazonaws.com';
+/** @type {[string, string, string, Record<string, string>, string?, boolean?, string?][]} */
 const fixed = [
   ['aws-get-object-range-style', 'GET', `${B}/test.txt`, {}],
   ['aws-get-object-range', 'GET', `${B}/test.txt`, { range: 'bytes=0-9' }],
   ['aws-list-objects', 'GET', `${B}/?max-keys=2&prefix=J`, {}],
   ['aws-lifecycle', 'GET', `${B}/?lifecycle`, {}],
-  ['aws-put-object', 'PUT', `${B}/test%24file.text`, { date: 'Fri, 24 May 2013 00:00:00 GMT', 'x-amz-storage-class': 'REDUCED_REDUNDANCY' }, 'Welcome to Amazon S3.'],
+  [
+    'aws-put-object',
+    'PUT',
+    `${B}/test%24file.text`,
+    { date: 'Fri, 24 May 2013 00:00:00 GMT', 'x-amz-storage-class': 'REDUCED_REDUNDANCY' },
+    'Welcome to Amazon S3.',
+  ],
   ['plain-key', 'GET', `${B}/2022/05/media/upload/facebook-131__m4qhsQzwMdHCoc6UnBOYv.webp`, {}],
   ['path-space', 'GET', `${B}/a%20b.txt`, {}],
   ['path-plus-literal', 'GET', `${B}/a+b.txt`, {}],
@@ -43,19 +64,64 @@ const fixed = [
   ['query-invalid-utf8', 'GET', `${B}/?a=%ff`, {}],
   ['query-stray-percent', 'GET', `${B}/?a=100%`, {}],
   ['headers-extra-spaces', 'PUT', `${B}/k`, { 'x-amz-meta-note': '  a   b  c ' }, 'x'],
-  ['headers-acl-and-meta', 'PUT', `${B}/k`, { 'x-amz-acl': 'public-read', 'x-amz-meta-z': 'z', 'x-amz-meta-a': 'a' }, ''],
+  [
+    'headers-acl-and-meta',
+    'PUT',
+    `${B}/k`,
+    { 'x-amz-acl': 'public-read', 'x-amz-meta-z': 'z', 'x-amz-meta-a': 'a' },
+    '',
+  ],
   ['body-unicode', 'PUT', `${B}/k`, {}, 'héllo wörld 日本語 😀'],
   ['body-empty-unsigned', 'PUT', `${B}/k`, {}, '', true],
   ['unsigned-payload', 'PUT', `${B}/k`, { 'x-amz-acl': 'private' }, '', true],
   ['port-nondefault', 'GET', 'https://127.0.0.1:9000/bucket/key', {}],
   ['path-style-host', 'GET', 'https://us-sea-1.linodeobjects.com/bucket/dir/file.txt', {}],
   ['http-scheme', 'GET', 'http://bucket.us-sea-1.linodeobjects.com/file', {}],
-  ['bench-download', 'GET', `${B}/2022/05/media/upload/facebook-131__m4qhsQzwMdHCoc6UnBOYv.webp`, {}],
-  ['session-token-get', 'GET', `${B}/test.txt`, {}, '', false, 'IQoJb3JpZ2luX2VjEXAMPLE//////////wEaCXVzLWVhc3QtMSJHMEUCIQDEXAMPLE+token=='],
-  ['session-token-put-unsigned', 'PUT', `${B}/k?x=1`, { 'x-amz-acl': 'private' }, '', true, 'short-token'],
-  ['bench-part-put', 'PUT', `${B}/2022/05/media/upload/video-1__abc123.mp4?partNumber=7&uploadId=2~m3XvQ9aD-ZkP_0wL`, { 'x-amz-acl': 'public-read' }, '', true],
-  ['bench-encode', 'GET', `${B}/folder one/ünï cödé/file (1) [final]!.txt?prefix=a b&delimiter=/&max-keys=100`, {}],
-  ['bench-body-1k', 'PUT', `${B}/2022/05/notes.json`, { 'x-amz-meta-note': 'a  b', 'x-amz-acl': 'private' }, 'x'.repeat(1024)],
+  [
+    'bench-download',
+    'GET',
+    `${B}/2022/05/media/upload/facebook-131__m4qhsQzwMdHCoc6UnBOYv.webp`,
+    {},
+  ],
+  [
+    'session-token-get',
+    'GET',
+    `${B}/test.txt`,
+    {},
+    '',
+    false,
+    'IQoJb3JpZ2luX2VjEXAMPLE//////////wEaCXVzLWVhc3QtMSJHMEUCIQDEXAMPLE+token==',
+  ],
+  [
+    'session-token-put-unsigned',
+    'PUT',
+    `${B}/k?x=1`,
+    { 'x-amz-acl': 'private' },
+    '',
+    true,
+    'short-token',
+  ],
+  [
+    'bench-part-put',
+    'PUT',
+    `${B}/2022/05/media/upload/video-1__abc123.mp4?partNumber=7&uploadId=2~m3XvQ9aD-ZkP_0wL`,
+    { 'x-amz-acl': 'public-read' },
+    '',
+    true,
+  ],
+  [
+    'bench-encode',
+    'GET',
+    `${B}/folder one/ünï cödé/file (1) [final]!.txt?prefix=a b&delimiter=/&max-keys=100`,
+    {},
+  ],
+  [
+    'bench-body-1k',
+    'PUT',
+    `${B}/2022/05/notes.json`,
+    { 'x-amz-meta-note': 'a  b', 'x-amz-acl': 'private' },
+    'x'.repeat(1024),
+  ],
   ['query-name-prefix-dash', 'GET', `${B}/?a-b=1&a=2`, {}],
   ['query-name-prefix-dash-sorted', 'GET', `${B}/?a=2&a-b=1`, {}],
   ['query-name-prefix-digit', 'GET', `${B}/?a1&a&max-keys`, {}],
@@ -63,17 +129,30 @@ const fixed = [
   ['query-same-name-sorted', 'GET', `${B}/?a=1&a=2`, {}],
   ['query-same-name-and-value', 'GET', `${B}/?a=1&a=1`, {}],
   ['query-valueless-mix', 'GET', `${B}/?b&a&c=1`, {}],
-  ['headers-name-prefix', 'PUT', `${B}/k`, { 'x-amz-meta-a_b': '3', 'x-amz-meta-a-b': '2', 'x-amz-meta-a': '1' }, 'x'],
+  [
+    'headers-name-prefix',
+    'PUT',
+    `${B}/k`,
+    { 'x-amz-meta-a_b': '3', 'x-amz-meta-a-b': '2', 'x-amz-meta-a': '1' },
+    'x',
+  ],
   [
     'headers-around-the-fixed-three',
     'PUT',
     `${B}/k`,
-    { 'x-amz-meta-z': 'z', 'content-type': 'text/plain', 'x-amz-acl': 'private', 'cache-control': 'no-cache', 'x-amz-storage-class': 'STANDARD' },
+    {
+      'x-amz-meta-z': 'z',
+      'content-type': 'text/plain',
+      'x-amz-acl': 'private',
+      'cache-control': 'no-cache',
+      'x-amz-storage-class': 'STANDARD',
+    },
     'x',
   ],
   ['root-no-path', 'GET', 'https://bucket.us-sea-1.linodeobjects.com', {}],
 ];
 
+/** @param {number} a */
 function mulberry32(a) {
   return () => {
     a |= 0;
@@ -85,7 +164,13 @@ function mulberry32(a) {
 }
 const rnd = mulberry32(20261013);
 const rndToken = mulberry32(7);
-const pick = (a) => a[Math.floor(rnd() * a.length)];
+/**
+ * @template T
+ * @param {readonly T[]} a
+ * @returns {T}
+ */
+const pick = (a) => /** @type {T} */ (a[Math.floor(rnd() * a.length)]);
+/** @param {number} n */
 const ri = (n) => Math.floor(rnd() * n);
 
 const pathAtoms = [
@@ -182,42 +267,90 @@ const qAtoms = [
   '%ff',
   '=',
 ];
+/**
+ * @param {string[]} atoms
+ * @param {number} max
+ */
 const word = (atoms, max) => Array.from({ length: 1 + ri(max) }, () => pick(atoms)).join('');
-const hosts = ['examplebucket.s3.amazonaws.com', 'bucket.us-sea-1.linodeobjects.com', 'us-lax-1.linodeobjects.com', '127.0.0.1:9000'];
+const hosts = [
+  'examplebucket.s3.amazonaws.com',
+  'bucket.us-sea-1.linodeobjects.com',
+  'us-lax-1.linodeobjects.com',
+  '127.0.0.1:9000',
+];
 const bodies = ['', 'hello', 'héllo 日本', 'x'.repeat(100)];
 const metaVals = ['a', '  a  b ', 'x   y   z', ' lead', 'trail '];
 
+/** @type {Case[]} */
 const cases = [];
 // the AWS GET Object example at another date and in another region (for the signing-key cache test only)
-for (const [id, extra] of [
+for (const [id, extra] of /** @type {[string, Partial<Case>][]} */ ([
   ['extra-next-day', { stamp: '20130525T000000Z' }],
   ['extra-other-region', { region: 'us-west-2' }],
-]) {
-  cases.push({ id, kind: 'extra', method: 'GET', href: `${B}/test.txt`, headers: { range: 'bytes=0-9' }, body: '', unsigned: false, ...extra });
+])) {
+  cases.push({
+    id,
+    kind: 'extra',
+    method: 'GET',
+    href: `${B}/test.txt`,
+    headers: { range: 'bytes=0-9' },
+    body: '',
+    unsigned: false,
+    ...extra,
+  });
 }
 for (const [id, method, href, headers, body = '', unsigned = false, token] of fixed) {
   const u = new URL(href);
-  cases.push({ id, kind: 'fixed', method, href: u.href, headers, body, unsigned, ...(token ? { token } : {}) });
+  cases.push({
+    id,
+    kind: 'fixed',
+    method,
+    href: u.href,
+    headers,
+    body,
+    unsigned,
+    ...(token ? { token } : {}),
+  });
 }
 for (let i = 0; i < 3000; i++) {
   const nSeg = ri(4);
   let path = '/' + Array.from({ length: nSeg }, () => word(pathAtoms, 4)).join('/');
   const nQ = ri(4);
-  const pairs = Array.from({ length: nQ }, () => (rnd() < 0.15 ? word(qAtoms, 3) : `${word(qAtoms, 3)}=${rnd() < 0.2 ? '' : word(qAtoms, 4)}`));
+  const pairs = Array.from({ length: nQ }, () =>
+    rnd() < 0.15 ? word(qAtoms, 3) : `${word(qAtoms, 3)}=${rnd() < 0.2 ? '' : word(qAtoms, 4)}`,
+  );
   let raw = `https://${pick(hosts)}${path}`;
-  if (pairs.length) raw += '?' + pairs.join('&');
+  if (pairs.length) {
+    raw += '?' + pairs.join('&');
+  }
   let u;
   try {
     u = new URL(raw);
   } catch {
     continue;
   }
+  /** @type {Record<string, string>} */
   const headers = {};
-  if (rnd() < 0.3) headers['x-amz-acl'] = pick(['private', 'public-read']);
-  if (rnd() < 0.2) headers['x-amz-meta-note'] = pick(metaVals);
+  if (rnd() < 0.3) {
+    headers['x-amz-acl'] = pick(['private', 'public-read']);
+  }
+  if (rnd() < 0.2) {
+    headers['x-amz-meta-note'] = pick(metaVals);
+  }
   const method = pick(['GET', 'PUT', 'POST', 'DELETE', 'HEAD']);
-  const c = { id: `fuzz-${i}`, kind: 'fuzz', method, href: u.href, headers, body: pick(bodies), unsigned: rnd() < 0.5 };
-  if (rndToken() < 0.1) c.token = `token-${i}-${Math.floor(rndToken() * 1e6)}+/=`;
+  /** @type {Case} */
+  const c = {
+    id: `fuzz-${i}`,
+    kind: 'fuzz',
+    method,
+    href: u.href,
+    headers,
+    body: pick(bodies),
+    unsigned: rnd() < 0.5,
+  };
+  if (rndToken() < 0.1) {
+    c.token = `token-${i}-${Math.floor(rndToken() * 1e6)}+/=`;
+  }
   cases.push(c);
 }
 // queries whose names start with one another, in every order, with and without values
@@ -228,7 +361,17 @@ for (let i = 0; i < 300; i++) {
     return rnd() < 0.25 ? name : `${name}=${pick(['', '1', '2', 'x', 'a b', '~'])}`;
   });
   const u = new URL(`https://${pick(hosts)}/k?${pairs.join('&')}`);
-  cases.push({ id: `qname-${i}`, kind: 'fuzz', method: 'GET', href: u.href, headers: {}, body: '', unsigned: false });
+  cases.push({
+    id: `qname-${i}`,
+    kind: 'fuzz',
+    method: 'GET',
+    href: u.href,
+    headers: {},
+    body: '',
+    unsigned: false,
+  });
 }
-writeFileSync(process.argv[2], JSON.stringify(cases));
-console.log(`${cases.length} cases (${cases.filter((c) => c.kind === 'fixed').length} fixed, ${cases.filter((c) => c.kind === 'fuzz').length} fuzz)`);
+writeFileSync(/** @type {string} */ (process.argv[2]), JSON.stringify(cases));
+console.log(
+  `${cases.length} cases (${cases.filter((c) => c.kind === 'fixed').length} fixed, ${cases.filter((c) => c.kind === 'fuzz').length} fuzz)`,
+);
