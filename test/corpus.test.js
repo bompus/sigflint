@@ -20,7 +20,7 @@ for (const [name, { getAuthHeaders }] of entries) {
         continue;
       }
       checked++;
-      const got = (await signCase(getAuthHeaders, c)).authorization.slice(-64);
+      const got = (await signCase(getAuthHeaders, c)).authorization?.slice(-64);
       if (got !== c.sig) {
         failures.push({ id: c.id, href: c.href, expected: c.sig, got, canonical: c.canonical });
       }
@@ -59,7 +59,7 @@ const awsExamples = [
 ];
 for (const [name, id, signedHeaders, signature] of awsExamples) {
   test(`AWS documentation example: ${name}`, async () => {
-    const headers = await signCase(
+    const headers = signCase(
       entries[0][1].getAuthHeaders,
       /** @type {import('./helpers.js').CorpusCase} */ (corpus.find((c) => c.id === id)),
     );

@@ -9,8 +9,8 @@ const corpus = JSON.parse(readFileSync(new URL('./corpus.json', import.meta.url)
 /** @param {string} id */
 const byId = (id) =>
   /** @type {import('./helpers.js').CorpusCase} */ (corpus.find((c) => c.id === id));
-/** @param {{ authorization: string }} headers */
-const sigOf = (headers) => headers.authorization.slice(-64);
+/** @param {import('../src/base.js').AuthHeaders} headers */
+const sigOf = (headers) => (headers.authorization ?? '').slice(-64);
 const awsRange = byId('aws-get-object-range');
 
 describe('result', () => {
@@ -35,7 +35,7 @@ describe('result', () => {
     assert.equal(headers['x-amz-date'], '20130524T000000Z');
     assert.equal(headers['x-amz-content-sha256'], 'UNSIGNED-PAYLOAD');
     assert.match(
-      headers.authorization,
+      headers.authorization ?? '',
       /^AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE\/20130524\/us-east-1\/s3\/aws4_request, SignedHeaders=host;x-amz-acl;x-amz-content-sha256;x-amz-date, Signature=[0-9a-f]{64}$/,
     );
   });
@@ -62,7 +62,7 @@ describe('result', () => {
     const headers = signCase(getAuthHeaders, byId('session-token-get'));
     assert.equal(headers['x-amz-security-token'], byId('session-token-get').token);
     assert.match(
-      headers.authorization,
+      headers.authorization ?? '',
       /SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token,/,
     );
   });
@@ -124,13 +124,13 @@ describe('result', () => {
       credentials,
     );
     const after = Math.floor(Date.now() / 1000);
-    const stamp = headers['x-amz-date'];
+    const stamp = headers['x-amz-date'] ?? '';
     const signed =
       Date.parse(
         stamp.replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'),
       ) / 1000;
     assert.ok(signed >= before && signed <= after);
-    assert.ok(headers.authorization.includes(`/${stamp.slice(0, 8)}//s3/aws4_request`));
+    assert.ok((headers.authorization ?? '').includes(`/${stamp.slice(0, 8)}//s3/aws4_request`));
   });
 });
 

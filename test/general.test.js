@@ -52,13 +52,13 @@ test('the service defaults to s3, and other services send x-amz-content-sha256 o
     body: 'Action=ListQueues',
     now: toMs('20130524T000000Z'),
   };
-  const s3 = await getAuthHeaders(request, credentials);
-  assert.match(s3.authorization, /Credential=[^/]+\/20130524\/us-east-1\/s3\/aws4_request/);
+  const s3 = getAuthHeaders(request, credentials);
+  assert.match(s3.authorization ?? '', /Credential=[^/]+\/20130524\/us-east-1\/s3\/aws4_request/);
   assert.ok('x-amz-content-sha256' in s3);
-  const sqs = await getAuthHeaders({ ...request, service: 'sqs' }, credentials);
-  assert.match(sqs.authorization, /\/sqs\/aws4_request, SignedHeaders=host;x-amz-date,/);
+  const sqs = getAuthHeaders({ ...request, service: 'sqs' }, credentials);
+  assert.match(sqs.authorization ?? '', /\/sqs\/aws4_request, SignedHeaders=host;x-amz-date,/);
   assert.deepEqual(Object.keys(sqs).sort(), ['authorization', 'x-amz-date']);
-  const unsigned = await getAuthHeaders(
+  const unsigned = getAuthHeaders(
     { ...request, service: 'sqs', unsignedPayload: true },
     credentials,
   );

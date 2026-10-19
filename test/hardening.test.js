@@ -39,14 +39,14 @@ for (const [
 
   test(`${name}: a trailer name in capitals is signed with its value`, async () => {
     const lower = text(
-      await (
-        await chunkSigner(await chunkedHeaders(), credentials)
-      ).end({ 'x-amz-checksum-crc32c': 'sOO8/Q==' }),
+      await chunkSigner(await chunkedHeaders(), credentials).end({
+        'x-amz-checksum-crc32c': 'sOO8/Q==',
+      }),
     );
     const upper = text(
-      await (
-        await chunkSigner(await chunkedHeaders(), credentials)
-      ).end({ 'X-Amz-Checksum-CRC32C': 'sOO8/Q==' }),
+      await chunkSigner(await chunkedHeaders(), credentials).end({
+        'X-Amz-Checksum-CRC32C': 'sOO8/Q==',
+      }),
     );
     assert.equal(upper, lower);
     assert.match(upper, /\r\nx-amz-checksum-crc32c:sOO8\/Q==\r\n/);
@@ -98,23 +98,23 @@ for (const [
   });
 
   test(`${name}: a line break in a trailer name or value is refused`, async () => {
-    for (const trailers of [
+    for (const trailers of /** @type {Record<string, string>[]} */ ([
       { 'x-amz-checksum-crc32c': 'a\nx-evil:1' },
       { 'x-amz-checksum-crc32c': 'a\r\nx-evil:1' },
       { 'x-a\nx-evil': '1' },
-    ]) {
-      const signer = await chunkSigner(await chunkedHeaders(), credentials);
+    ])) {
+      const signer = chunkSigner(await chunkedHeaders(), credentials);
       await rejects(() => signer.end(trailers), TypeError, /line break/);
     }
   });
 
   test(`${name}: a refused trailer does not move the chunk chain, so end() can be retried`, async () => {
     const good = { 'x-amz-checksum-crc32c': 'sOO8/Q==' };
-    const signer = await chunkSigner(await chunkedHeaders(), credentials);
+    const signer = chunkSigner(await chunkedHeaders(), credentials);
     await signer.chunk(new Uint8Array([1, 2, 3]));
     await rejects(() => signer.end({ 'x-amz-checksum-crc32c': 'a\nb' }), TypeError, /line break/);
     const retried = await signer.end(good);
-    const fresh = await chunkSigner(await chunkedHeaders(), credentials);
+    const fresh = chunkSigner(await chunkedHeaders(), credentials);
     await fresh.chunk(new Uint8Array([1, 2, 3]));
     assert.deepEqual(retried, await fresh.end(good));
   });
@@ -140,7 +140,8 @@ for (const [
   });
 
   test(`${name}: expires must be a whole number of seconds up to seven days`, async () => {
-    for (const expires of ['60&x-evil=1', 0, -1, 1.5, 604801, NaN]) {
+    // the string is not a valid type; the test checks that it is refused at run time
+    for (const expires of /** @type {any[]} */ (['60&x-evil=1', 0, -1, 1.5, 604801, NaN])) {
       await rejects(() => presign({ ...request, expires }, credentials), RangeError, /expires/);
     }
     for (const expires of [1, 3600, 604800]) {
@@ -162,7 +163,7 @@ for (const [
           { method: 'GET', url: new URL('https://x.example.com/'), region, service, now },
           credentials,
         )
-      ).authorization;
+      ).authorization ?? '';
     const first = await sign('a/b', 'c');
     const second = await sign('a', 'b/c');
     assert.notEqual(second.slice(-64), first.slice(-64));
@@ -176,28 +177,24 @@ for (const [
   });
 
   test(`${name}: an empty chunk is not sent and does not end the upload`, async () => {
-    const signer = await chunkSigner(await chunkedHeaders(), credentials);
+    const signer = chunkSigner(await chunkedHeaders(), credentials);
     const empty = await signer.chunk(new Uint8Array(0));
     assert.equal(empty.length, 0);
-    const reference = await (
-      await chunkSigner(await chunkedHeaders(), credentials)
-    ).chunk(new Uint8Array([1, 2, 3]));
+    const reference = await chunkSigner(await chunkedHeaders(), credentials).chunk(
+      new Uint8Array([1, 2, 3]),
+    );
     assert.deepEqual(await signer.chunk(new Uint8Array([1, 2, 3])), reference);
   });
 
   test(`${name}: an event signed at a fractional millisecond time is the same as at the whole millisecond`, async () => {
     const message = new Uint8Array([1, 2, 3]);
-    const a = await (
-      await eventSigner(
-        await getAuthHeaders({ ...request, service: 'transcribe' }, credentials),
-        credentials,
-      )
+    const a = await eventSigner(
+      await getAuthHeaders({ ...request, service: 'transcribe' }, credentials),
+      credentials,
     ).sign(message, now + 5.7);
-    const b = await (
-      await eventSigner(
-        await getAuthHeaders({ ...request, service: 'transcribe' }, credentials),
-        credentials,
-      )
+    const b = await eventSigner(
+      await getAuthHeaders({ ...request, service: 'transcribe' }, credentials),
+      credentials,
     ).sign(message, now + 5);
     assert.deepEqual(a, b);
   });

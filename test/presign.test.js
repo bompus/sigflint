@@ -54,7 +54,7 @@ for (const [name, { presign }] of entries) {
 test('the lifetime defaults to an hour, and the URL keeps its path and original query', async () => {
   const [, { presign }] = entries[0];
   const link = new URL(
-    await presign(
+    presign(
       {
         method: 'GET',
         url: new URL('https://bucket.s3.us-east-1.amazonaws.com/a/b?versionId=3'),

@@ -74,13 +74,12 @@ for (const [name, { getAuthHeadersV4a, presignV4a }] of entries) {
         );
         const text = stringToSign(prepared, hexHash(prepared.canonicalRequest));
         const [referenceRest, referenceSignature] = c.authorization.split(', Signature=');
-        const [ownRest, ownSignature] = (
-          await getAuthHeadersV4a(request, creds)
-        ).authorization.split(', Signature=');
+        const [ownRest, ownSignature] =
+          (await getAuthHeadersV4a(request, creds)).authorization?.split(', Signature=') ?? [];
         if (!verifies(text, referenceSignature)) {
           failures.push(['reference signature', c.id, c.href]);
         }
-        if (!verifies(text, ownSignature)) {
+        if (!verifies(text, ownSignature ?? '')) {
           failures.push(['our signature', c.id, c.href]);
         }
         if (ownRest !== referenceRest) {
@@ -130,13 +129,13 @@ test('the scope has no region, and the region set is signed (header) or a query 
     regionSet: 'us-east-1,us-west-2',
     now,
   };
-  const headers = await getAuthHeadersV4a(request, credentials);
+  const headers = getAuthHeadersV4a(request, credentials);
   assert.match(
-    headers.authorization,
+    headers.authorization ?? '',
     /^AWS4-ECDSA-P256-SHA256 Credential=AKIAIOSFODNN7EXAMPLE\/20130524\/s3\/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-region-set, Signature=[0-9a-f]+$/,
   );
   assert.equal(headers['x-amz-region-set'], 'us-east-1,us-west-2');
-  const link = new URL(await presignV4a(request, credentials));
+  const link = new URL(presignV4a(request, credentials));
   assert.equal(link.searchParams.get('X-Amz-Region-Set'), 'us-east-1,us-west-2');
   assert.equal(link.searchParams.get('X-Amz-Algorithm'), 'AWS4-ECDSA-P256-SHA256');
 });

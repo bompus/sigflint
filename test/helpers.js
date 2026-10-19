@@ -28,21 +28,24 @@ export const toMs = (s) =>
 
 /**
  * Signs a corpus case: the request exactly as the case describes it.
- * @template T
- * @param {(request: import('../src/base.js').SignRequest, credentials: import('../src/base.js').Credentials) => T} getAuthHeaders
+ * @template {(request: import('../src/base.js').SignRequest, credentials: import('../src/base.js').Credentials) => unknown} F
+ * @param {F} getAuthHeaders
  * @param {CorpusCase} c
+ * @returns {ReturnType<F>}
  */
 export function signCase(getAuthHeaders, c) {
-  return getAuthHeaders(
-    {
-      method: c.method,
-      url: new URL(c.href),
-      region: c.region ?? 'us-east-1',
-      body: c.body,
-      unsignedPayload: c.unsigned,
-      signHeaders: { ...c.headers },
-      now: toMs(c.stamp ?? stamp),
-    },
-    c.token ? { ...credentials, sessionToken: c.token } : credentials,
+  return /** @type {ReturnType<F>} */ (
+    getAuthHeaders(
+      {
+        method: c.method,
+        url: new URL(c.href),
+        region: c.region ?? 'us-east-1',
+        body: c.body,
+        unsignedPayload: c.unsigned,
+        signHeaders: { ...c.headers },
+        now: toMs(c.stamp ?? stamp),
+      },
+      c.token ? { ...credentials, sessionToken: c.token } : credentials,
+    )
   );
 }
