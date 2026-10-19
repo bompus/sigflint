@@ -97,5 +97,10 @@ jobs:
         with:
           node-version: '26'
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            conformance/streams/package-lock.json
       - run: npm ci
       - run: npm run check:style
+      - run: npm ci --prefix conformance/streams
+      - run: npm run types:streams

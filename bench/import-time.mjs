@@ -18,19 +18,7 @@ const arm = process.env.ARM ?? candidate;
 const startMs = performance.now();
 if (candidate === 'none') {
   const t1 = performance.now();
-  console.log(
-    JSON.stringify({
-      arm,
-      candidate,
-      runtime,
-      status: 'ok',
-      startMs,
-      importMs: t1 - startMs,
-      firstSignMs: 0,
-      totalMs: t1,
-      ok: true,
-    }),
-  );
+  console.log(JSON.stringify({ arm, candidate, runtime, status: 'ok', startMs, importMs: t1 - startMs, firstSignMs: 0, totalMs: t1, ok: true }));
 } else {
   freezeClock();
   const adapters = await loadAdapters(oursPath, null, [candidate]);
@@ -38,17 +26,5 @@ if (candidate === 'none') {
   const a = adapters.find((x) => x.id === candidate);
   const got = a.kind === 'sync' ? a.sign(c) : await a.sign(c);
   const t2 = performance.now();
-  console.log(
-    JSON.stringify({
-      arm,
-      candidate,
-      runtime,
-      status: 'ok',
-      startMs,
-      importMs: t1 - startMs,
-      firstSignMs: t2 - t1,
-      totalMs: t2,
-      ok: got === c.sig,
-    }),
-  );
+  console.log(JSON.stringify({ arm, candidate, runtime, status: 'ok', startMs, importMs: t1 - startMs, firstSignMs: t2 - t1, totalMs: t2, ok: got === c.sig }));
 }

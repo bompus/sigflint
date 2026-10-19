@@ -23,5 +23,13 @@
     "resolveJsonModule": true
   },
   "include": ["src", "test", "conformance", "index.d.ts"],
-  "exclude": ["test/types", "bench/frozen", "bench/results", "**/node_modules", "dist", "types"]
+  "exclude": [
+    "test/types",
+    "conformance/streams",
+    "bench/frozen",
+    "bench/results",
+    "**/node_modules",
+    "dist",
+    "types"
+  ]
 }

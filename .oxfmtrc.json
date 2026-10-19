@@ -10,8 +10,7 @@
     "test/corpus*.json",
     "package-lock.json",
     "**/package-lock.json",
-    "bench/frozen/**",
-    "bench/results/**",
+    "bench/**",
     "conformance/*.json"
   ],
   "sortPackageJson": true,

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- The code is formatted with oxfmt, linted with oxlint and type-checked by `tsc` in strict mode, and `npm run check` runs all three. Signing does not change: built without whitespace, the Bun build and the WebCrypto entry are the same code as before, and the Node build differs in one statement, an HMAC key XOR written as `a[i] = a[i] ^ b[i]` instead of `a[i] ^= b[i]`, which makes a minified bundle of the Node entry 8 bytes larger (`getAuthHeaders` alone: 5,675 bytes, 2,777 gzipped, up from 5,667 and 2,774). The published files in `src/` and `dist/` differ in formatting and braces. The public types (`index.d.ts` and `sigflint/web`) are unchanged; the generated declarations of internal helpers in `types/` have parameter types instead of `any`.
+- The code is formatted with oxfmt, linted with oxlint and type-checked by `tsc` in strict mode, and `npm run check` runs all three. Signing does not change: built without whitespace, the Bun build and the WebCrypto entry are the same code as before, and the Node build differs in the two statements of the HMAC key XOR, written as `a[i] = a[i] ^ b[i]` instead of `a[i] ^= b[i]`, which makes a minified bundle of the Node entry 8 bytes larger (`getAuthHeaders` alone: 5,675 bytes, 2,777 gzipped, up from 5,667 and 2,774). The published files in `src/` and `dist/` differ in formatting and braces, and `src/` has more JSDoc type comments. The public types (`index.d.ts` and `sigflint/web`) are unchanged; the generated declarations of internal helpers in `types/` have parameter types instead of `any`.
 
 ## 1.0.1 - 2026-10-18
 
