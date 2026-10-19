@@ -67,7 +67,7 @@ jobs:
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
-      - run: deno test -A test/
+      - run: deno test -A --no-check test/
 
   package:
     name: Package checks

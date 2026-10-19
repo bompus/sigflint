@@ -14,7 +14,7 @@ npm run check:package
 npm run check       # format, lint and all of the above (oxfmt, oxlint; npm run format fixes the format)
 ```
 
-The tests also run on Bun (`bun test test/`) and Deno (`deno test -A test/`); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.
+The tests also run on Bun (`bun test test/`) and Deno (`deno test -A --no-check test/`; `npm run types` does the type checking); run `npm run build` first, because they load `dist/`. Please run the runtimes you have.
 
 ## The conformance corpus
 
