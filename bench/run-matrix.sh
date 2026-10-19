@@ -18,7 +18,7 @@ if [ -n "${BENCH_LOCK:-}" ]; then # optional: serialize with other heavy jobs on
   echo "lock held $(date -u +%FT%TZ)"
 fi
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
-declare -A CAND=([sigflint - A]=sigflint [sigflint - B]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy [aws - sig]=aws-sig [wdl]=wdl [minio]=minio)
+declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio)
 busy() { # CPU busy percent over 1 s, whole machine
   read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ </proc/stat
   sleep 1

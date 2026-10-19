@@ -29,7 +29,7 @@ fi
   exit 4
 }
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
-declare -A CAND=([sigflint - A]=sigflint [sigflint - B]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy [aws - sig]=aws-sig [wdl]=wdl [minio]=minio [none]=none)
+declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio [none]=none)
 CAPPED=$HOME/.local/bin/run-capped
 NODE_FLAGS_ALLOC=(--expose-gc --min-semi-space-size=128 --max-semi-space-size=128)
 NODE_FLAGS_RUN=(--expose-gc)

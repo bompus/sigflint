@@ -49,7 +49,7 @@ CAPPED=$HOME/.local/bin/run-capped
 LOGDIR=$R/memory-logs
 mkdir -p "$LOGDIR"
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
-declare -A CAND=([sigflint - A]=sigflint [sigflint - B]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy [aws - sig]=aws-sig [wdl]=wdl [minio]=minio [none]=none)
+declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio [none]=none)
 
 busy() {
   read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ </proc/stat
