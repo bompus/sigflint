@@ -84,7 +84,7 @@
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "7.0.2004",
     "publint": "^0.3.25",
-    "typescript": "7.0.2"
+    "typescript": "7.1.0-beta"
   },
   "engines": {
     "node": ">=22.12.0"
