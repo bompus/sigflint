@@ -36,7 +36,7 @@ const med = (a) => {
     : (/** @type {number} */ (s[h - 1]) + /** @type {number} */ (s[h])) / 2;
 };
 /** @param {number} x */
-const fmt = (x) => Math.round(x).toLocaleString('en-US');
+const fmt = (x) => (Math.abs(x) < 100 ? x.toFixed(2) : Math.round(x).toLocaleString('en-US'));
 /** @param {number[]} v */
 const stat = (v) => ({ med: med(v), min: Math.min(...v), max: Math.max(...v) });
 /** @param {Stat} s */
