@@ -12,7 +12,7 @@
 #   C  memory: allocation, GC / CPU / growth / peak RSS, key-cache retention -> results/memory-raw.jsonl
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
 # RUNTIMES="node bun143 bun144" measures every unit under each listed runtime label (default "node bun"), in this order in odd rounds and the reverse in even rounds;
-#   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
+#   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (characters of the label outside A-Za-z0-9_ become _ in the variable name; default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
 # RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}
@@ -50,10 +50,21 @@ fi
 trap 'rm -f "$TMP"' EXIT
 CAPPED=$HOME/.local/bin/run-capped
 read -r -a RUNTIME_LIST <<<"${RUNTIMES:-node bun}"
-rtbin() { # rtbin <label>: the executable of a runtime label
-  local v="RT_BIN_$1"
-  if [ -n "${!v:-}" ]; then echo "${!v}"; else echo "${1%%[0-9]*}"; fi
+rtbin() { # rtbin <label>: the executable of a runtime label: RT_BIN_<label with every character outside A-Za-z0-9_ replaced by _>, else node or bun from PATH
+  local v="RT_BIN_${1//[^A-Za-z0-9_]/_}"
+  if [ -n "${!v:-}" ]; then
+    echo "${!v}"
+  else
+    case $1 in node) echo node ;; bun*) echo bun ;; *) return 1 ;; esac
+  fi
 }
+for rt in "${RUNTIME_LIST[@]}"; do
+  case $rt in node | bun*) ;; *)
+    echo "unknown runtime label $rt (node, or a label starting with bun)"
+    exit 2
+    ;;
+  esac
+done
 # rtart <label>: the built file of a runtime label
 rtart() { case $1 in node*) echo node.js ;; *) echo bun.js ;; esac }
 # rtseq <round>: the runtime labels in this round's order

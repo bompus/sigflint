@@ -108,7 +108,7 @@ if cores > 4:
     verdict["reasons"].append("more than 4 busy cores")
 if min(a0, a1) < 8:
     verdict["reasons"].append("available memory below 8 GiB")
-if any(delta[k] for k in SWAPS):
+if any(delta.get(k, 0) for k in SWAPS):  # a kernel without zswap has no zswap counters
     verdict["reasons"].append("swap-out or writeback")
 verdict["admit"] = not verdict["reasons"]
 print(json.dumps(verdict))

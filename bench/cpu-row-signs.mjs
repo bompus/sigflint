@@ -14,6 +14,7 @@ const rows = readFileSync(rawPath, 'utf8')
   .filter(Boolean)
   .map((l) => JSON.parse(l))
   .filter((r) => r.mode === 'run' && r.status === 'ok' && r.cpuUsPerCall !== undefined);
+const MIN_ROUNDS = 5; // the planned sample count of the protocol; fewer paired rounds get no verdict
 const labels = [...new Set(rows.map((r) => r.rt))].filter((rt) => rt.startsWith('bun')).sort();
 /** @param {number[]} a */
 const med = (a) => {
@@ -54,6 +55,12 @@ for (const w of wanted) {
     }
     const lower = n.filter((x, i) => x < /** @type {number} */ (b[i])).length;
     let verdict = 'unsettled';
+    if (rounds.length < MIN_ROUNDS) {
+      out.push(
+        `| ${arm} ${workload} | ${label} | ${rounds.length} | ${cell(n)} | ${cell(b)} | ${lower} of ${rounds.length} | fewer than ${MIN_ROUNDS} paired rounds: inconclusive |`,
+      );
+      continue;
+    }
     if (Math.max(...n) < Math.min(...b) && lower === n.length) {
       verdict = 'confirmed Node ahead';
     } else if (med(b) < med(n) || lower <= 2) {
