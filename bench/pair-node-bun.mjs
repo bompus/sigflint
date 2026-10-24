@@ -2,7 +2,7 @@
 // results/<out>. A runtime is ahead when its min-max range over the rounds is disjoint from the other's; otherwise the direction of the medians is given
 // and the ranges overlap. Dispositions are carried from an earlier table when a row's verdict class is unchanged; any other row is marked as needing one.
 // Usage: node pair-node-bun.mjs [results dir=results] [out file=rerun-3-node-bun.md] [earlier table=results/rerun-2-node-bun.md]
-//   needs speed-raw.jsonl, speed-more.jsonl and memory-summary.json (node analyze-memory.mjs results/memory-raw.jsonl results/memory-summary.json) in the results dir.
+//   needs memory-summary.json (node analyze-memory.mjs results/memory-raw.jsonl results/memory-summary.json) in the results dir; speed-raw.jsonl and speed-more.jsonl add the A and B rows when present.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const here = new URL('.', import.meta.url).pathname;
@@ -23,10 +23,12 @@ const prevFile = process.argv[4] ?? `${here}results/rerun-2-node-bun.md`;
  */
 /** @param {string} f */
 const jl = (f) =>
-  readFileSync(`${dir}/${f}`, 'utf8')
-    .trim()
-    .split('\n')
-    .map((l) => JSON.parse(l));
+  existsSync(`${dir}/${f}`)
+    ? readFileSync(`${dir}/${f}`, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((l) => JSON.parse(l))
+    : [];
 /** @param {number[]} a */
 const med = (a) => {
   const s = [...a].sort((x, y) => x - y),

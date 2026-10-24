@@ -11,6 +11,8 @@
 #   B  other services and presigned URLs, 8 arms      -> results/speed-more.jsonl
 #   C  memory: allocation, GC / CPU / growth / peak RSS, key-cache retention -> results/memory-raw.jsonl
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
+# RUNTIMES="node bun143 bun144" measures every unit under each listed runtime label (default "node bun"), in this order in odd rounds and the reverse in even rounds;
+#   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
 # RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}
@@ -47,6 +49,17 @@ if ! { mkdir -p "$R" && TMP=$(mktemp "$R/.unit.XXXXXX"); }; then
 fi
 trap 'rm -f "$TMP"' EXIT
 CAPPED=$HOME/.local/bin/run-capped
+read -r -a RUNTIME_LIST <<<"${RUNTIMES:-node bun}"
+rtbin() { # rtbin <label>: the executable of a runtime label
+  local v="RT_BIN_$1"
+  if [ -n "${!v:-}" ]; then echo "${!v}"; else echo "${1%%[0-9]*}"; fi
+}
+# rtart <label>: the built file of a runtime label
+rtart() { case $1 in node*) echo node.js ;; *) echo bun.js ;; esac }
+# rtseq <round>: the runtime labels in this round's order
+rtseq() {
+  if (($1 % 2 == 0)); then printf '%s\n' "${RUNTIME_LIST[@]}" | tac; else printf '%s\n' "${RUNTIME_LIST[@]}"; fi
+}
 LOGDIR=$R/memory-logs
 mkdir -p "$LOGDIR"
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
@@ -120,10 +133,10 @@ speedproc() {
 }
 NODE_FLAGS_ALLOC=(--expose-gc --min-semi-space-size=128 --max-semi-space-size=128)
 NODE_FLAGS_RUN=(--expose-gc)
-# jsc_rows <log> <arm> <round> <alloc|run>: appends the Bun GC rows parsed from the log to the unit's buffer; when the parser fails or finds fewer regions than the log marks, appends an error row instead, so the unit is not admitted
+# jsc_rows <log> <arm> <round> <alloc|run> <runtime label>: appends the Bun GC rows parsed from the log to the unit's buffer; when the parser fails or finds fewer regions than the log marks, appends an error row instead, so the unit is not admitted
 jsc_rows() {
-  local log=$1 arm=$2 round=$3 mode=$4 parsed want got l
-  local bad="{\"round\":$round,\"kind\":\"$mode\",\"armTag\":\"$arm\",\"rt\":\"bun\",\"status\":\"error\",\"msg\":\"gc log"
+  local log=$1 arm=$2 round=$3 mode=$4 rt=$5 parsed want got l
+  local bad="{\"round\":$round,\"kind\":\"$mode\",\"armTag\":\"$arm\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"gc log"
   parsed=$(node "$HERE/parse-jsc-log.mjs" "$log" "$arm" "$round") || {
     echo "$bad parse failed\"}" >>"$TMP"
     return
@@ -134,7 +147,7 @@ jsc_rows() {
     echo "$bad has $want regions, $got parsed\"}" >>"$TMP"
     return
   }
-  printf '%s\n' "$parsed" | while IFS= read -r l; do [ -n "$l" ] && echo "${l%\}},\"src\":\"jsc-log\",\"rt\":\"bun\",\"armTag\":\"$arm\",\"procKind\":\"$mode\",\"unit\":\"$UNIT\"}" >>"$TMP"; done
+  printf '%s\n' "$parsed" | while IFS= read -r l; do [ -n "$l" ] && echo "${l%\}},\"src\":\"jsc-log\",\"rt\":\"$rt\",\"armTag\":\"$arm\",\"procKind\":\"$mode\",\"unit\":\"$UNIT\"}" >>"$TMP"; done
 }
 memproc() { # memproc <alloc|run> <arm> <rt> <round>
   local mode=$1 arm=$2 rt=$3 round=$4 tag="\"round\":$4,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\"" sw0 sw1 out rc post err="$LOGDIR/$1-$3-$2-r$4.err"
@@ -146,29 +159,29 @@ memproc() { # memproc <alloc|run> <arm> <rt> <round>
   if [ "$rt" = node ]; then
     local flags=("${NODE_FLAGS_RUN[@]}")
     [ "$mode" = alloc ] && flags=("${NODE_FLAGS_ALLOC[@]}")
-    out=$(ARM=$arm "$CAPPED" "$CAP" node "${flags[@]}" "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/node.js" 2>"$err")
+    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" "${flags[@]}" "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/node.js" 2>"$err")
     rc=$?
   else
-    out=$(ARM=$arm BUN_JSC_logGC=1 "$CAPPED" "$CAP" bun "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/bun.js" 2>"$err")
+    out=$(ARM=$arm BUN_JSC_logGC=1 "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/memory.mjs" "$mode" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 2>"$err")
     rc=$?
   fi
   post=$(busy)
   sw1=$(swapfree)
   emit "$tag" "$rc" "$post" "$((sw1 - sw0))" "$out"
-  if [ "$rt" = bun ] && ((rc == 0)); then jsc_rows "$err" "$arm" "$round" "$mode"; fi
+  if [ "$rt" != node ] && ((rc == 0)); then jsc_rows "$err" "$arm" "$round" "$mode" "$rt"; fi
   [ "$rt" = node ] && rm -f "$err"
 }
 shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
   local kind=$1 arm=$2 rt=$3 round=$4 rep=$5 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
   sw0=$(swapfree)
   if [ "$kind" = import ]; then
-    out=$(ARM=$arm "$CAPPED" "$CAP" "$rt" "$HERE/import-time.mjs" "${CAND[$arm]}" "$NEW/$rt.js" 2>&1)
+    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/import-time.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 2>&1)
     rc=$?
   elif [ "$rt" = node ]; then
-    out=$(ARM=$arm "$CAPPED" "$CAP" node --expose-gc "$HERE/cache.mjs" "$NEW/node.js" 2>&1)
+    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" --expose-gc "$HERE/cache.mjs" "$NEW/node.js" 2>&1)
     rc=$?
   else
-    out=$(ARM=$arm "$CAPPED" "$CAP" bun "$HERE/cache.mjs" "$NEW/bun.js" 2>&1)
+    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/cache.mjs" "$NEW/$(rtart "$rt")" 2>&1)
     rc=$?
   fi
   sw1=$(swapfree)
@@ -178,19 +191,20 @@ shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
 run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes into $TMP
   local round=$1 arm=$2 rt
   : >"$TMP"
-  local RTS=(node bun)
-  ((round % 2 == 0)) && RTS=(bun node)
+  local RTS
+  mapfile -t RTS < <(rtseq "$round")
   for rt in "${RTS[@]}"; do case $PART in
-    A) speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$rt" "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$rt.js" 1 ;;
+    A) speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 1 ;;
     R)
-      local F=$NEW/$rt.js
-      [ "$arm" = frozen ] && F=$BASE/$rt.js
-      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$rt" "$HERE/speed.mjs" sigflint "$F" 1
+      local F
+      F=$NEW/$(rtart "$rt")
+      [ "$arm" = frozen ] && F=$BASE/$(rtart "$rt")
+      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" sigflint "$F" 1
       ;;
     B)
       local cand=$arm
       case $arm in final-*) cand=sigflint ;; esac
-      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "SRC=$NEW" "$rt" "$HERE/speed-more.mjs" "$cand" 1
+      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "SRC=$NEW" "$(rtbin "$rt")" "$HERE/speed-more.mjs" "$cand" 1
       ;;
     C)
       memproc alloc "$arm" "$rt" "$round"
@@ -209,8 +223,8 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
 run_import_round() { # part D: one unit is a whole round; REPS fresh processes per arm and runtime, the control `none` included, interleaved
   local round=$1 rt rep arm
   : >"$TMP"
-  local RTS=(node bun)
-  ((round % 2 == 0)) && RTS=(bun node)
+  local RTS
+  mapfile -t RTS < <(rtseq "$round")
   local ORDER=("${ARMS[@]}")
   ((round % 2 == 0)) && mapfile -t ORDER < <(printf '%s\n' "${ARMS[@]}" | tac)
   for rt in "${RTS[@]}"; do for rep in $(seq 1 "$REPS"); do
@@ -237,17 +251,26 @@ units_of() {
   printf '%s\n' "${order[@]}"
 }
 
-if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl" ]; then # allocation calibration on both runtimes, kept apart from the counted rows (memory-protocol.md)
+if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl" ]; then # allocation calibration on every runtime, kept apart from the counted rows (memory-protocol.md); each row is tagged with its runtime label
   CAL=$R/memory-calibration-final.jsonl
-  CERR=$LOGDIR/calib-bun.err
   CT=$(mktemp "$R/.calibration.XXXXXX")
-  {
-    ARM=calib "$CAPPED" "$CAP" node "${NODE_FLAGS_ALLOC[@]}" "$HERE/memory.mjs" alloc calib x 2>/dev/null
-    ARM=calib BUN_JSC_logGC=1 "$CAPPED" "$CAP" bun "$HERE/memory.mjs" alloc calib x 2>"$CERR"
-    node "$HERE/parse-jsc-log.mjs" "$CERR" calib 1
-  } >>"$CT"
-  # complete when both Node workloads and all four Bun regions (real and control, two workloads) are present
-  if (($(grep -c '"mode":"alloc","workload":"calib-[0-9]*".*"heapBytesPerCall"' "$CT") == 2 && $(grep -c '"region":"alloc-real"' "$CT") == 2 && $(grep -c '"region":"alloc-control"' "$CT") == 2)); then
+  NNODE=0
+  NBUN=0
+  for rt in "${RUNTIME_LIST[@]}"; do
+    CERR=$LOGDIR/calib-$rt.err
+    if [ "$rt" = node ]; then
+      NNODE=$((NNODE + 1))
+      ARM=calib "$CAPPED" "$CAP" "$(rtbin "$rt")" "${NODE_FLAGS_ALLOC[@]}" "$HERE/memory.mjs" alloc calib x 2>/dev/null | sed "s/}\$/,\"rt\":\"$rt\"}/" >>"$CT"
+    else
+      NBUN=$((NBUN + 1))
+      {
+        ARM=calib BUN_JSC_logGC=1 "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/memory.mjs" alloc calib x 2>"$CERR"
+        node "$HERE/parse-jsc-log.mjs" "$CERR" calib 1
+      } | sed "s/}\$/,\"rt\":\"$rt\"}/" >>"$CT"
+    fi
+  done
+  # complete when every Node runtime has both workloads and every Bun runtime has all four regions (real and control, two workloads)
+  if (($(grep -c '"mode":"alloc","workload":"calib-[0-9]*".*"heapBytesPerCall"' "$CT") == 2 * NNODE && $(grep -c '"region":"alloc-real"' "$CT") == 2 * NBUN && $(grep -c '"region":"alloc-control"' "$CT") == 2 * NBUN)); then
     mv "$CT" "$CAL"
     echo "calibration done $(date -u +%FT%TZ)"
   else
