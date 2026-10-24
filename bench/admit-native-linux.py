@@ -32,7 +32,7 @@ def read(path):
 
 
 def cpu():
-    v = [int(x) for x in read("/proc/stat")[0].split()[1:]]
+    v = [int(x) for x in read("/proc/stat")[0].split()[1:9]]  # guest time is already in user
     return sum(v) - v[3] - v[4], v[4]  # busy (not idle, not iowait), iowait
 
 
@@ -92,8 +92,8 @@ verdict = {
     "deltas": delta,
 }
 if have_psi:
-    mem = [(b[3] - a[3]) / 1000 for a, b in steps]
-    io = [(b[4] - a[4]) / 1000 for a, b in steps]
+    mem = [(b[3] - a[3]) / 1000 / (b[0] - a[0]) for a, b in steps]  # ms per second
+    io = [(b[4] - a[4]) / 1000 / (b[0] - a[0]) for a, b in steps]
     verdict.update(mem_full_psi_ms_max=max(mem), io_full_psi_ms_max=max(io))
     if max(mem) > 10:
         verdict["reasons"].append("memory full PSI above 10 ms in a second")

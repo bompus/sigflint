@@ -1,6 +1,6 @@
 # Protocol: Bun 1.4.4 peak memory and alternating CPU samples on a new host
 
-Declared 2026-10-23 23:25 MDT (2026-10-24 05:25 UTC), before the counted run.
+Declared 2026-10-23 23:17 MDT (2026-10-24 05:17 UTC; committed 23:17:49), before the counted run, which started 23:18:02.
 
 Two questions, one run:
 
@@ -24,6 +24,8 @@ Applies the host admission limits of the maintainer's benchmarking rules on a na
 **Pressure signals are not available on this host.** The kernel is built with PSI but not booted with `psi=1` (`/proc/pressure` is missing), so the memory and I/O pressure limits of the host rules (10 ms and 100 ms per second) cannot be read. The probe records `"psi": "unavailable"` in every receipt and refuses instead on stand-ins: a direct-reclaim or compaction stall in the window (memory) or more than 100 ms of iowait CPU time in any second (I/O). The stand-ins are not PSI and do not meet that clause of the host rules. They are a limit of this evidence, reported with it. Nothing on the host was changed to enable PSI.
 
 The host is shared and being reconfigured. Nothing was paused for this run; other work shows up as busy cores in the receipts and refuses a unit only when it passes 4 busy cores or the stand-ins fire. Priority, affinity and CPU frequency policy are the host's defaults (normal priority, all 24 cores, governor `performance`, each process under `run-capped 2G`).
+
+**Foreign load reported during the run (added 23:24 MDT, before any result was read).** The owner of other work on the host reported that a virtual machine build (8 vCPUs, first boot) ran from about 23:19 to 23:22 MDT, overlapping the first round, and paused it at 23:22. The host checks admitted every unit of that window (mean 2.1 to 3.2 busy cores in the windows between units, no stand-in tripped), so by the rules above those units count. Because the checks only sample between units, the analysis is also run a second time without the round-1 units that were measured in that window (aws4fetch to sigflint-B), as a sensitivity check. A verdict that differs between the two is reported as such and the affected arms get replacement rounds (same driver, new round numbers) before it is called.
 
 ## Variation criterion and verdicts (preset)
 

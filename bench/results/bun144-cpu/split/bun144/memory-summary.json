@@ -1,0 +1,3514 @@
+{
+ "rejectedRows": [],
+ "counts": {
+  "rows": 1370,
+  "accepted": 1120,
+  "rejectedOrError": 0
+ },
+ "cells": [
+  {
+   "metric": "allocBytes",
+   "runtime": "node",
+   "workload": "bench-download",
+   "unit": "B",
+   "baseMedian": 2625,
+   "baseRange": [
+    2624,
+    2625
+   ],
+   "aaRangePct": 0.038109756097560975,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2625,
+     "min": 2624,
+     "max": 2625,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 30029,
+     "min": 30003,
+     "max": 30044,
+     "ratio": 11.439619047619047,
+     "gap": 27404,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 10009,
+     "min": 10009,
+     "max": 10009,
+     "ratio": 3.812952380952381,
+     "gap": 7384,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 18277,
+     "min": 18277,
+     "max": 18277,
+     "ratio": 6.962666666666666,
+     "gap": 15652,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 71051,
+     "min": 71046,
+     "max": 71053,
+     "ratio": 27.06704761904762,
+     "gap": 68426,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 59408,
+     "min": 59408,
+     "max": 59408,
+     "ratio": 22.631619047619047,
+     "gap": 56783,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 8476,
+     "min": 8467,
+     "max": 8516,
+     "ratio": 3.228952380952381,
+     "gap": 5851,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2624,
+     "min": 2624,
+     "max": 2625,
+     "ratio": 0.9996190476190476,
+     "gap": -1,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "unit": "B",
+   "baseMedian": 4048,
+   "baseRange": [
+    4048,
+    4048
+   ],
+   "aaRangePct": 0,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 4048,
+     "min": 4048,
+     "max": 4048,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 32898,
+     "min": 32895,
+     "max": 32939,
+     "ratio": 8.12697628458498,
+     "gap": 28850,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 12843,
+     "min": 12841,
+     "max": 12846,
+     "ratio": 3.1726778656126484,
+     "gap": 8795,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 20423,
+     "min": 20421,
+     "max": 20424,
+     "ratio": 5.045207509881423,
+     "gap": 16375,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 61276,
+     "min": 61273,
+     "max": 61288,
+     "ratio": 15.137351778656127,
+     "gap": 57228,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 9051,
+     "min": 9045,
+     "max": 9086,
+     "ratio": 2.2359189723320156,
+     "gap": 5003,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 4048,
+     "min": 4048,
+     "max": 4048,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "node",
+   "workload": "bench-encode",
+   "unit": "B",
+   "baseMedian": 5632,
+   "baseRange": [
+    5632,
+    5633
+   ],
+   "aaRangePct": 0.01775568181818182,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 5632,
+     "min": 5632,
+     "max": 5633,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 33565,
+     "min": 33550,
+     "max": 33567,
+     "ratio": 5.9596946022727275,
+     "gap": 27933,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 13805,
+     "min": 13804,
+     "max": 13806,
+     "ratio": 2.451171875,
+     "gap": 8173,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 64570,
+     "min": 64569,
+     "max": 64570,
+     "ratio": 11.46484375,
+     "gap": 58938,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 5632,
+     "min": 5632,
+     "max": 5632,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "unit": "B",
+   "baseMedian": 4130,
+   "baseRange": [
+    4130,
+    4145
+   ],
+   "aaRangePct": 0.36319612590799033,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 4130,
+     "min": 4130,
+     "max": 4145,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 30403,
+     "min": 30386,
+     "max": 30459,
+     "ratio": 7.361501210653753,
+     "gap": 26273,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 9793,
+     "min": 9780,
+     "max": 9794,
+     "ratio": 2.371186440677966,
+     "gap": 5663,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 18691,
+     "min": 18688,
+     "max": 18692,
+     "ratio": 4.525665859564165,
+     "gap": 14561,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 8629,
+     "min": 8611,
+     "max": 8668,
+     "ratio": 2.0893462469733657,
+     "gap": 4499,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 4145,
+     "min": 4130,
+     "max": 4145,
+     "ratio": 1.0036319612590798,
+     "gap": 15,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "bun",
+   "workload": "bench-download",
+   "unit": "B",
+   "baseMedian": 1434.0095999999999,
+   "baseRange": [
+    1431.8592,
+    1442.0992
+   ],
+   "aaRangePct": 0.7429632804686359,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 1434.0095999999999,
+     "min": 1431.8592,
+     "max": 1442.0992,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 14986.5472,
+     "min": 14983.5776,
+     "max": 15015.5264,
+     "ratio": 10.45079977149386,
+     "gap": 13552.537600000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 6587.4944,
+     "min": 6584.9344,
+     "max": 6608.9983999999995,
+     "ratio": 4.593758926021137,
+     "gap": 5153.4848,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 13441.945600000001,
+     "min": 13433.344000000001,
+     "max": 13499.2896,
+     "ratio": 9.373678948871753,
+     "gap": 12007.936000000002,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 48927.9488,
+     "min": 48908.288,
+     "max": 48974.0288,
+     "ratio": 34.11968009140246,
+     "gap": 47493.9392,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 28974.1824,
+     "min": 28953.7024,
+     "max": 29038.8992,
+     "ratio": 20.20501285347044,
+     "gap": 27540.1728,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 7205.6831999999995,
+     "min": 7191.1424,
+     "max": 7214.4896,
+     "ratio": 5.024850042844902,
+     "gap": 5771.6736,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 1433.3952,
+     "min": 1432.7808,
+     "max": 1443.4304,
+     "ratio": 0.9995715509854328,
+     "gap": -0.6143999999999323,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "unit": "B",
+   "baseMedian": 2770.432,
+   "baseRange": [
+    2768.0768000000003,
+    2776.4736
+   ],
+   "aaRangePct": 0.30308630567361083,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2770.432,
+     "min": 2768.0768000000003,
+     "max": 2776.4736,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 15716.9664,
+     "min": 15705.9072,
+     "max": 15750.963199999998,
+     "ratio": 5.6731103308076145,
+     "gap": 12946.5344,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 8046.7968,
+     "min": 8043.1104000000005,
+     "max": 8077.6192,
+     "ratio": 2.9045278137128077,
+     "gap": 5276.3648,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 14301.5936,
+     "min": 14297.7024,
+     "max": 14327.5008,
+     "ratio": 5.16222509702458,
+     "gap": 11531.1616,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 28536.9344,
+     "min": 27961.4464,
+     "max": 28553.216,
+     "ratio": 10.300535945296618,
+     "gap": 25766.502399999998,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 7187.3536,
+     "min": 7175.168000000001,
+     "max": 7194.2144,
+     "ratio": 2.594307891332471,
+     "gap": 4416.921600000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2769.1008,
+     "min": 2766.9503999999997,
+     "max": 2774.4256,
+     "ratio": 0.9995194973202737,
+     "gap": -1.331199999999626,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "unit": "B",
+   "baseMedian": 4368.2816,
+   "baseRange": [
+    4368.0768,
+    4380.672
+   ],
+   "aaRangePct": 0.3305358901026771,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 4368.2816,
+     "min": 4368.0768,
+     "max": 4380.672,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 16952.1152,
+     "min": 16940.9536,
+     "max": 16972.8,
+     "ratio": 3.8807285684146366,
+     "gap": 12583.8336,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 8673.28,
+     "min": 8666.112,
+     "max": 8689.152,
+     "ratio": 1.9855130218711174,
+     "gap": 4304.9984,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 31387.648,
+     "min": 31366.5536,
+     "max": 31464.96,
+     "ratio": 7.185353618228275,
+     "gap": 27019.3664,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 4368.1792000000005,
+     "min": 4366.4384,
+     "max": 4380.8768,
+     "ratio": 0.9999765582878174,
+     "gap": -0.10239999999976135,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "allocBytes",
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "unit": "B",
+   "baseMedian": 2644.5824,
+   "baseRange": [
+    2643.7632000000003,
+    2650.4192
+   ],
+   "aaRangePct": 0.3215060427641849,
+   "bandPct": 6,
+   "absFloor": 64,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2644.5824,
+     "min": 2643.7632000000003,
+     "max": 2650.4192,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 16870.7072,
+     "min": 16847.4624,
+     "max": 17306.3168,
+     "ratio": 6.379346395105708,
+     "gap": 14226.124800000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 7840.5632000000005,
+     "min": 7815.68,
+     "max": 7859.0976,
+     "ratio": 2.964764191125223,
+     "gap": 5195.980800000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 15473.868799999998,
+     "min": 15462.809599999999,
+     "max": 15506.636799999998,
+     "ratio": 5.851157748005885,
+     "gap": 12829.286399999999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 8715.980800000001,
+     "min": 8697.0368,
+     "max": 8724.2752,
+     "ratio": 3.2957871912026646,
+     "gap": 6071.398400000002,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2643.5584,
+     "min": 2641.8176,
+     "max": 2650.3168,
+     "ratio": 0.9996127933090684,
+     "gap": -1.0239999999998872,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "node",
+   "workload": "bench-download",
+   "unit": "B",
+   "baseMedian": 30096,
+   "baseRange": [
+    29912,
+    30184
+   ],
+   "aaRangePct": 44.23229912490056,
+   "bandPct": 88.46459824980111,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 30096,
+     "min": 29912,
+     "max": 30184,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 198720,
+     "min": 190128,
+     "max": 199528,
+     "ratio": 6.6028708133971294,
+     "gap": 168624,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 48712,
+     "min": -4296,
+     "max": 58664,
+     "ratio": 1.6185539606592239,
+     "gap": 18616,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 51608,
+     "min": 51544,
+     "max": 56536,
+     "ratio": 1.7147793726741096,
+     "gap": 21512,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 71096,
+     "min": 68360,
+     "max": 72696,
+     "ratio": 2.362307283359915,
+     "gap": 41000,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 110800,
+     "min": 109232,
+     "max": 111008,
+     "ratio": 3.681552365762892,
+     "gap": 80704,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": 56120,
+     "min": 49280,
+     "max": 60080,
+     "ratio": 1.8646996278575225,
+     "gap": 26024,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 30168,
+     "min": 29920,
+     "max": 43264,
+     "ratio": 1.0023923444976077,
+     "gap": 72,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "unit": "B",
+   "baseMedian": 37888,
+   "baseRange": [
+    24720,
+    38144
+   ],
+   "aaRangePct": 35.8920286798819,
+   "bandPct": 71.7840573597638,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 37888,
+     "min": 24720,
+     "max": 38144,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": -776,
+     "min": -2392,
+     "max": -536,
+     "ratio": -0.020481418918918918,
+     "gap": -38664,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": -18696,
+     "min": -20760,
+     "max": -17296,
+     "ratio": -0.4934543918918919,
+     "gap": -56584,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 18336,
+     "min": 17472,
+     "max": 18736,
+     "ratio": 0.4839527027027027,
+     "gap": -19552,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": -9928,
+     "min": -9968,
+     "max": 3752,
+     "ratio": -0.26203547297297297,
+     "gap": -47816,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": 328,
+     "min": 328,
+     "max": 328,
+     "ratio": 0.008657094594594595,
+     "gap": -37560,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 37936,
+     "min": 24544,
+     "max": 38160,
+     "ratio": 1.0012668918918919,
+     "gap": 48,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "node",
+   "workload": "bench-encode",
+   "unit": "B",
+   "baseMedian": -1456,
+   "baseRange": [
+    -4104,
+    17792
+   ],
+   "aaRangePct": 1503.8461538461538,
+   "bandPct": 3007.6923076923076,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": -1456,
+     "min": -4104,
+     "max": 17792,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 7520,
+     "min": 3704,
+     "max": 15560,
+     "ratio": -5.164835164835165,
+     "gap": 8976,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": -47664,
+     "min": -59304,
+     "max": -45632,
+     "ratio": 32.73626373626374,
+     "gap": -46208,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 27688,
+     "min": 18880,
+     "max": 27792,
+     "ratio": -19.016483516483518,
+     "gap": 29144,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 17792,
+     "min": 15808,
+     "max": 17856,
+     "ratio": -12.219780219780219,
+     "gap": 19248,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "unit": "B",
+   "baseMedian": 13080,
+   "baseRange": [
+    13056,
+    13272
+   ],
+   "aaRangePct": 75.85574572127139,
+   "bandPct": 151.71149144254278,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 13080,
+     "min": 13056,
+     "max": 13272,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 54304,
+     "min": 49416,
+     "max": 55856,
+     "ratio": 4.151681957186544,
+     "gap": 41224,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 47456,
+     "min": 35424,
+     "max": 49096,
+     "ratio": 3.6281345565749237,
+     "gap": 34376,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": -10624,
+     "min": -10656,
+     "max": -9496,
+     "ratio": -0.8122324159021407,
+     "gap": -23704,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": -8440,
+     "min": -8440,
+     "max": -8440,
+     "ratio": -0.6452599388379205,
+     "gap": -21520,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 13088,
+     "min": 12928,
+     "max": 22856,
+     "ratio": 1.000611620795107,
+     "gap": 8,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "bun",
+   "workload": "bench-download",
+   "unit": "B",
+   "baseMedian": 910,
+   "baseRange": [
+    -614,
+    938
+   ],
+   "aaRangePct": 172.30769230769232,
+   "bandPct": 344.61538461538464,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 910,
+     "min": -614,
+     "max": 938,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 3893,
+     "min": 2267,
+     "max": 4128,
+     "ratio": 4.278021978021978,
+     "gap": 2983,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": -4139,
+     "min": -5743,
+     "max": -2943,
+     "ratio": -4.548351648351648,
+     "gap": -5049,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 5783,
+     "min": -1194,
+     "max": 23259,
+     "ratio": 6.354945054945055,
+     "gap": 4873,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": -590,
+     "min": -590,
+     "max": -558,
+     "ratio": -0.6483516483516484,
+     "gap": -1500,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": -4223,
+     "min": -5567,
+     "max": 1020,
+     "ratio": -4.640659340659341,
+     "gap": -5133,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": 20436,
+     "min": 20404,
+     "max": 20441,
+     "ratio": 22.457142857142856,
+     "gap": 19526,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 910,
+     "min": -658,
+     "max": 910,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "unit": "B",
+   "baseMedian": 9258,
+   "baseRange": [
+    5573,
+    9370
+   ],
+   "aaRangePct": 41.01317779217974,
+   "bandPct": 82.02635558435948,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 9258,
+     "min": 5573,
+     "max": 9370,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": -1496,
+     "min": -5751,
+     "max": -1209,
+     "ratio": -0.1615899762367682,
+     "gap": -10754,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 30021,
+     "min": 29925,
+     "max": 30228,
+     "ratio": 3.242709008425146,
+     "gap": 20763,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 8518,
+     "min": 2171,
+     "max": 26058,
+     "ratio": 0.9200691294015986,
+     "gap": -740,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 12827,
+     "min": -495,
+     "max": 12891,
+     "ratio": 1.38550442860229,
+     "gap": 3569,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": 4637,
+     "min": 4301,
+     "max": 4637,
+     "ratio": 0.5008641175199827,
+     "gap": -4621,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 9370,
+     "min": 6634,
+     "max": 9370,
+     "ratio": 1.012097645279758,
+     "gap": 112,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "unit": "B",
+   "baseMedian": 2765,
+   "baseRange": [
+    -208,
+    2765
+   ],
+   "aaRangePct": 122.3960477562783,
+   "bandPct": 244.7920955125566,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2765,
+     "min": -208,
+     "max": 2765,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 3327,
+     "min": 2539,
+     "max": 5282,
+     "ratio": 1.203254972875226,
+     "gap": 562,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 12731,
+     "min": 12571,
+     "max": 12731,
+     "ratio": 4.604339963833635,
+     "gap": 9966,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 585,
+     "min": -311,
+     "max": 11274,
+     "ratio": 0.2115732368896926,
+     "gap": -2180,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2429,
+     "min": -208,
+     "max": 2765,
+     "ratio": 0.8784810126582279,
+     "gap": -336,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "retained",
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "unit": "B",
+   "baseMedian": 2101,
+   "baseRange": [
+    2101,
+    2101
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 65536,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2101,
+     "min": 2101,
+     "max": 2101,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": -2031,
+     "min": -2379,
+     "max": -2031,
+     "ratio": -0.9666825321275583,
+     "gap": -4132,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 1209,
+     "min": 1209,
+     "max": 1209,
+     "ratio": 0.575440266539743,
+     "gap": -892,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 1481,
+     "min": -18,
+     "max": 2938,
+     "ratio": 0.7049024274155165,
+     "gap": -620,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "minio": {
+     "n": 5,
+     "median": -1176,
+     "min": -1176,
+     "max": -1176,
+     "ratio": -0.5597334602570204,
+     "gap": -3277,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2101,
+     "min": 2101,
+     "max": 2101,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "node",
+   "workload": "bench-download",
+   "unit": "µs",
+   "baseMedian": 2.3651,
+   "baseRange": [
+    2.3412,
+    2.3743
+   ],
+   "aaRangePct": 20.04820333041192,
+   "bandPct": 40.09640666082384,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.3651,
+     "min": 2.3412,
+     "max": 2.3743,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 47.7534,
+     "min": 46.1603,
+     "max": 48.9887,
+     "ratio": 20.1908587374741,
+     "gap": 45.3883,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 8.93,
+     "min": 8.8185,
+     "max": 9.0758,
+     "ratio": 3.7757388693924145,
+     "gap": 6.5649,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 15.8118,
+     "min": 15.4562,
+     "max": 16.1477,
+     "ratio": 6.68546784491142,
+     "gap": 13.4467,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 64.9261,
+     "min": 64.4528,
+     "max": 66.7447,
+     "ratio": 27.451735655997634,
+     "gap": 62.56100000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 86.762,
+     "min": 84.6834,
+     "max": 99.8681,
+     "ratio": 36.68428396262315,
+     "gap": 84.3969,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 15.4719,
+     "min": 14.7677,
+     "max": 15.6815,
+     "ratio": 6.541752991416853,
+     "gap": 13.1068,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.282,
+     "min": 1.9217,
+     "max": 2.3792,
+     "ratio": 0.9648640649443998,
+     "gap": -0.08309999999999995,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "unit": "µs",
+   "baseMedian": 2.2012,
+   "baseRange": [
+    2.1587,
+    2.2661
+   ],
+   "aaRangePct": 6.070765188239021,
+   "bandPct": 12.141530376478041,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.2012,
+     "min": 2.1587,
+     "max": 2.2661,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 39.4167,
+     "min": 39.1433,
+     "max": 41.4109,
+     "ratio": 17.90691441032164,
+     "gap": 37.2155,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 9.5817,
+     "min": 9.4301,
+     "max": 9.6457,
+     "ratio": 4.35294384880974,
+     "gap": 7.3805,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 13.7896,
+     "min": 13.5837,
+     "max": 14.5997,
+     "ratio": 6.264582954751954,
+     "gap": 11.5884,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 75.0031,
+     "min": 74.5874,
+     "max": 77.576,
+     "ratio": 34.07373250954025,
+     "gap": 72.8019,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 13.3096,
+     "min": 13.2732,
+     "max": 13.7172,
+     "ratio": 6.046520079956387,
+     "gap": 11.1084,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.2073,
+     "min": 2.1654,
+     "max": 2.2994,
+     "ratio": 1.002771215700527,
+     "gap": 0.006099999999999994,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "node",
+   "workload": "bench-encode",
+   "unit": "µs",
+   "baseMedian": 2.7189,
+   "baseRange": [
+    2.4863,
+    2.8451
+   ],
+   "aaRangePct": 16.789181964699882,
+   "bandPct": 33.578363929399764,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.7189,
+     "min": 2.4863,
+     "max": 2.8451,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 38.7646,
+     "min": 37.0724,
+     "max": 42.4524,
+     "ratio": 14.257457059840377,
+     "gap": 36.045700000000004,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 11.1809,
+     "min": 11.0242,
+     "max": 11.284,
+     "ratio": 4.112288057670381,
+     "gap": 8.462,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 80.0904,
+     "min": 78.2831,
+     "max": 81.3546,
+     "ratio": 29.456912722056714,
+     "gap": 77.3715,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.5439,
+     "min": 2.3476,
+     "max": 2.7747,
+     "ratio": 0.9356357350399057,
+     "gap": -0.17500000000000027,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "unit": "µs",
+   "baseMedian": 2.5657,
+   "baseRange": [
+    2.5281,
+    2.585
+   ],
+   "aaRangePct": 4.873549081405174,
+   "bandPct": 9.747098162810348,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.5657,
+     "min": 2.5281,
+     "max": 2.585,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 41.5657,
+     "min": 38.1857,
+     "max": 48.8441,
+     "ratio": 16.200530069766536,
+     "gap": 39,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 8.4568,
+     "min": 8.2949,
+     "max": 8.5168,
+     "ratio": 3.2960985306154265,
+     "gap": 5.8911,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 15.074,
+     "min": 14.5947,
+     "max": 15.8327,
+     "ratio": 5.875199750555404,
+     "gap": 12.5083,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 15.009,
+     "min": 14.6945,
+     "max": 15.8321,
+     "ratio": 5.849865533772459,
+     "gap": 12.4433,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.6018,
+     "min": 2.5367,
+     "max": 2.6635,
+     "ratio": 1.014070234244066,
+     "gap": 0.0360999999999998,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "bun",
+   "workload": "bench-download",
+   "unit": "µs",
+   "baseMedian": 2.1192,
+   "baseRange": [
+    2.0636,
+    2.2044
+   ],
+   "aaRangePct": 9.294796603012232,
+   "bandPct": 18.589593206024464,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.1192,
+     "min": 2.0636,
+     "max": 2.2044,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 28.8187,
+     "min": 26.0787,
+     "max": 30.4666,
+     "ratio": 13.598858059645147,
+     "gap": 26.6995,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 12.1367,
+     "min": 11.8577,
+     "max": 12.7766,
+     "ratio": 5.7270196300490746,
+     "gap": 10.017499999999998,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 17.5576,
+     "min": 14.9896,
+     "max": 18.905,
+     "ratio": 8.28501321253303,
+     "gap": 15.438400000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 45.8898,
+     "min": 40.8162,
+     "max": 46.8355,
+     "ratio": 21.654303510758776,
+     "gap": 43.7706,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 66.2012,
+     "min": 63.0256,
+     "max": 73.2587,
+     "ratio": 31.238769346923366,
+     "gap": 64.082,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 8.9006,
+     "min": 8.6644,
+     "max": 9.2466,
+     "ratio": 4.199981124952813,
+     "gap": 6.7814000000000005,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.1313,
+     "min": 2.0041,
+     "max": 2.2022,
+     "ratio": 1.0057097017742542,
+     "gap": 0.012099999999999778,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "unit": "µs",
+   "baseMedian": 2.0065,
+   "baseRange": [
+    1.7561,
+    2.1504
+   ],
+   "aaRangePct": 19.651133815100916,
+   "bandPct": 39.30226763020183,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.0065,
+     "min": 1.7561,
+     "max": 2.1504,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 22.6064,
+     "min": 22.1093,
+     "max": 24.3248,
+     "ratio": 11.26658360328931,
+     "gap": 20.5999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 8.6663,
+     "min": 8.5414,
+     "max": 8.7878,
+     "ratio": 4.319112883129828,
+     "gap": 6.6598,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 9.3715,
+     "min": 8.2171,
+     "max": 12.8888,
+     "ratio": 4.670570645402441,
+     "gap": 7.364999999999999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 58.8998,
+     "min": 57.6055,
+     "max": 63.0595,
+     "ratio": 29.354497881883876,
+     "gap": 56.893299999999996,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 5.4177,
+     "min": 5.3558,
+     "max": 5.4653,
+     "ratio": 2.700074757039621,
+     "gap": 3.4112,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.2,
+     "min": 2.0601,
+     "max": 2.2257,
+     "ratio": 1.096436581111388,
+     "gap": 0.19350000000000023,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "unit": "µs",
+   "baseMedian": 3.8174,
+   "baseRange": [
+    3.5627,
+    3.8572
+   ],
+   "aaRangePct": 8.558486967577869,
+   "bandPct": 17.116973935155738,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 3.8174,
+     "min": 3.5627,
+     "max": 3.8572,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 22.9675,
+     "min": 21.9224,
+     "max": 24.5692,
+     "ratio": 6.0165295751034735,
+     "gap": 19.150100000000002,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 9.1925,
+     "min": 9.1807,
+     "max": 9.2892,
+     "ratio": 2.408052601246922,
+     "gap": 5.375100000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 60.953,
+     "min": 58.5972,
+     "max": 64.9768,
+     "ratio": 15.967150416513858,
+     "gap": 57.135600000000004,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 3.7752,
+     "min": 3.5466,
+     "max": 3.8697,
+     "ratio": 0.9889453554775501,
+     "gap": -0.04220000000000024,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cpuUs",
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "unit": "µs",
+   "baseMedian": 2.0808,
+   "baseRange": [
+    2.0717,
+    2.2166
+   ],
+   "aaRangePct": 6.963667820069216,
+   "bandPct": 13.927335640138432,
+   "absFloor": 0.1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.0808,
+     "min": 2.0717,
+     "max": 2.2166,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 22.0959,
+     "min": 20.3262,
+     "max": 27.1128,
+     "ratio": 10.6189446366782,
+     "gap": 20.0151,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 4.9931,
+     "min": 4.9779,
+     "max": 5.1371,
+     "ratio": 2.3996059207996927,
+     "gap": 2.9123,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 8.7866,
+     "min": 8.1918,
+     "max": 9.0494,
+     "ratio": 4.222702806612841,
+     "gap": 6.7058,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 7.4512,
+     "min": 7.1665,
+     "max": 7.6885,
+     "ratio": 3.5809304113802383,
+     "gap": 5.3704,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.1042,
+     "min": 2.0648,
+     "max": 2.1298,
+     "ratio": 1.0112456747404845,
+     "gap": 0.023400000000000087,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "node",
+   "workload": "bench-download",
+   "unit": "",
+   "baseMedian": 6,
+   "baseRange": [
+    6,
+    6
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 6,
+     "min": 6,
+     "max": 6,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 90,
+     "min": 90,
+     "max": 90,
+     "ratio": 15,
+     "gap": 84,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 24,
+     "min": 24,
+     "max": 24,
+     "ratio": 4,
+     "gap": 18,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 45,
+     "min": 44,
+     "max": 45,
+     "ratio": 7.5,
+     "gap": 39,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 46,
+     "min": 46,
+     "max": 46,
+     "ratio": 7.666666666666667,
+     "gap": 40,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 173,
+     "min": 171,
+     "max": 174,
+     "ratio": 28.833333333333332,
+     "gap": 167,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 19,
+     "min": 19,
+     "max": 19,
+     "ratio": 3.1666666666666665,
+     "gap": 13,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 6,
+     "min": 6,
+     "max": 6,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "unit": "",
+   "baseMedian": 10,
+   "baseRange": [
+    10,
+    10
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 10,
+     "min": 10,
+     "max": 10,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 50,
+     "min": 48,
+     "max": 50,
+     "ratio": 5,
+     "gap": 40,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 31,
+     "min": 31,
+     "max": 31,
+     "ratio": 3.1,
+     "gap": 21,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 49,
+     "min": 49,
+     "max": 49,
+     "ratio": 4.9,
+     "gap": 39,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 90,
+     "min": 90,
+     "max": 91,
+     "ratio": 9,
+     "gap": 80,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 22,
+     "min": 22,
+     "max": 22,
+     "ratio": 2.2,
+     "gap": 12,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 10,
+     "min": 10,
+     "max": 10,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "node",
+   "workload": "bench-encode",
+   "unit": "",
+   "baseMedian": 14,
+   "baseRange": [
+    13,
+    14
+   ],
+   "aaRangePct": 7.142857142857142,
+   "bandPct": 14.285714285714285,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 14,
+     "min": 13,
+     "max": 14,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 48,
+     "min": 48,
+     "max": 48,
+     "ratio": 3.4285714285714284,
+     "gap": 34,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 33,
+     "min": 33,
+     "max": 33,
+     "ratio": 2.357142857142857,
+     "gap": 19,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 94,
+     "min": 94,
+     "max": 95,
+     "ratio": 6.714285714285714,
+     "gap": 80,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 14,
+     "min": 13,
+     "max": 14,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "unit": "",
+   "baseMedian": 10,
+   "baseRange": [
+    10,
+    10
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 10,
+     "min": 10,
+     "max": 10,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 44,
+     "min": 44,
+     "max": 44,
+     "ratio": 4.4,
+     "gap": 34,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 23,
+     "min": 23,
+     "max": 23,
+     "ratio": 2.3,
+     "gap": 13,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 45,
+     "min": 45,
+     "max": 45,
+     "ratio": 4.5,
+     "gap": 35,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 20,
+     "min": 20,
+     "max": 20,
+     "ratio": 2,
+     "gap": 10,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 10,
+     "min": 10,
+     "max": 10,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "bun",
+   "workload": "bench-download",
+   "unit": "",
+   "baseMedian": 3,
+   "baseRange": [
+    3,
+    3
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 3,
+     "min": 3,
+     "max": 3,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 27,
+     "min": 27,
+     "max": 27,
+     "ratio": 9,
+     "gap": 24,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 14,
+     "min": 14,
+     "max": 14,
+     "ratio": 4.666666666666667,
+     "gap": 11,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 24,
+     "min": 24,
+     "max": 24,
+     "ratio": 8,
+     "gap": 21,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 80,
+     "min": 80,
+     "max": 80,
+     "ratio": 26.666666666666668,
+     "gap": 77,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 47,
+     "min": 47,
+     "max": 47,
+     "ratio": 15.666666666666666,
+     "gap": 44,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 16,
+     "min": 16,
+     "max": 16,
+     "ratio": 5.333333333333333,
+     "gap": 13,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 3,
+     "min": 3,
+     "max": 3,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "unit": "",
+   "baseMedian": 5,
+   "baseRange": [
+    5,
+    5
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 5,
+     "min": 5,
+     "max": 5,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 26,
+     "min": 26,
+     "max": 26,
+     "ratio": 5.2,
+     "gap": 21,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 14,
+     "min": 14,
+     "max": 14,
+     "ratio": 2.8,
+     "gap": 9,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 23,
+     "min": 23,
+     "max": 23,
+     "ratio": 4.6,
+     "gap": 18,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 43,
+     "min": 43,
+     "max": 43,
+     "ratio": 8.6,
+     "gap": 38,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 15,
+     "min": 15,
+     "max": 15,
+     "ratio": 3,
+     "gap": 10,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 5,
+     "min": 5,
+     "max": 5,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "unit": "",
+   "baseMedian": 7,
+   "baseRange": [
+    7,
+    7
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 7,
+     "min": 7,
+     "max": 7,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 30,
+     "min": 29,
+     "max": 30,
+     "ratio": 4.285714285714286,
+     "gap": 23,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 17,
+     "min": 17,
+     "max": 17,
+     "ratio": 2.4285714285714284,
+     "gap": 10,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 49,
+     "min": 49,
+     "max": 49,
+     "ratio": 7,
+     "gap": 42,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 7,
+     "min": 7,
+     "max": 7,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcCount",
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "unit": "",
+   "baseMedian": 5,
+   "baseRange": [
+    5,
+    5
+   ],
+   "aaRangePct": 0,
+   "bandPct": 3,
+   "absFloor": 2,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 5,
+     "min": 5,
+     "max": 5,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 29,
+     "min": 29,
+     "max": 29,
+     "ratio": 5.8,
+     "gap": 24,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 15,
+     "min": 15,
+     "max": 15,
+     "ratio": 3,
+     "gap": 10,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 26,
+     "min": 26,
+     "max": 26,
+     "ratio": 5.2,
+     "gap": 21,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 18,
+     "min": 18,
+     "max": 18,
+     "ratio": 3.6,
+     "gap": 13,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 5,
+     "min": 5,
+     "max": 5,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "node",
+   "workload": "bench-download",
+   "unit": "ms",
+   "baseMedian": 0.3414490073919296,
+   "baseRange": [
+    0.33264099061489105,
+    0.5903349965810776
+   ],
+   "aaRangePct": 75.47071462720477,
+   "bandPct": 150.94142925440954,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 0.3414490073919296,
+     "min": 0.33264099061489105,
+     "max": 0.5903349965810776,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 15.550839051604271,
+     "min": 14.2252858877182,
+     "max": 18.21464803814888,
+     "ratio": 45.54366454418876,
+     "gap": 15.209390044212341,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 3.249508038163185,
+     "min": 3.146225944161415,
+     "max": 3.475941002368927,
+     "ratio": 9.516817937131275,
+     "gap": 2.9080590307712555,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 17.631644010543823,
+     "min": 17.110528007149696,
+     "max": 18.98524099588394,
+     "ratio": 51.637707619121805,
+     "gap": 17.290195003151894,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 28.379638969898224,
+     "min": 26.89083105325699,
+     "max": 30.300537049770355,
+     "ratio": 83.11530669445723,
+     "gap": 28.038189962506294,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 42.34471094608307,
+     "min": 33.265658006072044,
+     "max": 44.08288496732712,
+     "ratio": 124.01474313696868,
+     "gap": 42.00326193869114,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 21.08995196223259,
+     "min": 18.37429802119732,
+     "max": 24.481437981128693,
+     "ratio": 61.76603681856556,
+     "gap": 20.74850295484066,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 0.33908601105213165,
+     "min": 0.2767690271139145,
+     "max": 0.4265799969434738,
+     "ratio": 0.9930795044394853,
+     "gap": -0.0023629963397979736,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "unit": "ms",
+   "baseMedian": 0.43348000943660736,
+   "baseRange": [
+    0.3922930061817169,
+    0.5652559846639633
+   ],
+   "aaRangePct": 39.90102766377759,
+   "bandPct": 79.80205532755518,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 0.43348000943660736,
+     "min": 0.3922930061817169,
+     "max": 0.5652559846639633,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 7.626247987151146,
+     "min": 6.756629019975662,
+     "max": 8.618973016738892,
+     "ratio": 17.593078852847118,
+     "gap": 7.192767977714539,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 2.477771058678627,
+     "min": 2.4618259966373444,
+     "max": 2.6038810163736343,
+     "ratio": 5.715998442232615,
+     "gap": 2.0442910492420197,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 11.200204983353615,
+     "min": 10.31016293168068,
+     "max": 14.760752975940704,
+     "ratio": 25.83788119297701,
+     "gap": 10.766724973917007,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 24.368826910853386,
+     "min": 17.88297899067402,
+     "max": 36.69824394583702,
+     "ratio": 56.21672598587759,
+     "gap": 23.93534690141678,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 15.040697991847992,
+     "min": 12.653732970356941,
+     "max": 18.23070001602173,
+     "ratio": 34.69755851347411,
+     "gap": 14.607217982411385,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 0.42086902260780334,
+     "min": 0.38794898986816406,
+     "max": 0.5527409911155701,
+     "ratio": 0.9709075700049133,
+     "gap": -0.012610986828804016,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "node",
+   "workload": "bench-encode",
+   "unit": "ms",
+   "baseMedian": 0.5265980064868927,
+   "baseRange": [
+    0.5079889893531799,
+    0.6210539937019348
+   ],
+   "aaRangePct": 21.47083789835219,
+   "bandPct": 42.94167579670438,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 0.5265980064868927,
+     "min": 0.5079889893531799,
+     "max": 0.6210539937019348,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 9.698372974991798,
+     "min": 5.266372978687286,
+     "max": 18.60240203142166,
+     "ratio": 18.417033212284284,
+     "gap": 9.171774968504906,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 3.35807703435421,
+     "min": 3.2609210163354874,
+     "max": 3.5694479793310165,
+     "ratio": 6.376926978430926,
+     "gap": 2.831479027867317,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 29.216894015669823,
+     "min": 21.191967964172363,
+     "max": 38.9867090433836,
+     "ratio": 55.482348310783145,
+     "gap": 28.69029600918293,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 0.5453570187091827,
+     "min": 0.473052978515625,
+     "max": 0.5674289911985397,
+     "ratio": 1.035623021719048,
+     "gap": 0.01875901222229004,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "unit": "ms",
+   "baseMedian": 0.40570099651813507,
+   "baseRange": [
+    0.382534995675087,
+    0.4330649971961975
+   ],
+   "aaRangePct": 38.095609383506854,
+   "bandPct": 76.19121876701371,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 0.40570099651813507,
+     "min": 0.382534995675087,
+     "max": 0.4330649971961975,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 12.175369992852211,
+     "min": 6.786813035607338,
+     "max": 15.445780962705612,
+     "ratio": 30.010697773348863,
+     "gap": 11.769668996334076,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 2.9322450011968613,
+     "min": 2.868968054652214,
+     "max": 3.0502759963274,
+     "ratio": 7.227601180086793,
+     "gap": 2.526544004678726,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 17.98800504207611,
+     "min": 16.378449007868767,
+     "max": 21.364889040589333,
+     "ratio": 44.33808444261989,
+     "gap": 17.582304045557976,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 21.249461963772774,
+     "min": 17.780942991375923,
+     "max": 25.30833099782467,
+     "ratio": 52.37715003449076,
+     "gap": 20.84376096725464,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 0.4068789780139923,
+     "min": 0.38523097336292267,
+     "max": 0.5402339994907379,
+     "ratio": 1.0029035706245908,
+     "gap": 0.0011779814958572388,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "bun",
+   "workload": "bench-download",
+   "unit": "ms",
+   "baseMedian": 1.0281280000000002,
+   "baseRange": [
+    0.8902450000000002,
+    1.103275
+   ],
+   "aaRangePct": 41.05335949625825,
+   "bandPct": 82.1067189925165,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 1.0281280000000002,
+     "min": 0.8902450000000002,
+     "max": 1.103275,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 9.954013999999999,
+     "min": 7.440037,
+     "max": 12.561299999999997,
+     "ratio": 9.681687494164148,
+     "gap": 8.925885999999998,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 6.031448999999999,
+     "min": 5.40991,
+     "max": 7.0167280000000005,
+     "ratio": 5.866437836533971,
+     "gap": 5.003321,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 10.557264999999997,
+     "min": 10.075858,
+     "max": 12.206574,
+     "ratio": 10.26843447508481,
+     "gap": 9.529136999999997,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 29.855707999999993,
+     "min": 15.191199000000001,
+     "max": 33.956619999999994,
+     "ratio": 29.038901770985703,
+     "gap": 28.827579999999994,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 21.414134999999998,
+     "min": 16.810147999999998,
+     "max": 22.738304000000003,
+     "ratio": 20.828277218400817,
+     "gap": 20.386007,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 7.803851000000001,
+     "min": 7.563880000000002,
+     "max": 8.647423,
+     "ratio": 7.590349645180367,
+     "gap": 6.775723000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 0.916819,
+     "min": 0.7369699999999999,
+     "max": 1.1133549999999999,
+     "ratio": 0.8917362429580752,
+     "gap": -0.1113090000000001,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "unit": "ms",
+   "baseMedian": 1.6367120000000002,
+   "baseRange": [
+    1.495422,
+    1.7618399999999999
+   ],
+   "aaRangePct": 54.35750863403598,
+   "bandPct": 108.71501726807196,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 1.6367120000000002,
+     "min": 1.495422,
+     "max": 1.7618399999999999,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 7.597437000000001,
+     "min": 5.3409819999999995,
+     "max": 12.515171000000002,
+     "ratio": 4.641889959870766,
+     "gap": 5.960725000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 5.5231959999999996,
+     "min": 4.456316999999999,
+     "max": 6.2935989999999995,
+     "ratio": 3.3745680364046935,
+     "gap": 3.8864839999999994,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 10.009187,
+     "min": 9.347229,
+     "max": 11.680437999999999,
+     "ratio": 6.1154234831784695,
+     "gap": 8.372475000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 11.683529,
+     "min": 10.696441000000002,
+     "max": 12.186507999999998,
+     "ratio": 7.138414699715038,
+     "gap": 10.046817,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 6.85168,
+     "min": 6.239648999999999,
+     "max": 7.477144000000001,
+     "ratio": 4.186246572396365,
+     "gap": 5.214968,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 1.637415,
+     "min": 1.412963,
+     "max": 2.303021,
+     "ratio": 1.0004295196711455,
+     "gap": 0.0007029999999998982,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "unit": "ms",
+   "baseMedian": 2.158574,
+   "baseRange": [
+    1.8601429999999999,
+    2.3987610000000004
+   ],
+   "aaRangePct": 36.943243345434325,
+   "bandPct": 73.88648669086865,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 2.158574,
+     "min": 1.8601429999999999,
+     "max": 2.3987610000000004,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 11.055163000000002,
+     "min": 5.309586999999999,
+     "max": 12.595518,
+     "ratio": 5.121512164975582,
+     "gap": 8.896589000000002,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 6.270358999999999,
+     "min": 5.726414999999999,
+     "max": 6.779548,
+     "ratio": 2.904861728159423,
+     "gap": 4.111784999999999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 17.482349000000003,
+     "min": 15.094458,
+     "max": 21.906625000000002,
+     "ratio": 8.09902695019953,
+     "gap": 15.323775000000003,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 2.1422509999999995,
+     "min": 1.994609,
+     "max": 2.786026,
+     "ratio": 0.9924380632769594,
+     "gap": -0.016323000000000754,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "gcMs",
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "unit": "ms",
+   "baseMedian": 1.4600520000000001,
+   "baseRange": [
+    1.311127,
+    2.1904660000000002
+   ],
+   "aaRangePct": 60.2265535748042,
+   "bandPct": 120.4531071496084,
+   "absFloor": 1,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 1.4600520000000001,
+     "min": 1.311127,
+     "max": 2.1904660000000002,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 6.725764999999999,
+     "min": 5.843061,
+     "max": 12.569807,
+     "ratio": 4.606524288176036,
+     "gap": 5.265712999999999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 5.436008000000001,
+     "min": 4.950842,
+     "max": 6.549334999999999,
+     "ratio": 3.723160544966892,
+     "gap": 3.975956000000001,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 10.887070999999999,
+     "min": 10.116706000000002,
+     "max": 12.456055,
+     "ratio": 7.456632366518451,
+     "gap": 9.427018999999998,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 8.272098999999999,
+     "min": 7.744665,
+     "max": 8.439445000000001,
+     "ratio": 5.665619443691045,
+     "gap": 6.812046999999999,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 1.466338,
+     "min": 1.4401760000000001,
+     "max": 1.9754799999999997,
+     "ratio": 1.0043053261116726,
+     "gap": 0.006285999999999792,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "maxRss",
+   "runtime": "node",
+   "workload": "-",
+   "unit": "B",
+   "baseMedian": 83406848,
+   "baseRange": [
+    82501632,
+    85880832
+   ],
+   "aaRangePct": 4.051465894023474,
+   "bandPct": 8.102931788046948,
+   "absFloor": 2097152,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 83406848,
+     "min": 82501632,
+     "max": 85880832,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 103321600,
+     "min": 101539840,
+     "max": 104226816,
+     "ratio": 1.2387663900211168,
+     "gap": 19914752,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 83709952,
+     "min": 83603456,
+     "max": 85073920,
+     "ratio": 1.0036340421352452,
+     "gap": 303104,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 84852736,
+     "min": 83857408,
+     "max": 85082112,
+     "ratio": 1.0173353631586701,
+     "gap": 1445888,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 141139968,
+     "min": 140709888,
+     "max": 141565952,
+     "ratio": 1.6921868094092225,
+     "gap": 57733120,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 99049472,
+     "min": 98816000,
+     "max": 99688448,
+     "ratio": 1.1875460393851593,
+     "gap": 15642624,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 86208512,
+     "min": 85524480,
+     "max": 86499328,
+     "ratio": 1.0335903354122673,
+     "gap": 2801664,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 84418560,
+     "min": 82464768,
+     "max": 85716992,
+     "ratio": 1.0121298433433188,
+     "gap": 1011712,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "maxRss",
+   "runtime": "bun",
+   "workload": "-",
+   "unit": "B",
+   "baseMedian": 67735552,
+   "baseRange": [
+    66424832,
+    68026368
+   ],
+   "aaRangePct": 2.364394993045897,
+   "bandPct": 4.728789986091794,
+   "absFloor": 2097152,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 67735552,
+     "min": 66424832,
+     "max": 68026368,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "aws4fetch": {
+     "n": 5,
+     "median": 69476352,
+     "min": 67780608,
+     "max": 70610944,
+     "ratio": 1.0256999455765858,
+     "gap": 1740800,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "aws4": {
+     "n": 5,
+     "median": 71454720,
+     "min": 70983680,
+     "max": 72863744,
+     "ratio": 1.0549071778436234,
+     "gap": 3719168,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "smithy": {
+     "n": 5,
+     "median": 77979648,
+     "min": 74584064,
+     "max": 82591744,
+     "ratio": 1.1512366209106852,
+     "gap": 10244096,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "aws-sig": {
+     "n": 5,
+     "median": 81199104,
+     "min": 80842752,
+     "max": 82296832,
+     "ratio": 1.198766402612324,
+     "gap": 13463552,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "wdl": {
+     "n": 5,
+     "median": 77213696,
+     "min": 75247616,
+     "max": 81608704,
+     "ratio": 1.1399286448569874,
+     "gap": 9478144,
+     "unsettled": false,
+     "verdict": "more than sigflint"
+    },
+    "minio": {
+     "n": 5,
+     "median": 71536640,
+     "min": 71446528,
+     "max": 72519680,
+     "ratio": 1.0561165870472273,
+     "gap": 3801088,
+     "unsettled": true,
+     "verdict": "no clear change"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 67092480,
+     "min": 65843200,
+     "max": 67379200,
+     "ratio": 0.9905061377517083,
+     "gap": -643072,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cacheEntry",
+   "runtime": "node",
+   "workload": "-",
+   "unit": "B",
+   "baseMedian": 328.656,
+   "baseRange": [
+    326.488,
+    328.656
+   ],
+   "aaRangePct": 0.659656297161776,
+   "bandPct": 3,
+   "absFloor": 5,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 328.656,
+     "min": 326.488,
+     "max": 328.656,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 328.656,
+     "min": 327.264,
+     "max": 328.656,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  },
+  {
+   "metric": "cacheEntry",
+   "runtime": "bun",
+   "workload": "-",
+   "unit": "B",
+   "baseMedian": 359.845,
+   "baseRange": [
+    358.618,
+    360.074
+   ],
+   "aaRangePct": 0.6329343236577013,
+   "bandPct": 3,
+   "absFloor": 5,
+   "arms": {
+    "sigflint-A": {
+     "n": 5,
+     "median": 359.845,
+     "min": 358.618,
+     "max": 360.074,
+     "ratio": 1,
+     "gap": 0,
+     "unsettled": false,
+     "verdict": "baseline"
+    },
+    "sigflint-B": {
+     "n": 5,
+     "median": 358.805,
+     "min": 356.57,
+     "max": 358.841,
+     "ratio": 0.9971098667481831,
+     "gap": -1.0400000000000205,
+     "unsettled": true,
+     "verdict": "no clear change"
+    }
+   }
+  }
+ ]
+}

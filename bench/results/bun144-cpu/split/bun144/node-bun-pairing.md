@@ -1,0 +1,102 @@
+# Node and Bun pairing for the admitted-pair re-run
+
+Every workload, metric and library measured on both runtimes, from the raw results in this directory (median, then min-max over the rounds; units are those of the metric: ns, bytes, ms or µs). Verdict: a runtime is ahead when its range is disjoint from the other's; otherwise the direction of the medians is given and the ranges overlap. Disposition (for rows where Node is ahead): see the pairing section of `rerun-3-notes.md`. Nothing has been filed, edited or commented on at oven-sh/bun from this run. The Node-against-Bun comparison is not closed: every row marked "no disposition yet" is open, and a row with overlapping ranges needs alternating samples before it is called a gap or noise. Earlier reports, which this run does not change: [oven-sh/bun#45627](https://github.com/oven-sh/bun/issues/45627) (reading properties of a parsed URL) covers part of a sigflint speed gap; [oven-sh/bun#45699](https://github.com/oven-sh/bun/issues/45699) (`crypto.hash`) and [oven-sh/bun#45700](https://github.com/oven-sh/bun/issues/45700) (`encodeURIComponent`) are single calls compared on their own and not shown to explain any sigflint gap.
+
+| part | metric | workload | library | Node | Bun | verdict | disposition |
+|---|---|---|---|---|---|---|---|
+| C/D | allocBytes | bench-download | sigflint-A | 2,625 (2,624-2,625) | 1,434 (1,432-1,442) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | aws4fetch | 30,029 (30,003-30,044) | 14,987 (14,984-15,016) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | aws4 | 10,009 (10,009-10,009) | 6,587 (6,585-6,609) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | smithy | 18,277 (18,277-18,277) | 13,442 (13,433-13,499) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | aws-sig | 71,051 (71,046-71,053) | 48,928 (48,908-48,974) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | wdl | 59,408 (59,408-59,408) | 28,974 (28,954-29,039) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-download | minio | 8,476 (8,467-8,516) | 7,206 (7,191-7,214) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | sigflint-A | 4,048 (4,048-4,048) | 2,770 (2,768-2,776) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | aws4fetch | 32,898 (32,895-32,939) | 15,717 (15,706-15,751) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | aws4 | 12,843 (12,841-12,846) | 8,047 (8,043-8,078) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | smithy | 20,423 (20,421-20,424) | 14,302 (14,298-14,328) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | wdl | 61,276 (61,273-61,288) | 28,537 (27,961-28,553) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-part-put | minio | 9,051 (9,045-9,086) | 7,187 (7,175-7,194) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-encode | sigflint-A | 5,632 (5,632-5,633) | 4,368 (4,368-4,381) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-encode | aws4fetch | 33,565 (33,550-33,567) | 16,952 (16,941-16,973) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-encode | aws4 | 13,805 (13,804-13,806) | 8,673 (8,666-8,689) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-encode | wdl | 64,570 (64,569-64,570) | 31,388 (31,367-31,465) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-body-1k | sigflint-A | 4,130 (4,130-4,145) | 2,645 (2,644-2,650) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-body-1k | aws4fetch | 30,403 (30,386-30,459) | 16,871 (16,847-17,306) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-body-1k | aws4 | 9,793 (9,780-9,794) | 7,841 (7,816-7,859) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-body-1k | smithy | 18,691 (18,688-18,692) | 15,474 (15,463-15,507) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | allocBytes | bench-body-1k | minio | 8,629 (8,611-8,668) | 8,716 (8,697-8,724) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | cpuUs | bench-download | sigflint-A | 2.37 (2.34-2.37) | 2.12 (2.06-2.20) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-download | aws4fetch | 47.75 (46.16-48.99) | 28.82 (26.08-30.47) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-download | aws4 | 8.93 (8.82-9.08) | 12.14 (11.86-12.78) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun for this row |
+| C/D | cpuUs | bench-download | smithy | 15.81 (15.46-16.15) | 17.56 (14.99-18.91) | Node ahead in median, ranges overlap | no disposition yet: Node ahead in the median, ranges overlap (in band), so not a reproduced gap and not yet confirmed or shown to be noise; it needs alternating samples first; was Node ahead, ranges disjoint in the earlier run; nothing filed with oven-sh/bun |
+| C/D | cpuUs | bench-download | aws-sig | 64.93 (64.45-66.74) | 45.89 (40.82-46.84) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-download | wdl | 86.76 (84.68-99.87) | 66.20 (63.03-73.26) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-download | minio | 15.47 (14.77-15.68) | 8.90 (8.66-9.25) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | sigflint-A | 2.20 (2.16-2.27) | 2.01 (1.76-2.15) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | aws4fetch | 39.42 (39.14-41.41) | 22.61 (22.11-24.32) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | aws4 | 9.58 (9.43-9.65) | 8.67 (8.54-8.79) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | smithy | 13.79 (13.58-14.60) | 9.37 (8.22-12.89) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | wdl | 75.00 (74.59-77.58) | 58.90 (57.61-63.06) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-part-put | minio | 13.31 (13.27-13.72) | 5.42 (5.36-5.47) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-encode | sigflint-A | 2.72 (2.49-2.85) | 3.82 (3.56-3.86) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun for this row |
+| C/D | cpuUs | bench-encode | aws4fetch | 38.76 (37.07-42.45) | 22.97 (21.92-24.57) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-encode | aws4 | 11.18 (11.02-11.28) | 9.19 (9.18-9.29) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-encode | wdl | 80.09 (78.28-81.35) | 60.95 (58.60-64.98) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-body-1k | sigflint-A | 2.57 (2.53-2.58) | 2.08 (2.07-2.22) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-body-1k | aws4fetch | 41.57 (38.19-48.84) | 22.10 (20.33-27.11) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-body-1k | aws4 | 8.46 (8.29-8.52) | 4.99 (4.98-5.14) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-body-1k | smithy | 15.07 (14.59-15.83) | 8.79 (8.19-9.05) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cpuUs | bench-body-1k | minio | 15.01 (14.69-15.83) | 7.45 (7.17-7.69) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | gcCount | bench-download | sigflint-A | 6.00 (6.00-6.00) | 3.00 (3.00-3.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-download | aws4fetch | 90.00 (90.00-90.00) | 27.00 (27.00-27.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-download | aws4 | 24.00 (24.00-24.00) | 14.00 (14.00-14.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-download | smithy | 45.00 (44.00-45.00) | 24.00 (24.00-24.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-download | aws-sig | 46.00 (46.00-46.00) | 80.00 (80.00-80.00) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcCount | bench-download | wdl | 173 (171-174) | 47.00 (47.00-47.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-download | minio | 19.00 (19.00-19.00) | 16.00 (16.00-16.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | sigflint-A | 10.00 (10.00-10.00) | 5.00 (5.00-5.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | aws4fetch | 50.00 (48.00-50.00) | 26.00 (26.00-26.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | aws4 | 31.00 (31.00-31.00) | 14.00 (14.00-14.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | smithy | 49.00 (49.00-49.00) | 23.00 (23.00-23.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | wdl | 90.00 (90.00-91.00) | 43.00 (43.00-43.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-part-put | minio | 22.00 (22.00-22.00) | 15.00 (15.00-15.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-encode | sigflint-A | 14.00 (13.00-14.00) | 7.00 (7.00-7.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-encode | aws4fetch | 48.00 (48.00-48.00) | 30.00 (29.00-30.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-encode | aws4 | 33.00 (33.00-33.00) | 17.00 (17.00-17.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-encode | wdl | 94.00 (94.00-95.00) | 49.00 (49.00-49.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-body-1k | sigflint-A | 10.00 (10.00-10.00) | 5.00 (5.00-5.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-body-1k | aws4fetch | 44.00 (44.00-44.00) | 29.00 (29.00-29.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-body-1k | aws4 | 23.00 (23.00-23.00) | 15.00 (15.00-15.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-body-1k | smithy | 45.00 (45.00-45.00) | 26.00 (26.00-26.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcCount | bench-body-1k | minio | 20.00 (20.00-20.00) | 18.00 (18.00-18.00) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-download | sigflint-A | 0.34 (0.33-0.59) | 1.03 (0.89-1.10) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-download | aws4fetch | 15.55 (14.23-18.21) | 9.95 (7.44-12.56) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-download | aws4 | 3.25 (3.15-3.48) | 6.03 (5.41-7.02) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-download | smithy | 17.63 (17.11-18.99) | 10.56 (10.08-12.21) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-download | aws-sig | 28.38 (26.89-30.30) | 29.86 (15.19-33.96) | Node ahead in median, ranges overlap | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-download | wdl | 42.34 (33.27-44.08) | 21.41 (16.81-22.74) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-download | minio | 21.09 (18.37-24.48) | 7.80 (7.56-8.65) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-part-put | sigflint-A | 0.43 (0.39-0.57) | 1.64 (1.50-1.76) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-part-put | aws4fetch | 7.63 (6.76-8.62) | 7.60 (5.34-12.52) | Bun ahead in median, ranges overlap | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-part-put | aws4 | 2.48 (2.46-2.60) | 5.52 (4.46-6.29) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-part-put | smithy | 11.20 (10.31-14.76) | 10.01 (9.35-11.68) | Bun ahead in median, ranges overlap | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-part-put | wdl | 24.37 (17.88-36.70) | 11.68 (10.70-12.19) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-part-put | minio | 15.04 (12.65-18.23) | 6.85 (6.24-7.48) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-encode | sigflint-A | 0.53 (0.51-0.62) | 2.16 (1.86-2.40) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-encode | aws4fetch | 9.70 (5.27-18.60) | 11.06 (5.31-12.60) | Node ahead in median, ranges overlap | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-encode | aws4 | 3.36 (3.26-3.57) | 6.27 (5.73-6.78) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-encode | wdl | 29.22 (21.19-38.99) | 17.48 (15.09-21.91) | Bun ahead in median, ranges overlap | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-body-1k | sigflint-A | 0.41 (0.38-0.43) | 1.46 (1.31-2.19) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-body-1k | aws4fetch | 12.18 (6.79-15.45) | 6.73 (5.84-12.57) | Bun ahead in median, ranges overlap | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-body-1k | aws4 | 2.93 (2.87-3.05) | 5.44 (4.95-6.55) | Node ahead, ranges disjoint | suspected only: the two runtimes use different instruments |
+| C/D | gcMs | bench-body-1k | smithy | 17.99 (16.38-21.36) | 10.89 (10.12-12.46) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | gcMs | bench-body-1k | minio | 21.25 (17.78-25.31) | 8.27 (7.74-8.44) | Bun ahead, ranges disjoint | no cross-runtime finding: the two runtimes use different instruments, so the direction is not a result |
+| C/D | maxRss | - | sigflint-A | 83,406,848 (82,501,632-85,880,832) | 67,735,552 (66,424,832-68,026,368) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | aws4fetch | 103,321,600 (101,539,840-104,226,816) | 69,476,352 (67,780,608-70,610,944) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | aws4 | 83,709,952 (83,603,456-85,073,920) | 71,454,720 (70,983,680-72,863,744) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | smithy | 84,852,736 (83,857,408-85,082,112) | 77,979,648 (74,584,064-82,591,744) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | aws-sig | 141,139,968 (140,709,888-141,565,952) | 81,199,104 (80,842,752-82,296,832) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | wdl | 99,049,472 (98,816,000-99,688,448) | 77,213,696 (75,247,616-81,608,704) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | maxRss | - | minio | 86,208,512 (85,524,480-86,499,328) | 71,536,640 (71,446,528-72,519,680) | Bun ahead, ranges disjoint | none needed (Node not ahead) |
+| C/D | cacheEntry | - | sigflint-A | 329 (326-329) | 360 (359-360) | Node ahead, ranges disjoint | reproduced gap, report-ready: no reduced reproduction or issue search done; nothing filed with oven-sh/bun for this row |
