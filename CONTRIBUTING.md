@@ -4,7 +4,7 @@ Bug reports and pull requests are welcome. For a larger change, open an issue fi
 
 ## Setup
 
-The build uses [Bun](https://bun.sh)'s bundler (`bun build`), so install Bun as well as Node.js 22.12 or later. The type checks run on Bun's `bun check`, which needs Bun 1.4.3 or later; the declaration files are still emitted by `tsc`.
+The build uses [Bun](https://bun.sh)'s bundler (`bun build`), so install Bun as well as Node.js 22.12 or later. The format check runs on Bun's `bun fmt` and the type checks on `bun check`, which need Bun 1.4.4 or later; the declaration files are still emitted by `tsc`.
 
 ```sh
 npm ci
@@ -14,7 +14,7 @@ npm run types       # emits the .d.ts files, then type-checks src/, test/ and co
 npm run types:streams  # installs conformance/streams/'s dependencies (npm ci), then type-checks it
 npm run types:bench    # installs bench/'s dependencies (npm ci), then type-checks it
 npm run check:package
-npm run check       # format, lint and all of the above (oxfmt, oxlint; npm run format fixes the format)
+npm run check       # format, lint and all of the above (`bun fmt`, oxlint; npm run format fixes the format)
 ```
 
 `npm run check` also checks the Python and shell scripts with [ruff](https://docs.astral.sh/ruff/) 0.17.1, [ShellCheck](https://www.shellcheck.net/) 0.11.0 and [shfmt](https://github.com/mvdan/sh) 3.14.1, which are not npm packages: install those versions and put them on your `PATH`. CI installs the same versions.
