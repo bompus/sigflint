@@ -58,6 +58,10 @@ rtbin() { # rtbin <label>: the executable of a runtime label: RT_BIN_<label with
     case $1 in node) echo node ;; bun*) echo bun ;; *) return 1 ;; esac
   fi
 }
+if ((${#RUNTIME_LIST[@]} == 0)); then
+  echo "RUNTIMES lists no runtime label"
+  exit 2
+fi
 for rt in "${RUNTIME_LIST[@]}"; do
   case $rt in node | bun*) ;; *)
     echo "unknown runtime label $rt (node, or a label starting with bun)"
