@@ -27,7 +27,7 @@ export const symmetric = {
 const reSafePath = /^[A-Za-z0-9\-._~/]*$/;
 const reSafeQuery = /^[A-Za-z0-9\-._~=&]*$/;
 const reSpaces = /[ \t]+/g;
-const reDirty = /\t|  /;
+const reDirty = /\t| {2}/;
 
 // ASCII code -> what it is written as in a canonical path / query. url.pathname and url.search are always ASCII (the URL parser percent-encodes everything else).
 // Built on first use, so importing this module costs nothing.

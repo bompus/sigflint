@@ -77,7 +77,7 @@ const smithyFor = (c) => {
         region: c.region,
         service: c.service,
         sha256: Hash.bind(null, 'sha256'),
-        applyChecksum: c.service === 's3' ? true : false,
+        applyChecksum: c.service === 's3',
         uriEscapePath: c.service !== 's3',
       }),
     );
