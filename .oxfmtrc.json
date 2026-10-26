@@ -12,7 +12,8 @@
     "**/package-lock.json",
     "bench/frozen/**",
     "bench/results/**",
-    "conformance/*.json"
+    "conformance/*.json",
+    "scripts/oxlint-plugin.mjs"
   ],
   "sortPackageJson": true,
   "singleQuote": true
