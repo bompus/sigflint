@@ -1,0 +1,113 @@
+{
+  "rounds": [
+    1,
+    2,
+    3
+  ],
+  "runtimes": [
+    "node: node 26.13.0",
+    "bun: bun 1.4.4"
+  ],
+  "identityMismatches": [],
+  "hash": {
+    "hash-string-to-sign": {
+      "bunCryptoHash": 134.11332,
+      "bunSha256": 99.41796,
+      "mb": 134.11332,
+      "mo": 99.41796,
+      "diff": -34.695359999999994,
+      "rel": -0.258701820221884,
+      "band": 0.08990546203762619,
+      "noise": 0.04495273101881309,
+      "klass": "clear",
+      "lower": "other"
+    },
+    "hash-canonical-request": {
+      "bunCryptoHash": 156.66803,
+      "bunSha256": 129.29468,
+      "mb": 156.66803,
+      "mo": 129.29468,
+      "diff": -27.373349999999988,
+      "rel": -0.1747219901852343,
+      "band": 0.07247043318282637,
+      "noise": 0.03623521659141318,
+      "klass": "clear",
+      "lower": "other"
+    },
+    "hash-body-1k-string": {
+      "bunCryptoHash": 303.30562499999996,
+      "bunSha256": 277.275,
+      "mb": 303.30562499999996,
+      "mo": 277.275,
+      "diff": -26.030624999999986,
+      "rel": -0.08582308686164324,
+      "band": 0.03,
+      "noise": 0.011746821747362655,
+      "klass": "clear",
+      "lower": "other"
+    },
+    "hash-body-1k-bytes": {
+      "bunCryptoHash": 298.84569999999997,
+      "bunSha256": 271.7511,
+      "mb": 298.84569999999997,
+      "mo": 271.7511,
+      "diff": -27.094599999999957,
+      "rel": -0.09066417887224062,
+      "band": 0.03,
+      "noise": 0.011499245262688964,
+      "klass": "clear",
+      "lower": "other"
+    },
+    "hash-body-64k-bytes": {
+      "bunCryptoHash": 12995.4265,
+      "bunSha256": 12981.39,
+      "mb": 12995.4265,
+      "mo": 12981.39,
+      "diff": -14.03650000000016,
+      "rel": -0.0010801107605048715,
+      "band": 0.03,
+      "noise": 0.012331330862451122,
+      "klass": "no clear change",
+      "lower": "other"
+    }
+  },
+  "presign": {
+    "presign-any|node": {
+      "presignNs": 2645.711375,
+      "encodeQueryPartNs": 142.16239,
+      "shareQueryPartPct": 5.351442733702573,
+      "shareEncodeURIComponentPct": 3.001780277167022
+    },
+    "presign-any|bun": {
+      "presignNs": 2717.287925,
+      "encodeQueryPartNs": 170.251625,
+      "shareQueryPartPct": 6.26549816210588,
+      "shareEncodeURIComponentPct": 5.1498337262143465
+    },
+    "presign-s3|node": {
+      "presignNs": 2848.0099,
+      "encodeQueryPartNs": 133.867345,
+      "shareQueryPartPct": 4.700382010610286,
+      "shareEncodeURIComponentPct": 2.487679928276519
+    },
+    "presign-s3|bun": {
+      "presignNs": 2947.6417250000004,
+      "encodeQueryPartNs": 161.019665,
+      "shareQueryPartPct": 5.462660663076344,
+      "shareEncodeURIComponentPct": 4.390254557275091
+    },
+    "presign-s3-token|node": {
+      "presignNs": 3128.9908,
+      "encodeQueryPartNs": 192.248695,
+      "shareQueryPartPct": 6.144111865078031,
+      "shareEncodeURIComponentPct": 3.2213391295365907
+    },
+    "presign-s3-token|bun": {
+      "presignNs": 3179.55715,
+      "encodeQueryPartNs": 226.526095,
+      "shareQueryPartPct": 7.124454265588527,
+      "shareEncodeURIComponentPct": 5.666838068943028
+    }
+  },
+  "unsettled": []
+}

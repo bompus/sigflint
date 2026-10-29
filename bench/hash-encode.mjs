@@ -7,6 +7,7 @@
 import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import os from 'node:os';
+import { basename } from 'node:path';
 
 const isBun = typeof Bun !== 'undefined';
 const rt = isBun ? 'bun' : 'node';
@@ -180,7 +181,7 @@ function pass(fn, n) {
 
 emit({
   kind: 'header',
-  execPath: process.execPath,
+  executable: basename(process.execPath),
   priority: os.getPriority(),
   batches: BATCHES,
   caseCount: cases.length,
