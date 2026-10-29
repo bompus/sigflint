@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Document installing with Bun (`bun add sigflint`) and running a script with `bun run`, alongside npm.
+
 ## 1.0.2 - 2026-10-29
 
 - Node and Bun load unminified files bundled with Bun instead of esbuild. The files are 24,690 and 23,518 bytes, compared with 24,374 and 23,200 bytes in the published 1.0.1 package. Builds, checks and publishing use Bun 1.4.4.

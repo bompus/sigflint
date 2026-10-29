@@ -50,11 +50,21 @@ Microseconds per signature; lower is better. On Node 26.12.1, signing a plain S3
 
 ## Install
 
+With npm:
+
 ```sh
 npm install sigflint
 ```
 
-Node.js 22.12 or newer (it is an ES module; Node 22.12 can also `require()` it). Bun and Deno need no setup.
+With Bun:
+
+```sh
+bun add sigflint
+```
+
+Bun loads its own build directly; run your script with `bun run <file>`.
+
+Node.js 22.12 or newer (it is an ES module; Node 22.12 can also `require()` it). Bun and Deno need no build step.
 
 ## Usage
 
