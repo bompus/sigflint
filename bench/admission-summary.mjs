@@ -12,7 +12,7 @@ const rows = readFileSync(file, 'utf8')
 const med = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
 const parts = [...new Set(rows.map((r) => r.part))];
 const line = [
-  '| part | units admitted | units refused | checks | checks refused | refusal reasons | combined busy cores of admitting checks (min, median, max) | worst memory / I/O pressure of admitting checks (ms) |',
+  '| part | units admitted | units refused | checks | checks refused | refusal reasons | busy cores of admitting checks (min, median, max) | worst memory / I/O pressure of admitting checks (ms) |',
   '|---|--:|--:|--:|--:|---|---|---|',
 ];
 for (const p of parts) {
@@ -28,7 +28,7 @@ for (const p of parts) {
       reasons[k] = (reasons[k] ?? 0) + 1;
     }
   }
-  const cores = ok.map((c) => c.receipt.combined_busy_cores);
+  const cores = ok.map((c) => c.receipt.combined_busy_cores ?? c.receipt.busy_cores);
   const mem = Math.max(...ok.map((c) => c.receipt.mem_full_psi_ms_max)),
     io = Math.max(...ok.map((c) => c.receipt.io_full_psi_ms_max));
   line.push(

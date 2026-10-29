@@ -106,10 +106,19 @@ console.log(
 );
 for (const [key, cell] of Object.entries(A.cells)) {
   const [runtime, workload] = key.split('|');
-  const frozen = /** @type {{ ns: number }} */ (cell.arms.frozen).ns;
+  const baseline = /** @type {SCell['arms'][string]} */ (cell.arms.frozen);
+  const frozen = baseline.ns;
   const change = (100 * (cell.pooled - frozen)) / frozen;
-  const verdict =
-    Math.abs(change) <= cell.band ? 'no clear change' : change > 0 ? 'slower' : 'faster';
+  const controls = ['final-1', 'final-2'].map(
+    (arm) => /** @type {SCell['arms'][string]} */ (cell.arms[arm]),
+  );
+  const overlap =
+    Math.min(...controls.map((arm) => arm.min)) <= baseline.max &&
+    Math.max(...controls.map((arm) => arm.max)) >= baseline.min;
+  // The declared cap leaves overlapping ranges or a gap within twice the band inconclusive.
+  const unsettled =
+    overlap || Math.abs(cell.pooled - frozen) <= (2 * cell.band * cell.pooled) / 100;
+  const verdict = unsettled ? 'no clear change' : change > 0 ? 'slower' : 'faster';
   summary.regression.push({
     runtime,
     workload,

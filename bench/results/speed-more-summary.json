@@ -34,7 +34,7 @@
    "finalNs": 1662,
    "changePct": 4.3,
    "bandPct": 3,
-   "verdict": "slower"
+   "verdict": "no clear change"
   },
   {
    "runtime": "bun",

@@ -134,7 +134,7 @@ Other-service and presigned-URL signing use the same fresh-process method and A/
 | bun | bench-encode | 1,506 | 1,494 | -0.8% | 8.3% | no clear change |
 | bun | bench-body-1k | 1,251 | 1,252 | +0.1% | 10.5% | no clear change |
 
-The separate comparison against the older, pre-split S3 implementation is retained in `bench/results/speed-more-summary.json`: the Node 1 KiB PUT is 4.3% slower than that older code, outside its 3% band. That is not a change from published 1.0.1; the direct release comparison above is the release regression check.
+The separate comparison against the older, pre-split S3 implementation is retained in `bench/results/speed-more-summary.json`. All eight comparisons remain inconclusive at five rounds: the Node 1 KiB PUT has a 4.3% median gap and a 3% band, so its gap is within twice the band and does not establish a slowdown. This is an older baseline, separate from the direct published-release comparison above.
 
 **Node 26.12.1**, microseconds per call (times as long as sigflint in brackets):
 
