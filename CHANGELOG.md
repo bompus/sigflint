@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- Document installing with Bun (`bun add sigflint`) and running a script with `bun run`, alongside npm.
+## 1.0.3 - 2026-10-29
+
+- Document installing with Bun (`bun add sigflint`) and running a script with `bun run`, alongside npm. Documentation only; no code or benchmark change.
 
 ## 1.0.2 - 2026-10-29
 
