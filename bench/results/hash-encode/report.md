@@ -55,7 +55,7 @@ Node against Bun on the same call:
 
 ## 3. Share of the presign call spent encoding
 
-Share = the isolated time of the encoder calls one presign makes (credential, signed headers, and the token when the request has one), divided by the presign time measured in the same process and round. It is an estimate from separate timings, not a measurement inside the presigner.
+Share = the isolated time of the encoder calls one presign makes (the credential string and the signed-headers string), divided by the presign time measured in the same process and round. It is an estimate from separate timings, not a measurement inside the presigner.
 
 | Workload | Runtime | presign | encodeQueryPart calls | Share, encodeQueryPart | Share, encodeURIComponent alone |
 |---|---|--:|--:|--:|--:|
@@ -63,8 +63,6 @@ Share = the isolated time of the encoder calls one presign makes (credential, si
 | any | bun | 2717 (2684-2734) | 170.3 (170.1-170.7) | 6.3 (6.2-6.4)% | 5.1 (5.1-5.2)% |
 | s3 | node | 2848 (2812-2862) | 133.9 (130.3-138.5) | 4.7 (4.6-4.9)% | 2.5 (2.5-2.7)% |
 | s3 | bun | 2948 (2925-2966) | 161.0 (160.3-163.5) | 5.5 (5.4-5.6)% | 4.4 (4.4-4.6)% |
-| s3-token | node | 3129 (3127-3229) | 192.2 (185.9-195.9) | 6.1 (5.8-6.3)% | 3.2 (3.2-3.3)% |
-| s3-token | bun | 3180 (3159-3304) | 226.5 (225.2-228.7) | 7.1 (6.8-7.2)% | 5.7 (5.5-5.9)% |
 
 Node against Bun on the presign call, and what the encoders contribute to the difference:
 
@@ -72,6 +70,5 @@ Node against Bun on the presign call, and what the encoders contribute to the di
 |---|--:|--:|---|--:|
 | any | 2646 (2621-2657) | 2717 (2684-2734) | no clear change (+2.7%, band 11.3%) | 28.1 ns (no Bun slowdown to attribute) |
 | s3 | 2848 (2812-2862) | 2948 (2925-2966) | no clear change (+3.5%, band 9.5%) | 27.2 ns (no Bun slowdown to attribute) |
-| s3-token | 3129 (3127-3229) | 3180 (3159-3304) | no clear change (+1.6%, band 6.9%) | 34.3 ns (no Bun slowdown to attribute) |
 
 Unsettled comparisons: none.

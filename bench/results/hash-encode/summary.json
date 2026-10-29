@@ -94,18 +94,6 @@
       "encodeQueryPartNs": 161.019665,
       "shareQueryPartPct": 5.462660663076344,
       "shareEncodeURIComponentPct": 4.390254557275091
-    },
-    "presign-s3-token|node": {
-      "presignNs": 3128.9908,
-      "encodeQueryPartNs": 192.248695,
-      "shareQueryPartPct": 6.144111865078031,
-      "shareEncodeURIComponentPct": 3.2213391295365907
-    },
-    "presign-s3-token|bun": {
-      "presignNs": 3179.55715,
-      "encodeQueryPartNs": 226.526095,
-      "shareQueryPartPct": 7.124454265588527,
-      "shareEncodeURIComponentPct": 5.666838068943028
     }
   },
   "unsettled": []

@@ -17,7 +17,7 @@ One process per runtime and round runs `hash-encode.mjs`. Every case is one call
 |---|---|---|
 | hash | string to sign (about 130 bytes), canonical request (284 bytes), 1 KiB body as a string, 1 KiB body as bytes, 64 KiB body as bytes | `crypto.hash` (Node and Bun), `Bun.SHA256.hash` (Bun only; Node has no such call) |
 | encode | the credential string of an execute-api and an S3 request, the signed-headers string `host`, a 12-character session token (as in the corpus) and a 400-character synthetic token | `encodeURIComponent` alone, and `encodeQueryPart` (`src/presign.js`, what the presigner calls) |
-| presign | `presign` from `src/node.js` or `src/bun.js` on corpus requests `p-execute-api-0031` (the `presign-any` speed workload), `p-s3-0003` (`presign-s3`) and `p-s3-0008` (a request with a session token) | the production presigner |
+| presign | `presign` from `src/node.js` or `src/bun.js` on corpus requests `p-execute-api-0031` (the `presign-any` speed workload), `p-s3-0003` (`presign-s3`) and `p-s3-0008` (a request with a session token, timed but not analysed: see the limits) | the production presigner |
 
 Checks outside the timed region, before any timing: every hash arm must return the reference SHA-256 of its input (computed with `crypto.createHash`), and the presigner's output at the corpus's own clock must end with botocore's signature recorded in the corpus. A process that fails a check exits with an error row and the unit is not counted. Every row records the SHA-256 of its input and of its checked output; the analysis requires them to agree across runtimes.
 
@@ -40,7 +40,7 @@ Inventory: 5 hash cases with 2 arms on Bun and 1 on Node, 5 encode cases with 2 
 - The round value of an arm is the mean of its A and B passes. The A/A spread of an arm in a round is |A - B| divided by their mean.
 - For a comparison of two arms (base and other) on one case: the band is max(3%, 2 x the largest A/A spread of either arm in any round), as a share of the base median, with an absolute floor of 2 ns. **Clear** when the medians differ by more than the band, the min-max ranges over the rounds do not overlap and the sign of the difference is the same in every round. **No clear change** when the medians differ by no more than the band. **Unsettled** otherwise.
 - Question 1 compares `crypto.hash` (base) with `Bun.SHA256.hash` on Bun, per case. Question 2's decision comparison is the presign call, Node against Bun, per workload. Every other Node-against-Bun pair is reference only: reported with the same rule, never extended.
-- The share of the presign call is reported as median and range over the rounds of (the isolated time of the encoder calls one presign makes) divided by (the presign time of the same process and round). The calls are the credential string and the signed-headers string, plus the token for the request with one.
+- The share of the presign call is reported as median and range over the rounds of (the isolated time of the encoder calls one presign makes) divided by (the presign time of the same process and round). The calls are the credential string and the signed-headers string (`host` for both workloads analysed).
 - If `Bun.SHA256.hash` is not clearly faster on the cases that match what sigflint hashes (the string to sign and the canonical request, which every signature hashes), the issue's condition for changing the hash is not met. If `crypto.hash` is clearly faster on Bun for any case, that is reported to the maintainer as an offer; the code is not changed here.
 
 ## Plan and forecast
@@ -50,3 +50,5 @@ Whole task started 2026-10-29 (the afternoon the assignment arrived). The counte
 ## Limits
 
 One host, one Bun version, one Node version, synthetic inputs (the corpus requests, one fixed string to sign and canonical request, deterministic pseudo-random bodies, one synthetic long token). The encoder share is an estimate from separate timings of the encoder calls and the presign call, not a measurement inside the presigner (the presigner is not run with its encoder removed, because that would change its output). The timings are wall time per call after warm-up; they do not include JIT warm-up or CPU on background threads (see `docs/benchmarks.md`, CPU per call and warm-up). The results hold for Node.js 26.13.0 and Bun 1.4.4 on this machine.
+
+The request with a session token (`p-s3-0008`) signs the headers `content-md5;host;x-amz-meta-a`, not `host`; that string was not among the timed encoder inputs, so its share of the presign call cannot be computed from this run. Its presign rows are kept in `raw.jsonl` and are not analysed or reported.

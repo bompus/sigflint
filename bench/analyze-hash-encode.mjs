@@ -124,9 +124,8 @@ const hashCases = [...new Set(data.filter((r) => r.case.startsWith('hash-')).map
 const encodeCases = [
   ...new Set(data.filter((r) => r.case.startsWith('encode-')).map((r) => r.case)),
 ];
-const presignCases = [
-  ...new Set(data.filter((r) => r.case.startsWith('presign-')).map((r) => r.case)),
-];
+// the request with a session token (presign-s3-token) is timed but not analysed: its signed-headers string was not timed (see the protocol's limits)
+const presignCases = ['presign-any', 'presign-s3'];
 
 // identity of inputs and outputs, from every row, across runtimes
 /** @type {Map<string, Set<string>>} */
@@ -235,13 +234,12 @@ for (const c of encodeCases) {
 const parts = {
   'presign-any': ['encode-credential-execute-api', 'encode-signed-headers'],
   'presign-s3': ['encode-credential-s3', 'encode-signed-headers'],
-  'presign-s3-token': ['encode-credential-s3', 'encode-signed-headers', 'encode-token-12'],
 };
 out.push(
   '',
   '## 3. Share of the presign call spent encoding',
   '',
-  'Share = the isolated time of the encoder calls one presign makes (credential, signed headers, and the token when the request has one), divided by the presign time measured in the same process and round. It is an estimate from separate timings, not a measurement inside the presigner.',
+  'Share = the isolated time of the encoder calls one presign makes (the credential string and the signed-headers string), divided by the presign time measured in the same process and round. It is an estimate from separate timings, not a measurement inside the presigner.',
   '',
   '| Workload | Runtime | presign | encodeQueryPart calls | Share, encodeQueryPart | Share, encodeURIComponent alone |',
   '|---|---|--:|--:|--:|--:|',

@@ -4,11 +4,13 @@ Protocol: [`../../protocol-hash-encode.md`](../../protocol-hash-encode.md), comm
 
 ## Run
 
-- 3 rounds, one process per runtime in each (6 counted processes), node first in odd rounds, bun first in even rounds, under the host's shared benchmark lock (the driver's default lock file at the time; it now defaults to the repository's usual `bench-host.lock`, and `BENCH_LOCK` names another). Counted run 16:58:24 to 17:00:12 MDT (1.8 minutes; the forecast was about 4 minutes, so the measured time was under half of it). Nothing was extended: no comparison was unsettled after round 3.
+- 3 rounds, one process per runtime in each (6 counted processes), node first in odd rounds, bun first in even rounds, under the host's shared benchmark lock (the driver's default lock file at the time; the driver now requires `BENCH_LOCK` to name it). Counted run 16:58:24 to 17:00:12 MDT (1.8 minutes; the forecast was about 4 minutes, so the measured time was under half of it). Nothing was extended: no comparison was unsettled after round 3.
 - 3 units admitted at the first attempt, 0 refused, 0 error rows. 4 host checks, all admitted. The check before the first unit read a mean of 3.18 busy cores (limit 4; its busiest second was 5.13) and the three after read 1.28, 0.69 and 0.98. Memory and I/O pressure files were available; the largest memory pressure in any check was 0.92 ms per second and the largest I/O pressure 1.9 ms per second. At least 86.9 GiB of memory was available. The source of the load before the first unit was not identified; the host was shared and nothing was paused.
 - Normal priority (0), all CPUs, no cap. Every process printed the same SHA-256 of its input and of its checked output for every case; the analysis finds them identical across all six processes and both runtimes.
 - A trial of the script on each runtime ran before the protocol (no lock, no host check, about 12 s each); it is not counted and not kept.
 - After the run, the header rows were rewritten to keep the local path of the runtime executable out of the public record: `execPath` became `executable` (the file name, `node` or `bun`), and `hash-encode.mjs` now writes that field. Nothing else in `raw.jsonl` changed; the analysis gives the same report before and after.
+
+- A third presign request, with a session token (`p-s3-0008`), was timed too. Its signed-headers string (`content-md5;host;x-amz-meta-a`) was not among the timed encoder inputs, so its encoder share cannot be computed and its rows are kept but not analysed (found in review).
 
 ## Findings
 
@@ -24,14 +26,14 @@ Protocol: [`../../protocol-hash-encode.md`](../../protocol-hash-encode.md), comm
 
 The Bun build already hashes with `Bun.SHA256.hash`, so the measurement supports the current code. The issue's condition for changing the hash (`crypto.hash` faster on Bun) is not met in any case. For reference, Node's `crypto.hash` takes 167.6, 198.7, 360.4, 331.0 and 13,048 ns on the same inputs; Bun's `crypto.hash` is 9.7% to 21.1% faster than Node's on the four inputs up to 1 KiB and no different at 64 KiB.
 
-**Question 2: the encoders are 5.5% to 7.1% of a presign call on Bun and 4.7% to 6.1% on Node, and there is no Bun slowdown to attribute in this run.** In `report.md`, the share of the presign call spent in `encodeQueryPart` (the credential, the signed-headers string, and the token when there is one) is 6.3% (any service), 5.5% (S3) and 7.1% (S3 with a session token) on Bun, against 5.4%, 4.7% and 6.1% on Node. `encodeURIComponent` alone is 5.1%, 4.4% and 5.7% on Bun and 3.0%, 2.5% and 3.2% on Node. The presign call itself shows no clear difference between the runtimes: Bun's median is 1.6% to 3.5% above Node's, inside bands of 6.9% to 11.3%. Presigning took 2.72 to 3.18 µs on Bun and 2.65 to 3.13 µs on Node. The slowdown of `rerun-3-node-bun.md` (Bun 1.4.3: 4.50 and 5.00 µs against 3.37 and 3.64 µs) is not present on Bun 1.4.4; the 1.0.2 run also had Bun ahead on both presigned-URL rows. Where Bun's median is above Node's, the larger encoder time on Bun (27 to 34 ns per presign, about 1% of the call) would cover only part of it.
+**Question 2: the encoders are 5.5% to 6.3% of a presign call on Bun and 4.7% to 5.4% on Node, and there is no Bun slowdown to attribute in this run.** In `report.md`, the share of the presign call spent in `encodeQueryPart` (the credential string and the signed-headers string) is 6.3% (any service) and 5.5% (S3) on Bun, against 5.4% and 4.7% on Node. `encodeURIComponent` alone is 5.1% and 4.4% on Bun and 3.0% and 2.5% on Node. The presign call itself shows no clear difference between the runtimes: Bun's median is 2.7% and 3.5% above Node's, inside bands of 11.3% and 9.5%. Presigning took 2.72 and 2.95 µs on Bun and 2.65 and 2.85 µs on Node. The slowdown of `rerun-3-node-bun.md` (Bun 1.4.3: 4.50 and 5.00 µs against 3.37 and 3.64 µs) is not present on Bun 1.4.4; the 1.0.2 run also had Bun ahead on both presigned-URL rows. Where Bun's median is above Node's, the larger encoder time on Bun (27 to 28 ns per presign, about 1% of the call) would cover only part of it.
 
 `encodeURIComponent` on its own is clearly slower on Bun than on Node for these strings, by 59% to 142% (1.6 to 2.4 times as long: 102.6 against 64.5 ns for the credential string, 37.3 against 15.4 ns for `host`, 406 against 246 ns for a 400-character token). That is the behaviour reported in oven-sh/bun#45700. `encodeQueryPart`, which adds a replace step, is 14% to 48% slower on Bun, because the replace step costs less on Bun (11 to 16 ns against 25 to 39 ns).
 
 ## Decision
 
 - Hash: **reject a change.** Keep `Bun.SHA256.hash` in the Bun build; `crypto.hash` is not faster on Bun in any measured case.
-- Encoder share: **adopt as measured.** Encoding is about 5 to 7% of a presign call on both runtimes; nothing in the presigner needs to change for the share. The Node-against-Bun gap on `encodeURIComponent` is already filed upstream (#45700); nothing new to file from this run.
+- Encoder share: **adopt as measured.** Encoding is about 5 to 6% of a presign call on both runtimes; nothing in the presigner needs to change for the share. The Node-against-Bun gap on `encodeURIComponent` is already filed upstream (#45700); nothing new to file from this run.
 
 ## Limits
 

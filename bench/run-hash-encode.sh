@@ -3,7 +3,7 @@
 # in odd rounds, bun first in even rounds). A host admission check runs before the first unit and after every unit; the check after a unit is the check before
 # the next. A unit counts only when the check before it and the check after it both admitted. A unit that fails is kept in results/hash-encode/not-admitted.jsonl and
 # measured again (up to 4 attempts); when the host stays unquiet the run exits 6, and running it again continues with the rounds not yet admitted.
-# Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet> [BENCH_LOCK=<lock file>] [RESULTS=<dir>]
+# Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet> BENCH_LOCK=<the host benchmark lock file> [RESULTS=<dir>]
 #        run-hash-encode.sh [rounds=3] [from_round=1]
 # Raw rows: results/hash-encode/raw.jsonl; receipts of every admission check: admission.jsonl. Exit: 0 finished, 3 lock, 6 host not quiet, 7 a unit keeps failing.
 set -u
@@ -12,11 +12,12 @@ FROM=${2:-1}
 HERE=$(cd "$(dirname "$0")" && pwd)
 R=${RESULTS:-$HERE/results/hash-encode}
 : "${ADMIT:?set ADMIT to the host admission command}"
+: "${BENCH_LOCK:?set BENCH_LOCK to the host benchmark lock file}"
 mkdir -p "$R"
 RAW=$R/raw.jsonl
 REC=$R/admission.jsonl
 NOTADM=$R/not-admitted.jsonl
-exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
+exec 9>"$BENCH_LOCK"
 echo "waiting for lock $(date -u +%FT%TZ)"
 flock -w 7200 9 || {
   echo "lock not acquired"
