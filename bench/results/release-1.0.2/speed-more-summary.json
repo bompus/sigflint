@@ -1,0 +1,361 @@
+{
+ "regression": [
+  {
+   "runtime": "node",
+   "workload": "bench-download",
+   "frozenNs": 925,
+   "finalNs": 978,
+   "changePct": 5.7,
+   "bandPct": 7,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "node",
+   "workload": "bench-part-put",
+   "frozenNs": 1199,
+   "finalNs": 1261,
+   "changePct": 5.2,
+   "bandPct": 6.8,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "node",
+   "workload": "bench-encode",
+   "frozenNs": 1622,
+   "finalNs": 1702,
+   "changePct": 4.9,
+   "bandPct": 9.2,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "node",
+   "workload": "bench-body-1k",
+   "frozenNs": 1594,
+   "finalNs": 1662,
+   "changePct": 4.3,
+   "bandPct": 3,
+   "verdict": "slower"
+  },
+  {
+   "runtime": "bun",
+   "workload": "bench-download",
+   "frozenNs": 637,
+   "finalNs": 663,
+   "changePct": 4.1,
+   "bandPct": 9,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "bun",
+   "workload": "bench-part-put",
+   "frozenNs": 902,
+   "finalNs": 948,
+   "changePct": 5.1,
+   "bandPct": 24.3,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "bun",
+   "workload": "bench-encode",
+   "frozenNs": 1482,
+   "finalNs": 1515,
+   "changePct": 2.2,
+   "bandPct": 14.5,
+   "verdict": "no clear change"
+  },
+  {
+   "runtime": "bun",
+   "workload": "bench-body-1k",
+   "frozenNs": 1215,
+   "finalNs": 1247,
+   "changePct": 2.6,
+   "bandPct": 9.6,
+   "verdict": "no clear change"
+  }
+ ],
+ "more": [
+  {
+   "runtime": "node",
+   "workload": "any-post-json",
+   "sigflintNs": 1309,
+   "bandPct": 3.1,
+   "libraries": {
+    "aws4": "wrong-result",
+    "aws4fetch": {
+     "ns": 32354,
+     "times": 24.7
+    },
+    "smithy": {
+     "ns": 10357,
+     "times": 7.9
+    },
+    "aws-sig": {
+     "ns": 48641,
+     "times": 37.2
+    },
+    "wdl": "wrong-result",
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "node",
+   "workload": "any-token",
+   "sigflintNs": 1156,
+   "bandPct": 3,
+   "libraries": {
+    "aws4": {
+     "ns": 4448,
+     "times": 3.8
+    },
+    "aws4fetch": {
+     "ns": 30126,
+     "times": 26.1
+    },
+    "smithy": {
+     "ns": 8737,
+     "times": 7.6
+    },
+    "aws-sig": "wrong-result",
+    "wdl": {
+     "ns": 74120,
+     "times": 64.1
+    },
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "node",
+   "workload": "any-query",
+   "sigflintNs": 1426,
+   "bandPct": 5,
+   "libraries": {
+    "aws4": {
+     "ns": 5736,
+     "times": 4
+    },
+    "aws4fetch": {
+     "ns": 30444,
+     "times": 21.3
+    },
+    "smithy": {
+     "ns": 9942,
+     "times": 7
+    },
+    "aws-sig": {
+     "ns": 49814,
+     "times": 34.9
+    },
+    "wdl": {
+     "ns": 73976,
+     "times": 51.9
+    },
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "node",
+   "workload": "presign-any",
+   "sigflintNs": 2975,
+   "bandPct": 6.4,
+   "libraries": {
+    "aws4": {
+     "ns": 9919,
+     "times": 3.3
+    },
+    "aws4fetch": {
+     "ns": 43872,
+     "times": 14.7
+    },
+    "smithy": {
+     "ns": 10523,
+     "times": 3.5
+    },
+    "aws-sig": "wrong-result",
+    "wdl": "wrong-result",
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "node",
+   "workload": "presign-s3",
+   "sigflintNs": 3191,
+   "bandPct": 7.4,
+   "libraries": {
+    "aws4": {
+     "ns": 10210,
+     "times": 3.2
+    },
+    "aws4fetch": {
+     "ns": 35531,
+     "times": 11.1
+    },
+    "smithy": {
+     "ns": 11099,
+     "times": 3.5
+    },
+    "aws-sig": "wrong-result",
+    "wdl": "wrong-result",
+    "minio": {
+     "ns": 12550,
+     "times": 3.9
+    }
+   }
+  },
+  {
+   "runtime": "bun",
+   "workload": "any-post-json",
+   "sigflintNs": 890,
+   "bandPct": 4.9,
+   "libraries": {
+    "aws4": "wrong-result",
+    "aws4fetch": {
+     "ns": 17452,
+     "times": 19.6
+    },
+    "smithy": {
+     "ns": 6356,
+     "times": 7.1
+    },
+    "aws-sig": {
+     "ns": 30199,
+     "times": 33.9
+    },
+    "wdl": "wrong-result",
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "bun",
+   "workload": "any-token",
+   "sigflintNs": 775,
+   "bandPct": 13.9,
+   "libraries": {
+    "aws4": {
+     "ns": 2767,
+     "times": 3.6
+    },
+    "aws4fetch": {
+     "ns": 18032,
+     "times": 23.3
+    },
+    "smithy": {
+     "ns": 5834,
+     "times": 7.5
+    },
+    "aws-sig": "wrong-result",
+    "wdl": {
+     "ns": 53058,
+     "times": 68.5
+    },
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "bun",
+   "workload": "any-query",
+   "sigflintNs": 1151,
+   "bandPct": 3.6,
+   "libraries": {
+    "aws4": {
+     "ns": 3867,
+     "times": 3.4
+    },
+    "aws4fetch": {
+     "ns": 19041,
+     "times": 16.5
+    },
+    "smithy": {
+     "ns": 7227,
+     "times": 6.3
+    },
+    "aws-sig": {
+     "ns": 31327,
+     "times": 27.2
+    },
+    "wdl": {
+     "ns": 56862,
+     "times": 49.4
+    },
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "bun",
+   "workload": "presign-any",
+   "sigflintNs": 2758,
+   "bandPct": 3.6,
+   "libraries": {
+    "aws4": {
+     "ns": 8385,
+     "times": 3
+    },
+    "aws4fetch": {
+     "ns": 24701,
+     "times": 9
+    },
+    "smithy": {
+     "ns": 9041,
+     "times": 3.3
+    },
+    "aws-sig": "wrong-result",
+    "wdl": "wrong-result",
+    "minio": "wrong-result"
+   }
+  },
+  {
+   "runtime": "bun",
+   "workload": "presign-s3",
+   "sigflintNs": 2989,
+   "bandPct": 7.2,
+   "libraries": {
+    "aws4": {
+     "ns": 8421,
+     "times": 2.8
+    },
+    "aws4fetch": {
+     "ns": 26046,
+     "times": 8.7
+    },
+    "smithy": {
+     "ns": 9377,
+     "times": 3.1
+    },
+    "aws-sig": "wrong-result",
+    "wdl": "wrong-result",
+    "minio": {
+     "ns": 5958,
+     "times": 2
+    }
+   }
+  }
+ ],
+ "versions": {
+  "node": "node 26.12.1",
+  "bun": "bun 1.4.4"
+ },
+ "rejected": 0,
+ "errors": 0,
+ "maxBusy": 6,
+ "alone": {
+  "sigv4a-header": {
+   "nodeNs": 16986,
+   "bunNs": 15083
+  },
+  "sigv4a-presign": {
+   "nodeNs": 18617,
+   "bunNs": 17008
+  },
+  "chunk-64k": {
+   "nodeNs": 35721,
+   "bunNs": 17554
+  },
+  "chunk-end-trailer": {
+   "nodeNs": 2340,
+   "bunNs": 829
+  },
+  "event-4k": {
+   "nodeNs": 9170,
+   "bunNs": 8079
+  }
+ }
+}

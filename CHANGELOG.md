@@ -2,8 +2,11 @@
 
 ## Unreleased
 
-- `dist/node.js` and `dist/bun.js` are bundled by Bun's bundler (`bun build --target=node` and `--target=bun`) instead of esbuild, still unminified. Both come from the same `src/` and are smaller: 24,712 and 23,540 bytes, from 26,959 and 25,710. `dist/bun.js` imports `crypto` rather than `node:crypto`; Bun loads the same module for both. The tests run against both builds on Node, Bun and Deno. The speed, memory and import figures in `docs/benchmarks.md` were measured on the 1.0.1 build, which esbuild made, and are measured again before the next release, as for every release. Building from source needs Bun (`CONTRIBUTING.md`).
-- The code is formatted with Bun's formatter (`bun fmt`, reading the oxfmt settings), linted with oxlint and type-checked in strict mode (`bun check`, with `tsc` still emitting the declaration files), and `npm run check` runs all three. Signing does not change: built without whitespace, the Bun build and the WebCrypto entry are the same code as before, and the Node build differs in the two statements of the HMAC key XOR, written as `a[i] = a[i] ^ b[i]` instead of `a[i] ^= b[i]`, which makes a minified bundle of the Node entry 8 bytes larger (`getAuthHeaders` alone: 5,675 bytes, 2,777 gzipped, up from 5,667 and 2,774). The published files in `src/` and `dist/` differ in formatting and braces, and `src/` has more JSDoc type comments. The public types (`index.d.ts` and `sigflint/web`) are unchanged; the generated declarations of internal helpers in `types/` have parameter types instead of `any`.
+## 1.0.2 - 2026-10-29
+
+- Node and Bun load unminified files bundled with Bun instead of esbuild. The files are 24,690 and 23,518 bytes, compared with 24,374 and 23,200 bytes in the published 1.0.1 package. Builds, checks and publishing use Bun 1.4.4.
+- Speed, memory, import and size measurements were repeated on the shipped build with Node 26.12.1 and Bun 1.4.4. The five-round comparison against published 1.0.1 found no clear S3 signing-speed change. Charts and tables in `docs/benchmarks.md` show the new figures and limits. Header signing alone is 5,677 bytes minified and 2,769 bytes gzipped for the Node entry.
+- Formatting, lint and strict type checks now cover the library, tests, conformance generators and benchmark tools. Bun formats and checks types; TypeScript emits declarations. Public signing APIs and types are unchanged. Generated declarations for internal helpers now have parameter types instead of `any`.
 
 ## 1.0.1 - 2026-10-18
 

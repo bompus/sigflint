@@ -1,0 +1,12 @@
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.1","mode":"alloc","workload":"(load)","status":"ok","heapBytes":-1656,"externalBytes":-1875781,"rssBytes":196608,"rssAfterLoad":68931584,"rt":"node"}
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.1","mode":"alloc","workload":"calib-512","status":"ok","heapBytesPerCall":3990,"extBytesPerCall":0,"rawHeapBytesPerCall":4164.44,"controlHeapBytesPerCall":174.2,"keptChunks":40,"droppedChunks":0,"controlKept":39,"rt":"node"}
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.1","mode":"alloc","workload":"calib-2048","status":"ok","heapBytesPerCall":17259,"extBytesPerCall":0,"rawHeapBytesPerCall":17433,"controlHeapBytesPerCall":174.2,"keptChunks":40,"droppedChunks":0,"controlKept":40,"rt":"node"}
+{"arm":"calib","candidate":"calib","runtime":"node 26.12.1","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":141348864,"rt":"node"}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.4","mode":"alloc","workload":"(load)","status":"ok","heapBytes":8412,"externalBytes":0,"rssBytes":0,"rssAfterLoad":43122688,"rt":"bun"}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.4","mode":"alloc","workload":"calib-512","status":"pending-log","na":10000,"rt":"bun"}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.4","mode":"alloc","workload":"calib-2048","status":"pending-log","na":10000,"rt":"bun"}
+{"arm":"calib","candidate":"calib","runtime":"bun 1.4.4","mode":"alloc","workload":"(process)","status":"ok","maxRssBytes":55279616,"rt":"bun"}
+{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-real","calls":10000,"collections":12,"heapBytes":66607104,"heapBytesPerCall":6660.7104,"rt":"bun"}
+{"arm":"calib","round":1,"workload":"calib-512","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1017856,"heapBytesPerCall":101.7856,"rt":"bun"}
+{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-real","calls":10000,"collections":36,"heapBytes":194299904,"heapBytesPerCall":19429.9904,"rt":"bun"}
+{"arm":"calib","round":1,"workload":"calib-2048","region":"alloc-control","calls":10000,"collections":1,"heapBytes":1005568,"heapBytesPerCall":100.5568,"rt":"bun"}

@@ -1,10 +1,10 @@
 ### Correctness
 
-Requests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: sigflint's row is the source of 1.0.1 (tree `712d1eb2`), before the version was changed.
+Requests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: the screen records the candidate's package version before the release version bump.
 
 | Library | Version | Ordinary requests (1,520) | Edge cases (1,522) |
 |---|---|--:|--:|
-| **sigflint** | 1.0.0 | 1,520 (100.0%) | 1,522 (100.0%) |
+| **sigflint** | 1.0.1 | 1,520 (100.0%) | 1,522 (100.0%) |
 | aws4fetch | 1.0.20 | 1,408 (92.6%) | 595 (39.1%) |
 | aws4 | 1.13.2 | 1,264 (83.2%) | 268 (17.6%) |
 | @smithy/signature-v4 | 5.7.4 | 904 (59.5%) | 236 (15.5%) |
@@ -16,44 +16,44 @@ Requests whose signature equals botocore’s (same key, same clock). The version
 
 Microseconds per signature, median of 3 processes. “wrong signature” means the library’s result differed from botocore’s for that request, so it was not timed; a blank means the library does not offer that API.
 
-**Node 26.12.0**
+**Node 26.12.1**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.31** | **1.64** | **2.21** | **2.31** |
-| aws4fetch | 232.63 | 223.89 | 235.23 | 216.90 |
-| aws4 | 5.56 | 6.66 | 7.97 | 6.29 |
-| @smithy/signature-v4 | 9.63 | 9.90 | wrong signature | 11.17 |
-| aws-sig | 55.46 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 724.93 | 618.06 | 720.21 | wrong signature |
-| minio | 10.92 | 10.71 | wrong signature | 11.71 |
+| **sigflint** | **0.97** | **1.25** | **1.69** | **1.66** |
+| aws4fetch | 24.67 | 27.12 | 26.94 | 26.94 |
+| aws4 | 5.11 | 6.06 | 7.28 | 5.38 |
+| @smithy/signature-v4 | 8.79 | 9.10 | wrong signature | 9.80 |
+| aws-sig | 47.18 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 72.43 | 65.97 | 72.84 | wrong signature |
+| minio | 10.29 | 10.05 | wrong signature | 11.31 |
 
-**Bun 1.4.3**
+**Bun 1.4.4**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
-| **sigflint** | **1.38** | **1.97** | **2.67** | **2.58** |
-| aws4fetch | 212.79 | 208.19 | 224.29 | 215.72 |
-| aws4 | 5.83 | 8.04 | 9.72 | 7.80 |
-| @smithy/signature-v4 | 9.20 | 8.54 | wrong signature | 9.42 |
-| aws-sig | 38.65 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 580.14 | 540.06 | 559.73 | wrong signature |
-| minio | 6.99 | 7.40 | wrong signature | 8.01 |
+| **sigflint** | **0.66** | **0.96** | **1.51** | **1.25** |
+| aws4fetch | 19.13 | 19.27 | 20.86 | 20.04 |
+| aws4 | 3.39 | 4.28 | 5.51 | 3.71 |
+| @smithy/signature-v4 | 5.05 | 6.01 | wrong signature | 6.11 |
+| aws-sig | 30.21 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 45.78 | 49.80 | 55.57 | wrong signature |
+| minio | 3.51 | 3.80 | wrong signature | 4.14 |
 
-Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.0 bench-download: 5%; node 26.12.0 bench-part-put: 5%; node 26.12.0 bench-encode: 8%; node 26.12.0 bench-body-1k: 4%; bun 1.4.3 bench-download: 44%; bun 1.4.3 bench-part-put: 31%; bun 1.4.3 bench-encode: 30%; bun 1.4.3 bench-body-1k: 32%. Every gap between sigflint and another library is far outside its band.
+Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.1 bench-download: 5%; node 26.12.1 bench-part-put: 5%; node 26.12.1 bench-encode: 6%; node 26.12.1 bench-body-1k: 6%; bun 1.4.4 bench-download: 3%; bun 1.4.4 bench-part-put: 3%; bun 1.4.4 bench-encode: 6%; bun 1.4.4 bench-body-1k: 13%. Every gap between sigflint and another library is far outside its band.
 
 
 ### Size
 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
-| **sigflint** | 42,041 | 5,675 | 2,777 | 2,558 | 0 |  |
-| aws4fetch |  | 7,428 | 2,915 | 2,626 | 0 | 65,541 |
-| aws4 |  | 9,026 | 3,251 | 2,971 | 0 | 23,399 |
-| @smithy/signature-v4 |  | 140,787 | 45,924 | 39,907 | 3 | 106,103 |
-| aws-sig |  | 9,942 | 4,167 | 3,787 | 0 | 270,403 |
-| @wdl-dev/aws-sigv4 |  | 15,979 | 5,484 | 4,986 | 0 | 82,832 |
-| minio |  | 330,170 | 85,329 | 74,103 | 13 | 2,092,892 |
+| **sigflint** | 42,043 | 5,677 | 2,769 | 2,560 | 0 |  |
+| aws4fetch |  | 7,428 | 2,927 | 2,626 | 0 | 65,541 |
+| aws4 |  | 9,026 | 3,249 | 2,971 | 0 | 23,399 |
+| @smithy/signature-v4 |  | 140,787 | 45,963 | 39,907 | 3 | 106,103 |
+| aws-sig |  | 9,942 | 4,173 | 3,787 | 0 | 270,403 |
+| @wdl-dev/aws-sigv4 |  | 15,979 | 5,504 | 4,986 | 0 | 82,832 |
+| minio |  | 330,170 | 84,973 | 74,103 | 13 | 2,092,892 |
 
 ### Runtimes
 

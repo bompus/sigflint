@@ -1,23 +1,23 @@
 {
  "sigflint-node": {
-  "bundledBytes": 12361,
-  "minifiedBytes": 5675,
-  "gzipBytes": 2777,
-  "brotliBytes": 2558,
+  "bundledBytes": 12363,
+  "minifiedBytes": 5677,
+  "gzipBytes": 2769,
+  "brotliBytes": 2560,
   "source": {
-   "bytes": 42041,
+   "bytes": 42043,
    "lines": 1170
   },
   "directDependencies": 0,
   "dependencyNames": []
  },
  "sigflint-bun": {
-  "bundledBytes": 11197,
-  "minifiedBytes": 5034,
-  "gzipBytes": 2535,
-  "brotliBytes": 2330,
+  "bundledBytes": 11199,
+  "minifiedBytes": 5036,
+  "gzipBytes": 2529,
+  "brotliBytes": 2334,
   "source": {
-   "bytes": 40248,
+   "bytes": 40250,
    "lines": 1131
   },
   "directDependencies": 0,
@@ -26,7 +26,7 @@
  "aws4fetch": {
   "bundledBytes": 11191,
   "minifiedBytes": 7428,
-  "gzipBytes": 2915,
+  "gzipBytes": 2927,
   "brotliBytes": 2626,
   "unpackedBytes": 65541,
   "directDependencies": 0,
@@ -35,7 +35,7 @@
  "aws4": {
   "bundledBytes": 15541,
   "minifiedBytes": 9026,
-  "gzipBytes": 3251,
+  "gzipBytes": 3249,
   "brotliBytes": 2971,
   "unpackedBytes": 23399,
   "directDependencies": 0,
@@ -44,7 +44,7 @@
  "smithy": {
   "bundledBytes": 301353,
   "minifiedBytes": 140787,
-  "gzipBytes": 45924,
+  "gzipBytes": 45963,
   "brotliBytes": 39907,
   "unpackedBytes": 106103,
   "directDependencies": 3,
@@ -57,7 +57,7 @@
  "aws-sig": {
   "bundledBytes": 20959,
   "minifiedBytes": 9942,
-  "gzipBytes": 4167,
+  "gzipBytes": 4173,
   "brotliBytes": 3787,
   "unpackedBytes": 270403,
   "directDependencies": 0,
@@ -66,7 +66,7 @@
  "wdl": {
   "bundledBytes": 31713,
   "minifiedBytes": 15979,
-  "gzipBytes": 5484,
+  "gzipBytes": 5504,
   "brotliBytes": 4986,
   "unpackedBytes": 82832,
   "directDependencies": 0,
@@ -75,7 +75,7 @@
  "minio": {
   "bundledBytes": 598009,
   "minifiedBytes": 330170,
-  "gzipBytes": 85329,
+  "gzipBytes": 84973,
   "brotliBytes": 74103,
   "unpackedBytes": 2092892,
   "directDependencies": 13,

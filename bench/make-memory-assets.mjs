@@ -284,7 +284,7 @@ const FULL = {
 };
 let md = '';
 for (const rt of ['node', 'bun']) {
-  md += `\n**${rt === 'node' ? 'Node 26.12.1' : 'Bun 1.4.3'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
+  md += `\n**${rt === 'node' ? 'Node 26.12.1' : 'Bun 1.4.4'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
   for (const arm of ORDER) {
     md += `| ${FULL[arm]} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
   }

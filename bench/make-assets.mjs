@@ -255,7 +255,7 @@ out.correctness = (t) => {
   });
 };
 tables.push(
-  "### Correctness\n\nRequests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: sigflint's row is the source of 1.0.1 (tree `712d1eb2`), before the version was changed.\n\n| Library | Version | Ordinary requests (" +
+  "### Correctness\n\nRequests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: the screen records the candidate's package version before the release version bump.\n\n| Library | Version | Ordinary requests (" +
     fmtInt(groups[0].total) +
     ') | Edge cases (' +
     fmtInt(groups[1].total) +
@@ -316,7 +316,7 @@ out.speed = (t) => {
     plotW = 400;
   let o = header(t, 'Time to sign one request, plain GET (lower is better)', [
     `Median of ${speedRounds} separate processes per library and runtime; log scale. A plain GET, which every library here signs correctly.`,
-    'Measured before the S3 code was split into modules; the shipped code is within 4% of it (no clear change).',
+    'Measured on the shipped build; each process checks its signature before timing.',
   ]);
   let y = 98;
   for (const rt of runtimes) {

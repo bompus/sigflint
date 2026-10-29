@@ -1,0 +1,35 @@
+{
+  "A": {
+    "extend": false,
+    "reasons": []
+  },
+  "R": {
+    "extend": true,
+    "reasons": [
+      "node bench-download: gap 5.7%, band 3%",
+      "node bench-part-put: gap 5.2%, band 6.9%",
+      "node bench-encode: gap 4.7%, band 3.7%",
+      "node bench-body-1k: gap 4.2%, band 3%",
+      "bun bench-download: gap 4.4%, band 9%",
+      "bun bench-part-put: gap 7%, band 17.9%",
+      "bun bench-encode: gap 3.8%, band 6.2%",
+      "bun bench-body-1k: gap 3.6%, band 9.6%"
+    ]
+  },
+  "published1.0.1Regression": {
+    "extend": true,
+    "reason": "All eight comparisons are within twice the A/A reporting band after round 3; complete rounds 4 and 5, cap 5."
+  },
+  "B": {
+    "extend": false,
+    "reasons": []
+  },
+  "C": {
+    "extend": true,
+    "reason": "35/36 retained-heap and 5/12 peak-RSS comparisons unsettled after three rounds; two final rounds under the protocol cap."
+  },
+  "D": {
+    "extend": true,
+    "reason": "8/12 import and 5/12 first-signature comparisons unsettled after three rounds; complete only rounds 4 and 5 under the existing cap."
+  }
+}

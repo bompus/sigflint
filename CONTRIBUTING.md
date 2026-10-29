@@ -4,7 +4,7 @@ Bug reports and pull requests are welcome. For a larger change, open an issue fi
 
 ## Setup
 
-The build uses [Bun](https://bun.sh)'s bundler (`bun build`), so install Bun as well as Node.js 22.12 or later. The format check runs on Bun's `bun fmt` and the type checks on `bun check`, which need Bun 1.4.4 or later; the declaration files are still emitted by `tsc`.
+The build uses [Bun](https://bun.sh)'s bundler (`bun build`), pinned to Bun 1.4.4 for builds, checks and publishing, so install that version as well as Node.js 22.12 or later. The format check runs on Bun's `bun fmt` and the type checks on `bun check`, which need Bun 1.4.4 or later; the declaration files are still emitted by `tsc`.
 
 ```sh
 npm ci
