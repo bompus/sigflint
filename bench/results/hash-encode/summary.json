@@ -8,7 +8,6 @@
     "node: node 26.13.0",
     "bun: bun 1.4.4"
   ],
-  "identityMismatches": [],
   "hash": {
     "hash-string-to-sign": {
       "bunCryptoHash": 134.11332,

@@ -1,7 +1,7 @@
 # Hash and encode measurements
 
 Rounds counted: 3 (1, 2, 3). Runtimes: node: node 26.13.0; bun: bun 1.4.4.
-Every input and output digest agrees across the rows and runtimes of a case: yes.
+Every input and output digest agrees across the rows and runtimes of a case: yes (the analysis stops otherwise).
 Round value = mean of the A and B passes of an arm in one process. Band = max(3%, 2 x the largest relative A/A spread of either arm in any round); a difference is clear only when the medians differ by more than the band (and 2 ns), the ranges over the rounds are disjoint and the sign is the same in every round. Cells are median (min-max over rounds) in ns per call.
 
 ## 1. Which SHA-256 is faster on Bun
@@ -70,8 +70,8 @@ Node against Bun on the presign call, and what the encoders contribute to the di
 
 | Workload | Presign, Node | Presign, Bun | Result | Encoder time, Bun minus Node |
 |---|--:|--:|---|--:|
-| any | 2646 (2621-2657) | 2717 (2684-2734) | no clear change (+2.7%, band 11.3%) | 27.8 ns (no Bun slowdown to attribute) |
-| s3 | 2848 (2812-2862) | 2948 (2925-2966) | no clear change (+3.5%, band 9.5%) | 27.6 ns (no Bun slowdown to attribute) |
-| s3-token | 3129 (3127-3229) | 3180 (3159-3304) | no clear change (+1.6%, band 6.9%) | 35.3 ns (no Bun slowdown to attribute) |
+| any | 2646 (2621-2657) | 2717 (2684-2734) | no clear change (+2.7%, band 11.3%) | 28.1 ns (no Bun slowdown to attribute) |
+| s3 | 2848 (2812-2862) | 2948 (2925-2966) | no clear change (+3.5%, band 9.5%) | 27.2 ns (no Bun slowdown to attribute) |
+| s3-token | 3129 (3127-3229) | 3180 (3159-3304) | no clear change (+1.6%, band 6.9%) | 34.3 ns (no Bun slowdown to attribute) |
 
 Unsettled comparisons: none.

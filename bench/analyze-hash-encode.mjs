@@ -145,13 +145,16 @@ for (const c of hashCases) {
     mismatched.push(`${c} (arms differ)`);
   }
 }
-summary.identityMismatches = mismatched;
+if (mismatched.length > 0) {
+  // the protocol requires identical inputs and outputs; timings of different work are not compared
+  throw new Error(`input or output digests differ: ${mismatched.join(', ')}`);
+}
 
 out.push(
   `# Hash and encode measurements`,
   '',
   `Rounds counted: ${roundsOf.length} (${roundsOf.join(', ')}). Runtimes: ${runtimes.join('; ')}.`,
-  `Every input and output digest agrees across the rows and runtimes of a case: ${mismatched.length === 0 ? 'yes' : `NO: ${mismatched.join(', ')}`}.`,
+  `Every input and output digest agrees across the rows and runtimes of a case: yes (the analysis stops otherwise).`,
   `Round value = mean of the A and B passes of an arm in one process. Band = max(3%, 2 x the largest relative A/A spread of either arm in any round); a difference is clear only when the medians differ by more than the band (and 2 ns), the ranges over the rounds are disjoint and the sign is the same in every round. Cells are median (min-max over rounds) in ns per call.`,
   '',
   '## 1. Which SHA-256 is faster on Bun',
@@ -284,8 +287,16 @@ for (const c of presignCases) {
   const b = need('bun', c, 'presign');
   const cmp = compare(n, b);
   const names = /** @type {string[]} */ (parts[c]);
+  // the median over the rounds of the encoder total of each round, as in the share table
   const qpMed = (/** @type {string} */ rt) =>
-    names.reduce((t, x) => t + med(need(rt, x, 'encodeQueryPart').vals), 0);
+    med(
+      roundsOf.map((_, i) =>
+        names.reduce(
+          (t, x) => t + /** @type {number} */ (need(rt, x, 'encodeQueryPart').vals[i]),
+          0,
+        ),
+      ),
+    );
   const encDiff = qpMed('bun') - qpMed('node');
   const gap =
     cmp.klass === 'clear' && cmp.lower === 'base'

@@ -16,7 +16,7 @@ mkdir -p "$R"
 RAW=$R/raw.jsonl
 REC=$R/admission.jsonl
 NOTADM=$R/not-admitted.jsonl
-exec 9>"${BENCH_LOCK:-$HOME/.cache/setupLinuxHost/post-upgrade-bench.lock}"
+exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
 echo "waiting for lock $(date -u +%FT%TZ)"
 flock -w 7200 9 || {
   echo "lock not acquired"
