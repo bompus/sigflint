@@ -27,7 +27,15 @@ if (!a) {
 }
 const workloads = ['bench-download', 'bench-part-put', 'bench-encode', 'bench-body-1k'];
 const arm = process.env.ARM ?? candidate;
-const runtime = typeof Bun !== 'undefined' ? `bun ${Bun.version}` : `node ${process.versions.node}`;
+// Deno defines its own global and reports its Node compatibility version in process.versions.node, so it is
+// checked before the Node fallback.
+const deno = /** @type {any} */ (globalThis).Deno;
+const runtime =
+  typeof Bun !== 'undefined'
+    ? `bun ${Bun.version}`
+    : deno
+      ? `deno ${deno.version.deno}`
+      : `node ${process.versions.node}`;
 
 /** @param {CorpusCase} c */
 async function once(c) {

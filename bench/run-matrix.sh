@@ -1,13 +1,22 @@
 #!/bin/bash
 # Speed matrix: arms x runtimes x rounds, one process per (round, runtime, arm), arm order reversed on even rounds.
 # Records the machine state (whole-machine CPU busy, load, swap) around every process; Linux only (/proc).
-# Usage: [BENCH_LOCK=/path/to/lockfile] [FROM_ROUND=n] run-matrix.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5 to an earlier file)
+# Usage: [BENCH_LOCK=/path/to/lockfile] [FROM_ROUND=n] [RUNTIMES="bun node"] [DENO=deno] run-matrix.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5 to an earlier file)
 set -u
 NEW=$1
 OUT=$2
 ROUNDS=${3:-3}
 FROM=${FROM_ROUND:-1}
+RUNTIMES=${RUNTIMES:-"bun node"}
+DENO=${DENO:-deno}
 HERE=$(cd "$(dirname "$0")" && pwd)
+# Deno runs the Node build, since that is the code path it gets (node:crypto); it needs its own command form.
+rt_cmd() {
+  case "$1" in deno) printf '%s run -A' "$DENO" ;; *) printf '%s' "$1" ;; esac
+}
+rt_entry() {
+  case "$1" in deno) printf '%s/node.js' "$NEW" ;; *) printf '%s/%s.js' "$NEW" "$1" ;; esac
+}
 if [ -n "${BENCH_LOCK:-}" ]; then # optional: serialize with other heavy jobs on a shared machine
   exec 9>"$BENCH_LOCK"
   echo "waiting for lock $BENCH_LOCK $(date -u +%FT%TZ)"
@@ -29,7 +38,7 @@ busy() { # CPU busy percent over 1 s, whole machine
 for round in $(seq "$FROM" "$ROUNDS"); do
   ORDER=("${ARMS[@]}")
   if ((round % 2 == 0)); then mapfile -t ORDER < <(printf '%s\n' "${ARMS[@]}" | tac); fi
-  for rt in bun node; do
+  for rt in $RUNTIMES; do
     for arm in "${ORDER[@]}"; do
       tries=0
       pre=$(busy)
@@ -44,7 +53,9 @@ for round in $(seq "$FROM" "$ROUNDS"); do
         echo "{\"arm\":\"$arm\",\"runtime\":\"$rt\",\"round\":$round,\"status\":\"rejected-load\",\"preBusyPct\":$pre,\"load1\":$load}" >>"$OUT"
         continue
       fi
-      lines=$(ARM=$arm $rt "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$rt.js" 1 2>&1)
+      # The Deno command form is two words, so this split is intended.
+      # shellcheck disable=SC2046
+      lines=$(ARM=$arm $(rt_cmd "$rt") "$HERE/speed.mjs" "${CAND[$arm]}" "$(rt_entry "$rt")" 1 2>&1)
       post=$(busy)
       swap1=$(awk '/SwapFree/{print $2}' /proc/meminfo)
       printf '%s\n' "$lines" | while IFS= read -r l; do
