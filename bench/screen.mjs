@@ -9,6 +9,7 @@
 //   unsigned-header  a header some libraries deliberately never sign (date, range): valid, but a different signature
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { loadAdapters, freezeClock } from './adapters.mjs';
+import { tagOf } from './tags.mjs';
 /** @typedef {import('./adapters.mjs').Case & { kind: string, sig: string, canonical: string }} CorpusCase */
 /** @typedef {{ pass: number, fail: number, error: number }} TagResult */
 
@@ -26,52 +27,6 @@ const expected = Object.fromEntries(
 const cases = corpus.filter((c) => c.kind !== 'extra');
 const adapters = await loadAdapters(/** @type {string} */ (oursPath), expected);
 
-const enc = new TextEncoder();
-/** @param {string} raw */
-function decodedBytes(raw) {
-  /** @type {number[]} */
-  const out = [];
-  for (let i = 0; i < raw.length; i++) {
-    if (raw[i] === '%' && /^[0-9A-Fa-f]{2}$/.test(raw.slice(i + 1, i + 3))) {
-      out.push(parseInt(raw.slice(i + 1, i + 3), 16));
-      i += 2;
-    } else {
-      out.push(...enc.encode(raw[i]));
-    }
-  }
-  return Uint8Array.from(out);
-}
-/** @param {CorpusCase} c */
-function tagOf(c) {
-  if (c.token) {
-    return 'session-token';
-  }
-  const u = new URL(c.href);
-  if ('date' in c.headers || 'range' in c.headers) {
-    return 'unsigned-header';
-  }
-  const raw = u.pathname + u.search;
-  if (/%(?![0-9A-Fa-f]{2})/.test(raw)) {
-    return 'malformed';
-  }
-  try {
-    new TextDecoder('utf-8', { fatal: true }).decode(decodedBytes(raw));
-  } catch {
-    return 'malformed';
-  }
-  if (
-    u.search
-      .slice(1)
-      .split('&')
-      .some((p) => p.startsWith('='))
-  ) {
-    return 'empty-query-name';
-  }
-  if (u.pathname.includes('+')) {
-    return 'plus-in-path';
-  }
-  return null;
-}
 const tags = new Map(cases.map((c) => [c.id, tagOf(c)]));
 /** @type {Record<string, number>} */
 const tagCounts = {};

@@ -101,6 +101,8 @@ Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `node
 
 ## Benchmarks
 
+The [S3 client comparison](docs/benchmarks.md#s3-client-signing-cores) also covers s3mini, tiny-oss, lean-s3 and s3-lite-client, with supported-request counts and input limits.
+
 Correctness, [speed](docs/benchmarks.md#speed), [memory](docs/benchmarks.md#memory) and [size](docs/benchmarks.md#size), the [test corpora](docs/benchmarks.md#how-it-is-tested) and the [methodology and limits](docs/benchmarks.md#methodology-and-limits) are in [docs/benchmarks.md](docs/benchmarks.md). Every figure there comes from raw results committed in `bench/results/`. The speed, memory and import figures were measured on the code in this release and are re-run before each release.
 
 ## Scope

@@ -56,6 +56,50 @@ The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on
 
 Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches 1,519 of the 1,520 ordinary requests; `minio` matches 1,320 of them (`bench/results/screen-node.json`). The table above is what each library produces when given the URL as an application has it.
 
+### S3 client signing cores
+
+On 2026-10-30, `bun bench/compat-clients.mjs` compared four client signing cores
+with the same botocore corpus on Bun 1.4.4. These inputs are decoded object keys
+and query pairs from the corpus's normalized canonical requests. They do not
+exercise parsing of arbitrary serialized URLs or complete client operations.
+They are separate from the URL-input screen above.
+
+| Signing core | Version | Matches / supported ordinary requests | Matches / common 578 requests |
+|---|---|--:|--:|
+| sigflint | 1.0.3 | 1,520 / 1,520 | 578 / 578 |
+| s3mini | 1.0.3 | 494 / 578 | 494 / 578 |
+| tiny-oss | 1.2.0 source | 316 / 578 | 316 / 578 |
+| lean-s3 | 0.11.2 source | 1,293 / 1,520 | 458 / 578 |
+| s3-lite-client | 1.0.1 | 1,519 / 1,520 | 578 / 578 |
+
+s3mini and tiny-oss cannot express the other 942 ordinary requests because they
+use unsigned payloads. The last column uses exactly the same requests in every
+row. sigflint also matches every request in each client's supported subset.
+No adapter errors occurred. The seeded corpus contains many unusual characters
+and repeated spaces, so these fractions are not production failure rates.
+A different signature can also mean a client deliberately signs a different
+set of headers, rather than a rejected request.
+
+The adapters invoke each library's own signing code. s3mini's internal `_sign`
+receives a key encoded by its own helper. lean-s3 receives its caller-prepared,
+sorted query string and uses its own URL builder and header preparation.
+Consequently this screen does not test lean-s3's operation-specific query
+builders. s3-lite-client receives a decoded key and encoded query, as its caller
+supplies them. tiny-oss uses its own path escaping and query canonicalization.
+The reference path/query normalization is supplied by this repository, as in
+the corpus generation, and is not independently validated by this comparison.
+
+The source-only entries are pinned to
+[lean-s3 70267217](https://github.com/nikeee/lean-s3/tree/70267217a6ccd813874c9f9938e7fa464178acf6)
+and [tiny-oss a0e9b54e](https://github.com/Alex1990/tiny-oss/tree/a0e9b54ee5d59c2f0a03d374680fd138d0a7c3fe)
+because their npm entry points do not expose the signing cores. The other two
+use their locked npm packages. All four dependencies are benchmark-only.
+[The raw results](../bench/results/client-correctness.json) include every
+differing case ID and the unsupported counts. Reproduce after installing the
+root and `bench/` dependencies. The comparison was run by sigflint's maintainer.
+No speed, memory, import or size measurements for these four clients are
+included in the existing performance tables.
+
 ### Other services and presigned URLs
 
 Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each library called through its normal public API; same fixed clock). The sigflint row is `npm test` on the same corpora:
