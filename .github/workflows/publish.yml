@@ -40,4 +40,28 @@ jobs:
       - run: npm test
       - run: npm run types
       - run: npm run check:package
-      - run: npm publish --provenance --access public
+      # A rerun after a partial failure must not fail on a version that is already on the registry.
+      - name: Publish to npm
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip $name@$version (already published)"
+          else
+            npm publish --provenance --access public
+          fi
+      # npm can take about a minute to show a new version, so a green run means the version is really on the registry (up to 5 minutes).
+      - name: Verify the version is on the registry
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          for i in $(seq 1 30); do
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "verified $name@$version"
+              exit 0
+            fi
+            echo "waiting for $name@$version to appear ($i of 30)"
+            sleep 10
+          done
+          echo "::error::$name@$version never appeared on the registry"
+          exit 1
