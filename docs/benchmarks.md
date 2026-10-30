@@ -113,6 +113,20 @@ Microseconds per signature, median of 3 processes. “wrong signature” means t
 | @wdl-dev/aws-sigv4 | 45.78 | 49.80 | 55.57 | wrong signature |
 | minio | 3.51 | 3.80 | wrong signature | 4.14 |
 
+**Deno 2.9.6**
+
+| Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
+|---|--:|--:|--:|--:|
+| **sigflint** | **1.65** | **2.02** | **2.45** | **2.65** |
+| aws4fetch | 33.51 | 34.42 | 36.77 | 36.87 |
+| aws4 | 6.26 | 8.00 | 9.49 | 7.74 |
+| @smithy/signature-v4 | 13.45 | 12.64 | wrong signature | 19.13 |
+| aws-sig | 50.71 | wrong signature | wrong signature | wrong signature |
+| @wdl-dev/aws-sigv4 | 89.45 | 87.17 | 89.94 | wrong signature |
+| minio | 26.54 | 28.99 | wrong signature | 41.31 |
+
+The Deno table comes from a separate run and its own declaration, [protocol-deno.md](../bench/protocol-deno.md): 3 rounds, the same eight arms, the per-process CPU gate only, with no host admission and no Node process paired against each Deno one. Its two control arms agree within 1.3%, and every gap against another library is far wider than that. The chart above covers Node.js and Bun; Deno is in the table only.
+
 Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.1 bench-download: 5%; node 26.12.1 bench-part-put: 5%; node 26.12.1 bench-encode: 6%; node 26.12.1 bench-body-1k: 6%; bun 1.4.4 bench-download: 3%; bun 1.4.4 bench-part-put: 3%; bun 1.4.4 bench-encode: 6%; bun 1.4.4 bench-body-1k: 13%. Every gap between sigflint and another library is far outside its band.
 
 <!-- END speed -->
