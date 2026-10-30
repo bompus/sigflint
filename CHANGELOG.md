@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Documentation only: Cloudflare R2 agrees with signing a raw `+` in an S3 path as a space. Four read-only `GET` requests: R2 accepted the signature for `+` signed as `%20` and rejected the same URL signed as `%2B`. Which object it then names was not tested. `docs/guide.md` and the README say so.
+
 ## 1.0.3 - 2026-10-29
 
 - Document installing with Bun (`bun add sigflint`) and running a script with `bun run`, alongside npm. Documentation only; no code or benchmark change.
