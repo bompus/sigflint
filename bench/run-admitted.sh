@@ -129,7 +129,9 @@ emit() {
     echo "{$et,\"status\":\"error\",\"exit\":$rc,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
     return
   fi
-  if [[ $PART == [CD] ]] && ((sd < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the process ran
+  local swaplim=51200                  # protocol-more.md (speed parts A, R, B): free swap fell by more than 50 MB while the process ran
+  [[ $PART == [CD] ]] && swaplim=65536 # memory-protocol.md (parts C, D): more than 64 MiB
+  if ((sd < -swaplim)); then
     echo "{$et,\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$sd,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
     return
   fi
