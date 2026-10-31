@@ -30,6 +30,12 @@ REC=$R/rerun-3-admission.jsonl
 NOTADM=$R/rerun-3-not-admitted.jsonl
 : "${ADMIT:?set ADMIT to the host admission command}"
 : "${OBSERVER:?set OBSERVER to the continuous observer command}"
+# One cgroup for the whole phase: this driver, its observer and every measured child run in one transient scope that
+# carries the memory cap (CAP), so the observer can subtract the phase's own CPU and watch its counters.
+# PHASE_SCOPE=1 marks the copy that runs inside it.
+if [ -z "${PHASE_SCOPE:-}" ]; then
+  exec systemd-run --user --scope --quiet --collect -p "MemoryMax=${CAP:-2G}" env PHASE_SCOPE=1 bash "$0" "$@"
+fi
 case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B) OUT=$R/speed-more.jsonl ;; C | D) OUT=$R/memory-raw.jsonl ;; *)
   echo "unknown part $PART"
   exit 2
@@ -51,7 +57,7 @@ if ! { mkdir -p "$R" && TMP=$(mktemp "$R/.unit.XXXXXX"); }; then
   exit 2
 fi
 trap 'rm -f "$TMP"' EXIT
-CAPPED=$HOME/.local/bin/run-capped
+CAPPED=$HERE/in-scope.sh # the scope already carries the cap; children are not given scopes of their own
 read -r -a RUNTIME_LIST <<<"${RUNTIMES:-node bun}"
 rtbin() { # rtbin <label>: the executable of a runtime label: RT_BIN_<label with every character outside A-Za-z0-9_ replaced by _>, else node or bun from PATH
   local v="RT_BIN_${1//[^A-Za-z0-9_]/_}"
