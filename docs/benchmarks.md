@@ -2,9 +2,9 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md). Library comparisons put sigflint first as the reference, then alternatives alphabetically by displayed name. Correctness rows stay grouped by input method.
 
-The speed, memory, import and size figures were measured on 2026-10-29 for release 1.0.2, on Node.js 26.12.1 and Bun 1.4.4. The measured files are the unminified Bun-built files that ship, from source tree `90a032d5` at commit `c610c42`; their SHA-256 hashes are in [`bench/results/release-1.0.2-artifacts.sha256`](../bench/results/release-1.0.2-artifacts.sha256). Builds, checks and publishing use Bun 1.4.4. Dependencies and corpora were not upgraded.
+The figures below describe sigflint 1.0.3. Speed, memory, import and size were measured on 2026-10-29 on Node.js 26.12.1 and Bun 1.4.4. The current unminified Node and Bun builds match the measured artifact hashes byte for byte. Builds, checks and publishing use Bun 1.4.4.
 
-The run follows the existing admitted-pair protocol: three rounds, extending a part to five only when its comparisons remain unsettled. The S3 and other-service speed matrices finished at three; both baseline comparisons, memory and import reached five. The A/A controls, variation bands and five-round cap are unchanged. The release protocol and exclusions are in [`bench/protocol-release-1.0.2.md`](../bench/protocol-release-1.0.2.md); raw results and extension decisions are in [`bench/results/release-1.0.2/`](../bench/results/release-1.0.2/). Historical results remain in git history and their dated result directories. Runtime compatibility below is historical evidence and is labelled separately.
+The speed matrices use three fresh processes per library and runtime; memory and import use five rounds. A/A controls and reporting bands accompany the results. Raw evidence and reproducible protocols are linked under Methodology and limits.
 
 ## Runtimes
 
@@ -21,19 +21,19 @@ The run follows the existing admitted-pair protocol: three rounds, extending a p
 | aws4 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws-sig | ✓ | ✓ | ✓ | ✓ | ✓ |
-| lean-s3 | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| lean-s3 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | minio | ✓ | ✓ | ✓ | ✓ | ✗ |
-| s3-lite-client | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
-| s3mini | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| s3-lite-client | ✓ | ✓ | ✓ | ✓ | ✓ |
+| s3mini | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @smithy/signature-v4 | ✓ | ✓ | ✓ | ✗ | ✗ |
 | @smithy/signature-v4 (web hash) | ✓ | ✓ | ✓ | ✓ | ✓ |
-| tiny-oss | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| tiny-oss | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
+Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.149.0, workerd 1.20261006.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).
 <!-- END runtimes -->
 
-Each assessed library signed one S3 GET on each runtime and was checked against botocore's signature. This historical grid ran on 2026-10-16 on the 1.0.1 source tree `712d1eb2`, while `package.json` still said 1.0.0; it was not rerun for 1.0.2: one signature per library and runtime, so it shows that each signature matched, not how often it does. “Workers” ran in a local workerd through wrangler, not on Cloudflare's network. `smithy` needs a SHA-256 class you supply; the “web hash” row passes it `@aws-crypto/sha256-js`, and its default Node one does not run in workerd. sigflint has three code paths so that each runtime gets the fastest primitive it has: Bun uses its own hasher, Node and Deno use `node:crypto`, and Workers and browsers use WebCrypto. A plain `import 'sigflint'` selects the right one; `sigflint/web` forces the WebCrypto one on any runtime.
+Each library signed one S3 GET on each runtime and was checked against botocore's signature. These are signing-path checks, not full client integration tests. “Workers” runs in local workerd through wrangler, not on Cloudflare's network. s3mini and tiny-oss use an unsigned payload, checked against a separately computed botocore reference. tiny-oss and lean-s3 use pinned source signing cores; s3-lite-client uses its locked package core. These three are compiled with Bun, with `node:` imports preserved and no polyfills. Other rows use the same entry points as the correctness comparison. The smithy “web hash” row supplies `@aws-crypto/sha256-js`; its default row supplies the Node hash implementation. Sigflint selects Bun's hasher, Node/Deno's `node:crypto`, or Workers' WebCrypto implementation through package export conditions.
 
 ## Correctness
 
@@ -47,7 +47,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
-| **sigflint** | Serialized URL | 1.0.1 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
+| **sigflint** | Serialized URL | 1.0.3 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
 | aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 268 / 1,522 | Not assessed |
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not assessed |
 | aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not assessed |
@@ -61,7 +61,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 | tiny-oss | Decoded key | 1.2.0 source | 316 / 578 | 942 | Not assessed | 316 / 578 |
 <!-- END correctness -->
 
-The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those. The serialized-URL sigflint row shows version 1.0.1, the version in `package.json` during the 1.0.2 release screen, before its version bump. `npm test` checks the shipped code against the same corpus (`test/corpus.json`, 3,360 requests).
+The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those. `npm test` checks the shipped code against the same corpus (`test/corpus.json`, 3,360 requests).
 
 Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches 1,519 of the 1,520 ordinary requests; `minio` matches 1,320 of them (`bench/results/screen-node.json`). The serialized-URL rows above show what each library produces when given the URL as an application has it.
 
@@ -73,9 +73,8 @@ The table and chart above include both screens. The serialized-URL screen tests
 URL parsing as well as signing. The decoded-key screen ran on Bun 1.4.4 on
 2026-10-30 with `bun bench/compat-clients.mjs`. It uses decoded keys and query
 pairs from normalized canonical requests, so it does not test arbitrary URL
-parsing or complete client operations. Its sigflint baseline is 1.0.3; the older
-URL-input screen records 1.0.1 before the 1.0.2 version bump. These are distinct
-input methods, not directly comparable rankings.
+parsing or complete client operations. Both screens use sigflint 1.0.3. These
+are distinct input methods, not directly comparable rankings.
 
 s3mini and tiny-oss cannot express the other 942 ordinary requests because they
 use unsigned payloads. The common decoded-key column uses exactly the same 578 requests in each
@@ -104,8 +103,7 @@ differing case ID and the unsupported counts. Reproduce after installing the
 root and `bench/` dependencies. The comparison was run by sigflint's maintainer.
 No speed, memory, import or size measurements for these four clients are
 available. Their rows are marked Not measured in the performance tables and
-plot captions. Not assessed in the runtime grid means its one-request public-API
-probe was not run; passing the Bun signing-core screen does not fill that cell.
+plot captions. Runtime results above are separate signing-path checks; they do not measure performance or exercise every client operation.
 
 ### Other services and presigned URLs
 
@@ -198,24 +196,9 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 
 The Deno table comes from a separate run and its own declaration, [protocol-deno.md](../bench/protocol-deno.md): 3 rounds, the same eight arms, the per-process CPU gate only, with no host admission and no Node process paired against each Deno one. Its two control arms agree within 1.3%, and every gap against another library is far wider than that. The chart above covers Node.js and Bun; Deno is in the table only.
 
-### Other services, presigned URLs, and the 1.0 layout
+### Other services and presigned URLs
 
-Other-service and presigned-URL signing use the same fresh-process method and A/A control, three rounds on each runtime. The release was also compared directly with the published 1.0.1 package, with five rounds on each runtime. There is no clear change in any of those eight release comparisons.
-
-**S3 header signing, published 1.0.1 and 1.0.2** (nanoseconds per call; positive change is slower):
-
-| Runtime | Workload | 1.0.1 | 1.0.2 | Change | Reporting band | |
-|---|---|--:|--:|--:|--:|---|
-| node | bench-download | 977 | 987 | +1.0% | 5.9% | no clear change |
-| node | bench-part-put | 1,271 | 1,270 | -0.1% | 5.5% | no clear change |
-| node | bench-encode | 1,695 | 1,701 | +0.4% | 4.9% | no clear change |
-| node | bench-body-1k | 1,672 | 1,674 | +0.1% | 5.7% | no clear change |
-| bun | bench-download | 651 | 656 | +0.8% | 3.0% | no clear change |
-| bun | bench-part-put | 952 | 946 | -0.6% | 6.1% | no clear change |
-| bun | bench-encode | 1,506 | 1,494 | -0.8% | 8.3% | no clear change |
-| bun | bench-body-1k | 1,251 | 1,252 | +0.1% | 10.5% | no clear change |
-
-The separate comparison against the older, pre-split S3 implementation is retained in `bench/results/speed-more-summary.json`. All eight comparisons remain inconclusive at five rounds: the Node 1 KiB PUT has a 4.3% median gap and a 3% band, so its gap is within twice the band and does not establish a slowdown. This is an older baseline, separate from the direct published-release comparison above.
+Other-service and presigned-URL signing use the same fresh-process method and A/A control, three rounds on each runtime.
 
 **Node 26.12.1**, microseconds per call (times as long as sigflint in brackets):
 
@@ -307,7 +290,7 @@ What is counted: managed JavaScript heap per `getAuthHeaders` call (excluding na
 
 At the five-round cap, 35 of 36 retained-heap comparisons, 6 of 12 peak-RSS comparisons, 8 of 12 import comparisons and 5 of 12 import-plus-first-signature comparisons remain unsettled. For the plain GET on Node, `aws4fetch` retains about 189 KiB per 10,000 calls against sigflint's 29 KiB; this is not shown to be a leak. Signing-key retention is measured separately in the raw cache rows; no other library's cache is measured.
 
-All figures use five rounds on the shipped built files, with seven fresh import processes per arm and round. No accepted memory or import process was rejected or failed. Raw values are in [`bench/results/memory-raw.jsonl`](../bench/results/memory-raw.jsonl); medians, ranges and verdicts are in [`bench/results/memory-report.md`](../bench/results/memory-report.md). The release protocol is [`bench/protocol-release-1.0.2.md`](../bench/protocol-release-1.0.2.md), which retains the metric definitions and floors of [`bench/memory-protocol.md`](../bench/memory-protocol.md). This run's allocation calibration is in [`bench/results/memory-calibration-final.jsonl`](../bench/results/memory-calibration-final.jsonl): slopes 8.64 bytes per element on Node and 8.31 on Bun, both within 10% of the expected 8 bytes. Allocation and GC instruments differ across runtimes.
+All figures use five rounds on the shipped built files, with seven fresh import processes per arm and round. No accepted memory or import process was rejected or failed. Raw values are in [`bench/results/memory-raw.jsonl`](../bench/results/memory-raw.jsonl); medians, ranges and verdicts are in [`bench/results/memory-report.md`](../bench/results/memory-report.md). The release protocol is [measurement protocol](../bench/protocol-release-1.0.2.md), which retains the metric definitions and floors of [`bench/memory-protocol.md`](../bench/memory-protocol.md). This run's allocation calibration is in [`bench/results/memory-calibration-final.jsonl`](../bench/results/memory-calibration-final.jsonl): slopes 8.64 bytes per element on Node and 8.31 on Bun, both within 10% of the expected 8 bytes. Allocation and GC instruments differ across runtimes.
 
 ## Size
 
@@ -369,13 +352,13 @@ Each runs against the synchronous source, the built file that Node and Bun load,
 
 ## Methodology and limits
 
-- Speed: three rounds per library and runtime for both matrices, five for the baseline comparisons. Node and Bun run back to back for each library and round, with runtime and library order reversed on even rounds. Sigflint runs twice as an A/A noise control. Each process validates its signature before timing batches for one second. The band is the larger of 3% and twice the larger A/A spread. All library-against-sigflint speed comparisons settled after three rounds. Protocol: [`bench/protocol-release-1.0.2.md`](../bench/protocol-release-1.0.2.md).
+- Speed: three rounds per library and runtime for both matrices. Node and Bun run back to back for each library and round, with runtime and library order reversed on even rounds. Sigflint runs twice as an A/A noise control. Each process validates its signature before timing batches for one second. The band is the larger of 3% and twice the larger A/A spread. All library-against-sigflint speed comparisons settled after three rounds. Protocol: [measurement protocol](../bench/protocol-release-1.0.2.md).
 - Memory: 5 rounds, each process under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
 - Machine: native Linux, normal priority, all available CPUs, no CPU pinning. The shared host lock is held during each part. Admission checks bracket each Node/Bun library pair (each round for import); a continuous process-tree/cgroup observer records competing CPU, memory and I/O pressure, swap, OOM and memory-limit events. Every accepted phase passed these resource checks. Each serial phase has a 2 GiB cgroup cap. Observer activity is recorded but is not claimed to be negligible. All current measurements use Node 26.12.1 and Bun 1.4.4; the retained runtime grid names its older cohort.
-- Other services, presigned URLs and the check against the pre-split build: a second protocol, written before the runs ([`bench/protocol-more.md`](../bench/protocol-more.md)), run on the final code; raw results in `bench/results/speed-regression.jsonl` and `speed-more.jsonl`.
+- Other services and presigned URLs: a second protocol, written before the runs ([`bench/protocol-more.md`](../bench/protocol-more.md)), raw results in `bench/results/speed-more.jsonl`.
 - Not timed: `Bun.S3Client.presign` (a different request) and `@aws-lite/client` (wraps `aws4`).
 - Not tested: real AWS, and Cloudflare beyond four read-only `GET` requests that checked only how a raw `+` in the path is signed. The signatures are checked against botocore, the AWS CRT and the AWS SDK's signer; the other live server tried is a local `s3s-fs` 0.17.0 on loopback, once, with header-signed requests (see [the guide on a raw `+`](guide.md#how-it-reads-the-url)). SigV4a, presigned URLs, chunked uploads and event streams have not been sent to any service.
-- Node against Bun: every comparable runtime/workload metric is paired in [`bench/results/release-1.0.2/node-bun-pairing.md`](../bench/results/release-1.0.2/node-bun-pairing.md), including the ranges and reporting disposition. Different allocation and GC instruments do not establish a cross-runtime comparison. Upstream follow-up remains separate from this release; unresolved rows are not claimed as explained.
+- Node against Bun: every comparable runtime/workload metric is paired in [paired runtime analysis](../bench/results/release-1.0.2/node-bun-pairing.md), including the ranges and reporting disposition. Different allocation and GC instruments do not establish a cross-runtime comparison. Upstream follow-up remains separate from this release; unresolved rows are not claimed as explained.
 - CPU per call and warm-up: the CPU figure is the user plus system time of the whole process over the timed window (10,000 calls after 2,000 warm-up calls), so it includes the runtime's background threads. For the rows where Node's CPU per call was lower than Bun's in the measurements on Bun 1.4.4 (`bench-download` for `aws4` and `bench-encode` for `sigflint`), most of the gap is the cost of compiling code while the process warms up, not the steady-state cost of a call. JavaScriptCore compiles with its top tier (FTL) on background threads while a process is still warming up (in a stand-alone loop, during roughly the first 12,000 calls), and that work can fall inside the timed window. Running Bun 1.4.4 with `BUN_JSC_useFTLJIT=0` removed the gap in those two rows (Node was lower in none of 5 rounds in either). For `@smithy/signature-v4` on `bench-download` the comparison stayed unsettled (Node lower in 9 of 10 rounds, ranges overlapping), and with FTL off Bun was lower in all 10 rounds. In a stand-alone loop of `aws4` calls Bun's CPU per call over calls 200,001 to 210,000 was lower than Node's (3.15 against 5.10 µs). So these figures include compilation inside the timed window and do not establish steady-state CPU per call; read these rows as warm-up cost, not as Bun being slower per call. This is one machine, one Bun version and one Node version, and the cause is a measured explanation, not a confirmed engine defect.
-- Reproduce: use the cohort and artifacts in [`bench/protocol-release-1.0.2.md`](../bench/protocol-release-1.0.2.md), `npm ci` in the repository and `bench/`, then `ADMIT=<host check command> ./run-admitted.sh <A|R|B|C|D> <artifact dir> 3`. Extend only unsettled parts with `FROM_ROUND=4 ... <part> <artifact dir> 5`. Then run `analyze.mjs`, `analyze-more.mjs`, `analyze-memory.mjs`, `pair-node-bun.mjs`, `sizes.mjs`, `tiers.mjs`, `make-assets.mjs` and `make-memory-assets.mjs`. The driver resumes admitted units without rerunning them. The host-specific continuous observer is external to this repository.
+- Reproduce: use the cohort and artifacts in [measurement protocol](../bench/protocol-release-1.0.2.md), `npm ci` in the repository and `bench/`, then `ADMIT=<host check command> ./run-admitted.sh <A|R|B|C|D> <artifact dir> 3`. Extend only unsettled parts with `FROM_ROUND=4 ... <part> <artifact dir> 5`. Then run `analyze.mjs`, `analyze-more.mjs`, `analyze-memory.mjs`, `pair-node-bun.mjs`, `sizes.mjs`, `tiers.mjs`, `make-assets.mjs` and `make-memory-assets.mjs`. The driver resumes admitted units without rerunning them. The host-specific continuous observer is external to this repository.

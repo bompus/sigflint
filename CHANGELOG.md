@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Complete the signing-path runtime grid for all comparison libraries on Node, Bun, Deno and local Workers; show current-version benchmark figures without historical release comparisons.
+
 - Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Use sigflint first and alphabetical alternatives consistently across tables and charts. Existing benchmark figures are unchanged.
 
 - Compare the signing cores of s3mini, tiny-oss, lean-s3 and s3-lite-client against the botocore corpus, with supported subsets and a shared-request comparison. This adds correctness evidence only.

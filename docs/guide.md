@@ -131,3 +131,27 @@ A request that cannot be signed correctly throws instead of returning a signatur
 - **Headers.** Names are lowercased, values trimmed with runs of spaces collapsed, and the list sorted.
 
 The signing key for each secret, date and region is derived once and kept (up to 1,000 of them), so a repeated call costs one hash and one HMAC over short strings (plus a hash of the body, when there is one).
+
+## Deployment platforms
+
+Hosting providers use different JavaScript engines and APIs. Sharing the word “edge” does not mean they run Cloudflare Workers. The [runtime grid](benchmarks.md#runtimes) checks local Node, Bun, Deno and workerd, not deployments on every provider below.
+
+The following entry points follow the providers' documented runtimes. Provider deployments have not been tested. Use a supported Node version (22.12 or later) or a runtime with the WebCrypto APIs required by `sigflint/web`; always await the returned result.
+
+| Platform | Documented runtime | Entry point and verification limit |
+|---|---|---|
+| [AWS Lambda and Lambda@Edge](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-edge-function-restrictions.html) | Node.js | `sigflint` on a supported Node version; local Node tested |
+| [Bunny Edge Scripting](https://docs.bunny.net/scripting/runtime) | Restricted Deno runtime | `sigflint/web` is the WebCrypto entry to validate on this host; local Deno tested |
+| [Cloudflare Workers](https://developers.cloudflare.com/workers/runtime-apis/web-crypto/) | workerd | `sigflint` or `sigflint/web`; local workerd tested with and without `nodejs_compat` |
+| [Deno Deploy](https://docs.deno.com/deploy/) | Deno | `sigflint/web` avoids Node-specific export resolution; local Deno tested |
+| [Google Cloud Run functions](https://cloud.google.com/functions/docs/runtime-support) | Node.js | `sigflint` on a supported Node version; local Node tested |
+| [Microsoft Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions) | Node.js | `sigflint` on a supported Node version; local Node tested |
+| [Netlify Edge Functions](https://docs.netlify.com/build/edge-functions/api/) | Deno | `sigflint/web`; local Deno tested |
+| [Supabase Edge Functions](https://supabase.com/docs/guides/functions) | Deno-compatible edge runtime | `sigflint/web`; local Deno tested |
+| [Vercel Functions](https://vercel.com/docs/functions/runtimes/node-js) | Node.js | `sigflint` on a supported Node version; local Node tested |
+
+Vercel's [standalone Edge Functions are deprecated](https://vercel.com/docs/functions/runtimes/edge/edge-functions); its edge Routing Middleware remains supported. Existing middleware that provides standard WebCrypto can use the `sigflint/web` entry, but has not been tested here.
+
+Fly.io and other container hosts can run a supported Node or Bun version; the container's runtime determines compatibility. [Fastly Compute](https://www.fastly.com/documentation/guides/compute/javascript/) and [Akamai EdgeWorkers](https://techdocs.akamai.com/edgeworkers/docs/crypto) have distinct runtime APIs and still need platform-specific checks before being listed as compatible. In particular, Akamai exposes crypto through its own module interface.
+
+AWS CloudFront Functions is different from Lambda@Edge. Its [restricted JavaScript runtime](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html) is neither full Node nor the WebCrypto environment used by this package; it is not a supported deployment target.

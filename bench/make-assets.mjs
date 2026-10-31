@@ -155,6 +155,10 @@ const tables = [];
 // Two groups: ordinary requests, and the edge cases (stray %, a raw + in the path, empty query names, headers some
 // libraries never sign). Session-token cases are left out: only sigflint is run on them (316 of 316 pass).
 const screen = read('screen-node.json');
+const currentVersion = JSON.parse(readFileSync(`${here}../package.json`, 'utf8')).version;
+if (screen.candidates.sigflint.version !== currentVersion) {
+  throw new Error('Re-run the Node correctness screen for the current sigflint version');
+}
 const unmeasured = `Not measured: ${clientIds.join(', ')}.`;
 /** @typedef {{ id: string, version: string } & Tally} ScreenRow */
 /** @typedef {{ key: string, title: string, tags: string[], total: number, rows: ScreenRow[] }} Group */
@@ -501,8 +505,14 @@ const cLibs = [
  * @param {string} lib
  * @param {string} col
  */
-const status = (lib, col) =>
-  compat.find((r) => r.lib === lib && rtOf(r)?.[0] === col)?.status ?? '?';
+const status = (lib, col) => {
+  const result = compat.find((r) => r.lib === lib && rtOf(r)?.[0] === col);
+  if (!result) {
+    throw new Error(`Missing runtime probe: ${lib} / ${col}`);
+  }
+  return result.status;
+};
+const compatEnvironment = read('compat-environment.json');
 const compatVersions = [
   ...new Set(
     compat
@@ -524,7 +534,7 @@ out.runtimes = (t) => {
   let o = header(
     t,
     'Where each library runs',
-    'One S3 GET per runtime: tick = same signature; cross = failed or did not load; Not assessed = no public-API probe.',
+    'One S3 GET per runtime: tick = reference signature; cross = failed or did not load. Signing paths, not full client tests.',
   );
   rtCols.forEach(([, label], i) => {
     o += text(x0 + cw * i + cw / 2, top - 14, label, {
@@ -544,16 +554,7 @@ out.runtimes = (t) => {
       weight: ours ? 700 : 400,
     });
     rtCols.forEach(([col], i) => {
-      const measured = status(lib, col) !== '?';
       const ok = status(lib, col) === 'ok';
-      if (!measured) {
-        o += text(x0 + cw * i + cw / 2, y + 16, 'Not assessed', {
-          size: 11,
-          fill: t.muted,
-          anchor: 'middle',
-        });
-        return;
-      }
       o += `<rect x="${x0 + cw * i + 4}" y="${y}" width="${cw - 8}" height="${rowH - 6}" rx="4" fill="${ok ? t.pass : t.fail}" fill-opacity="0.22" stroke="${ok ? t.pass : t.fail}"/>`;
       const cx = x0 + cw * i + cw / 2,
         cy = y + (rowH - 6) / 2,
@@ -571,7 +572,7 @@ out.runtimes = (t) => {
     desc: cLibs
       .map(
         (l) =>
-          `${name(l)}: ${rtCols.map(([c]) => (status(l, c) === '?' ? 'not assessed' : status(l, c) === 'ok' ? 'yes' : 'no')).join('/')}`,
+          `${name(l)}: ${rtCols.map(([c]) => (status(l, c) === 'ok' ? 'yes' : 'no')).join('/')}`,
       )
       .join('; '),
     body: o,
@@ -586,10 +587,10 @@ tables.push(
     cLibs
       .map(
         (l) =>
-          `| ${l.startsWith('sigflint') ? `**${name(l)}**` : name(l)} | ${rtCols.map(([c]) => (status(l, c) === '?' ? 'Not assessed' : status(l, c) === 'ok' ? '✓' : '✗')).join(' | ')} |`,
+          `| ${l.startsWith('sigflint') ? `**${name(l)}**` : name(l)} | ${rtCols.map(([c]) => (status(l, c) === 'ok' ? '✓' : '✗')).join(' | ')} |`,
       )
       .join('\n') +
-    `\n\nRuntimes: ${compatVersions.join(', ')}; Workers run in local workerd through wrangler ${'(see bench/frozen/versions.txt)'}. ✗ cells: ` +
+    `\n\nRuntimes: ${compatVersions.join(', ')}; Workers run in local workerd through wrangler ${compatEnvironment.wrangler}, workerd ${compatEnvironment.workerd} (run ${compatEnvironment.date}; see bench/results/compat-environment.json). ✗ cells: ` +
     compat
       .filter((r) => r.status !== 'ok')
       .map(

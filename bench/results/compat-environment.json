@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-31",
+  "bun": "1.4.4",
+  "wrangler": "4.149.0",
+  "workerd": "1.20261006.1",
+  "sourceBuilds": [
+    "tiny-oss",
+    "lean-s3",
+    "s3-lite-client"
+  ],
+  "sourceBuildTarget": "browser, node:* external, no polyfills",
+  "unsignedReference": "botocore S3SigV4Auth; bench-download with unsigned=true"
+}

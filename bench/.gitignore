@@ -4,3 +4,4 @@ compat/*.log
 compat/workerd-results.json
 results/size-out
 results/tiers-out
+compat/compiled

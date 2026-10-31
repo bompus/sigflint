@@ -4,7 +4,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
-| **sigflint** | Serialized URL | 1.0.1 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
+| **sigflint** | Serialized URL | 1.0.3 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
 | aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 268 / 1,522 | Not assessed |
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not assessed |
 | aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not assessed |
@@ -81,13 +81,13 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | aws4 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws-sig | ✓ | ✓ | ✓ | ✓ | ✓ |
-| lean-s3 | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| lean-s3 | ✓ | ✓ | ✓ | ✓ | ✗ |
 | minio | ✓ | ✓ | ✓ | ✓ | ✗ |
-| s3-lite-client | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
-| s3mini | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| s3-lite-client | ✓ | ✓ | ✓ | ✓ | ✓ |
+| s3mini | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @smithy/signature-v4 | ✓ | ✓ | ✓ | ✗ | ✗ |
 | @smithy/signature-v4 (web hash) | ✓ | ✓ | ✓ | ✓ | ✓ |
-| tiny-oss | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| tiny-oss | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
+Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.149.0, workerd 1.20261006.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).

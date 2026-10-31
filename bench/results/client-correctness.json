@@ -1,5 +1,6 @@
 {
   "runtime": "Bun 1.4.4",
+  "sigflintVersion": "1.0.3",
   "corpusSha256": "a4f907d61241c241f2bc13edf4cd81f71f7b8d93043cea891b0360191efb9cfe",
   "dependencyLockSha256": "254958e6902dc4719b6a53143d4695050e6b38507c74ed35dd92bae06e3c4372",
   "corpusCases": 3360,

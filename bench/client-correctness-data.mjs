@@ -2,10 +2,16 @@ import { readFileSync } from 'node:fs';
 import { compareLibraries } from './comparison-order.mjs';
 
 /** @typedef {{ id: string, version: string, pass: number, tested: number, errors: number, baselinePass: number, common: { tested: number, pass: number } }} ClientRow */
-/** @type {{ ordinaryCases: number, candidates: ClientRow[] }} */
+/** @type {{ sigflintVersion: string, ordinaryCases: number, candidates: ClientRow[] }} */
 const clientScreen = JSON.parse(
   readFileSync(new URL('results/client-correctness.json', import.meta.url), 'utf8'),
 );
+const currentVersion = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+).version;
+if (clientScreen.sigflintVersion !== currentVersion) {
+  throw new Error('Re-run the client correctness screen for the current sigflint version');
+}
 clientScreen.candidates.sort((a, b) => compareLibraries(a.id, b.id));
 export const clientIds = clientScreen.candidates.map((c) => c.id);
 
@@ -18,7 +24,13 @@ export const clientGroups = [
     title: 'Decoded key input: ordinary requests (gray = unsupported)',
     total: clientScreen.ordinaryCases,
     rows: [
-      { id: 'sigflint', version: '1.0.3', pass: clientScreen.ordinaryCases, fail: 0, na: 0 },
+      {
+        id: 'sigflint',
+        version: clientScreen.sigflintVersion,
+        pass: clientScreen.ordinaryCases,
+        fail: 0,
+        na: 0,
+      },
       ...clientScreen.candidates.map((c) => ({
         id: c.id,
         version: c.version,
@@ -35,7 +47,7 @@ export const clientGroups = [
     rows: [
       {
         id: 'sigflint',
-        version: '1.0.3',
+        version: clientScreen.sigflintVersion,
         pass: clientScreen.candidates[0]?.common.tested ?? 0,
         fail: 0,
         na: 0,

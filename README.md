@@ -97,7 +97,9 @@ More in the [guide](docs/guide.md): [other services](docs/guide.md#other-service
 
 ## Runtimes
 
-Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `nodejs_compat`; browsers get the same WebCrypto code. Each runtime was checked against botocore's signature for one S3 request. The grid, with the other libraries, is in the [benchmarks](docs/benchmarks.md#runtimes).
+Node.js 22.12 and later, Bun, Deno, and Cloudflare Workers with or without `nodejs_compat`; browsers get the same WebCrypto code. Node, Bun, Deno and local Workers were checked against botocore's signature for one S3 request. The grid, with the other libraries, is in the [benchmarks](docs/benchmarks.md#runtimes).
+
+For hosting services such as Vercel, Netlify, Supabase and AWS Lambda, see [deployment platforms](docs/guide.md#deployment-platforms). That guide distinguishes runtime compatibility from testing on a hosted service.
 
 ## Benchmarks
 

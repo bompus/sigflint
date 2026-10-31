@@ -10,7 +10,7 @@
  "candidates": {
   "sigflint": {
    "label": "sigflint",
-   "version": "1.0.1",
+   "version": "1.0.3",
    "unsupported": 0,
    "byTag": {
     "well-formed": {

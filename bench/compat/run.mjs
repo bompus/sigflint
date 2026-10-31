@@ -30,8 +30,8 @@ for (const id of IDS) {
       JSON.stringify({
         runtime,
         lib: id,
-        status: sig === EXPECTED ? 'ok' : 'wrong',
-        ...(sig === EXPECTED ? {} : { detail: sig }),
+        status: sig === (mod.expected ?? EXPECTED) ? 'ok' : 'wrong',
+        ...(sig === (mod.expected ?? EXPECTED) ? {} : { detail: sig }),
       }),
     );
   } catch (e) {

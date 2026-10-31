@@ -3,6 +3,8 @@
 export const HREF =
   'https://examplebucket.s3.amazonaws.com/2022/05/media/upload/facebook-131__m4qhsQzwMdHCoc6UnBOYv.webp';
 export const EXPECTED = '038caaeca9783938139f75f49fed7f8c128dd93fd5c97a9bf863cdadb0cab17a';
+// botocore S3SigV4Auth, bench-download with unsigned=true.
+export const UNSIGNED_EXPECTED = '906aa3bd3f2f9a716f82df9de24562805acd05919dbbe93e0c98b6282ad632be';
 export const EMPTY = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 export const CREDS = {
   accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
@@ -42,4 +44,8 @@ export const IDS = [
   'aws-sig',
   'wdl',
   'minio',
+  's3mini',
+  'tiny-oss',
+  'lean-s3',
+  's3-lite-client',
 ];

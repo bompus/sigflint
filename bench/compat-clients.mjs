@@ -74,6 +74,7 @@ try {
     JSON.stringify(
       {
         runtime: `Bun ${Bun.version}`,
+        sigflintVersion: /** @type {import('./adapters.mjs').Adapter} */ (ours).version,
         corpusSha256: createHash('sha256')
           .update(readFileSync(new URL('../test/corpus.json', import.meta.url)))
           .digest('hex'),

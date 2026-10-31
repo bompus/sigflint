@@ -20,17 +20,21 @@ for (const flag of process.argv[2] ? [process.argv[2]] : ['nodejs_compat', 'no-f
     );
     writeFileSync(
       `${dir}/index.mjs`,
-      `import { sign } from '../../libs/${id}.mjs';\nimport { EXPECTED } from '../../common.mjs';\nexport default { async fetch() { try { const s = await sign(); return Response.json({ status: s === EXPECTED ? 'ok' : 'wrong', detail: s === EXPECTED ? undefined : s }); } catch (e) { return Response.json({ status: 'error', detail: String(e && e.message || e).slice(0, 160) }); } } };\n`,
+      `import * as probe from '../../libs/${id}.mjs';\nimport { EXPECTED } from '../../common.mjs';\nexport default { async fetch() { try { const s = await probe.sign(); return Response.json({ status: s === (probe.expected ?? EXPECTED) ? 'ok' : 'wrong', detail: s === (probe.expected ?? EXPECTED) ? undefined : s }); } catch (e) { return Response.json({ status: 'error', detail: String(e && e.message || e).slice(0, 160) }); } } };\n`,
     );
     const p = port++;
     /** @type {string[]} */
     const log = [];
-    const child = spawn(WRANGLER, ['dev', '--local', '--port', String(p), '--ip', '127.0.0.1'], {
-      cwd: dir,
-      detached: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, WRANGLER_SEND_METRICS: 'false', CI: '1' },
-    });
+    const child = spawn(
+      process.env.NODE ?? 'node',
+      [WRANGLER, 'dev', '--local', '--port', String(p), '--ip', '127.0.0.1'],
+      {
+        cwd: dir,
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, WRANGLER_SEND_METRICS: 'false', CI: '1' },
+      },
+    );
     child.stdout.on('data', (d) => log.push(String(d)));
     child.stderr.on('data', (d) => log.push(String(d)));
     // set by the exit listener below (the cast keeps the type checker from treating it as always false)
