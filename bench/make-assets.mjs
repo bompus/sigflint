@@ -2,6 +2,7 @@
 // files in results/. Usage: node make-assets.mjs  ->  ../docs/*.svg and ../docs/tables.md
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { compareLibraries, sortComparisonTables } from './comparison-order.mjs';
+import { fillBenchmarksDoc } from './fill-benchmarks-doc.mjs';
 import {
   completeClientComparison,
   clientGroups,
@@ -298,6 +299,12 @@ const arm = {
   wdl: 'wdl',
   minio: 'minio',
 };
+// a client with speed results is charted and tabled like the other libraries; the others stay listed as not measured
+for (const id of clientIds) {
+  if (Object.values(speed.cells).some((c) => c.arms[id])) {
+    arm[id] = id;
+  }
+}
 /** @type {[string, string][]} */
 const workloads = [
   ['bench-download', 'GET, plain key'],
@@ -315,6 +322,17 @@ const runtimes = [
  */
 const cell = (rt, w, lib) => speed.cells[`${rt}|${w}`].arms[/** @type {string} */ (arm[lib])];
 const libs = Object.keys(arm).sort((a, b) => compareLibraries(name(a), name(b)));
+const notChartedSpeed = libs.filter((l) =>
+  runtimes.some((rt) => !cell(rt, 'bench-download', l)?.medianNs),
+);
+const speedNote = [
+  clientIds.some((id) => !arm[id]) &&
+    `Not measured: ${clientIds.filter((id) => !arm[id]).join(', ')}.`,
+  notChartedSpeed.length &&
+    `Not charted (no timed result for this request, see the table): ${notChartedSpeed.map(name).join(', ')}.`,
+]
+  .filter(Boolean)
+  .join(' ');
 out.speed = (t) => {
   const panelW = 700,
     x0 = 190,
@@ -363,7 +381,7 @@ out.speed = (t) => {
     w: panelW + 60,
     h: y,
     title: 'Signing time per request',
-    note: unmeasured,
+    note: speedNote,
     desc: libs
       .map(
         (l) =>
@@ -398,7 +416,7 @@ out.speed = (t) => {
   for (const rt of runtimes) {
     md += `\n**${hdr(rt)}**\n\n| Library | ${workloads.map((w) => w[1]).join(' | ')} |\n|---|${workloads.map(() => '--:').join('|')}|\n`;
     md +=
-      [...libs, ...clientIds]
+      [...new Set([...libs, ...clientIds])]
         .sort((a, b) => compareLibraries(name(a), name(b)))
         .map(
           (l) =>
@@ -425,6 +443,23 @@ const sizeRows = [
   ['wdl', 'wdl'],
   ['minio', 'minio'],
 ];
+// a client with size results is charted and tabled like the other libraries
+for (const id of clientIds) {
+  if (sizes[id]) {
+    sizeRows.push([id, id]);
+  }
+}
+const sizeNotes = sizeRows
+  .filter(([id, lib]) => lib !== 'sigflint' && sizes[id].note)
+  .map(([id, lib]) => `${name(lib)}: ${sizes[id].note}.`)
+  .join(' ');
+const sizeNote = [
+  clientIds.some((id) => !sizes[id]) &&
+    `Not measured: ${clientIds.filter((id) => !sizes[id]).join(', ')}.`,
+  sizeNotes,
+]
+  .filter(Boolean)
+  .join(' ');
 out.size = (t) => {
   const rows = sizeRows
     .map(([id, lib]) => ({ lib, s: sizes[id] }))
@@ -449,7 +484,7 @@ out.size = (t) => {
     w: 760,
     h: g.height,
     title: 'Size of the code you ship',
-    note: unmeasured,
+    note: sizeNote,
     desc: sizeRows.map(([id, lib]) => `${lib} ${sizes[id].gzipBytes} B`).join(', '),
     body:
       header(
@@ -464,13 +499,15 @@ tables.push(
     sizeRows
       .map(([id, lib]) => {
         const s = sizes[id];
-        return `| ${lib === 'sigflint' ? '**sigflint**' : name(lib)} | ${s.source ? fmtInt(s.source.bytes) : ''} | ${fmtInt(s.minifiedBytes)} | ${fmtInt(s.gzipBytes)} | ${fmtInt(s.brotliBytes)} | ${s.directDependencies} | ${s.unpackedBytes ? fmtInt(s.unpackedBytes) : ''} |`;
+        return `| ${lib === 'sigflint' ? '**sigflint**' : name(lib)} | ${s.source ? fmtInt(s.source.bytes) : ''} | ${fmtInt(s.minifiedBytes)} | ${fmtInt(s.gzipBytes)} | ${fmtInt(s.brotliBytes)} | ${s.directDependencies ?? ''} | ${s.unpackedBytes ? fmtInt(s.unpackedBytes) : ''} |`;
       })
       .join('\n') +
     '\n' +
     clientIds
+      .filter((id) => !sizes[id])
       .map((id) => `| ${name(id)} | ${Array(6).fill('Not measured').join(' | ')} |`)
-      .join('\n'),
+      .join('\n') +
+    (sizeNotes ? `\n\n${sizeNotes}` : ''),
 );
 
 // ---- runtimes -----------------------------------------------------------------------------------------------------
@@ -944,50 +981,7 @@ for (const [id, draw] of Object.entries(out)) {
 }
 writeFileSync(`${docs}tables.md`, sortComparisonTables(tables.join('\n\n') + '\n'));
 
-// fill the marked blocks in the README: the chart (dark and light) and the table under it
-const sections = [
-  ['correctness', 'Bar chart: how many requests each library signs the same as botocore'],
-  ['speed', 'Bar chart: time to sign one request on Node.js and Bun'],
-  ['size', 'Bar chart: bundled, minified and gzipped size of each library'],
-  ['runtimes', 'Grid: which runtimes each library runs on'],
-];
-let readme = readFileSync(`${here}../docs/benchmarks.md`, 'utf8');
-readme = readme.replace(
-  /(<!-- BEGIN compat-table -->)[\s\S]*?(<!-- END compat-table -->)/,
-  (_, a, b) => `${a}\n${moreTable}\n${b}`,
-);
-sections.forEach(([key, alt], i) => {
-  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${key}-dark.svg">\n  <img alt="${alt}" src="${key}-light.svg">\n</picture>`;
-  const body = /** @type {string} */ (tables[i]).replace(/^### [^\n]*\n\n/, '');
-  readme = readme.replace(
-    new RegExp(`(<!-- BEGIN ${key} -->)[\\s\\S]*?(<!-- END ${key} -->)`),
-    (_, a, b) => `${a}\n${picture}\n\n${body}\n${b}`,
-  );
-});
-// charts that stand alone above a table the README writes by hand: <!-- BEGIN pic-<key> --> ... <!-- END pic-<key> -->
-for (const [key, alt] of [
-  [
-    'compat-more',
-    'Bar chart: how many header and presigned-URL requests for other services each library signs the same as botocore',
-  ],
-  [
-    'speed-more-node',
-    'Bar chart: time to sign other-service and presigned-URL requests on Node.js',
-  ],
-  ['speed-more-bun', 'Bar chart: time to sign other-service and presigned-URL requests on Bun'],
-  [
-    'size-tiers',
-    'Bar chart: gzipped and minified size of sigflint for each combination of signers',
-  ],
-]) {
-  const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${key}-dark.svg">\n  <img alt="${alt}" src="${key}-light.svg">\n</picture>`;
-  const block = new RegExp(`(<!-- BEGIN pic-${key} -->)[\\s\\S]*?(<!-- END pic-${key} -->)`);
-  if (!block.test(readme)) {
-    throw new Error(`docs/benchmarks.md has no pic-${key} block`);
-  }
-  readme = readme.replace(block, (_, a, b) => `${a}\n${picture}\n${b}`);
-}
-writeFileSync(`${here}../docs/benchmarks.md`, sortComparisonTables(readme));
+fillBenchmarksDoc(`${here}../docs/benchmarks.md`, tables, moreTable);
 console.log(
   'wrote',
   Object.keys(out)

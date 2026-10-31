@@ -173,7 +173,7 @@ function panel(t, rt, cells, { x0, plotW, top, unit }) {
   let y = top;
   for (const r of rows) {
     const ours = r.arm === 'sigflint-A';
-    out += text(x0 - 10, y + 14, NAMES[r.arm], {
+    out += text(x0 - 10, y + 14, NAMES[r.arm] ?? r.arm, {
       fill: ours ? t.text : t.muted,
       anchor: 'end',
       weight: ours ? 700 : 400,
@@ -206,6 +206,8 @@ function panel(t, rt, cells, { x0, plotW, top, unit }) {
   return { body: out, height: top + rows.length * rowH + 24 };
 }
 
+// a client the results hold no measurement for stays listed as not measured; one with results gets its bars and table row
+const unmeasuredClients = clientIds.filter((id) => !summary.cells.some((c) => c.arms[id]));
 for (const ch of CHARTS) {
   for (const [name, t] of Object.entries(THEMES)) {
     const w = 900;
@@ -231,8 +233,13 @@ for (const ch of CHARTS) {
       { size: 11, fill: t.muted },
     );
     y += 20;
-    body += text(20, y, `Not measured: ${clientIds.join(', ')}.`, { size: 11, fill: t.muted });
-    y += 20;
+    if (unmeasuredClients.length) {
+      body += text(20, y, `Not measured: ${unmeasuredClients.join(', ')}.`, {
+        size: 11,
+        fill: t.muted,
+      });
+      y += 20;
+    }
     writeFileSync(
       `${outDir}${ch.file}-${name}.svg`,
       `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${y}" viewBox="0 0 ${w} ${y}" role="img" aria-labelledby="t" ${FONT}>\n<title id="t">${esc(ch.title)}</title>\n<rect width="${w}" height="${y}" rx="8" fill="${t.bg}"/>\n${body}\n</svg>\n`,
