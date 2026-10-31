@@ -1,10 +1,12 @@
 import { readFileSync } from 'node:fs';
+import { compareLibraries } from './comparison-order.mjs';
 
 /** @typedef {{ id: string, version: string, pass: number, tested: number, errors: number, baselinePass: number, common: { tested: number, pass: number } }} ClientRow */
 /** @type {{ ordinaryCases: number, candidates: ClientRow[] }} */
 const clientScreen = JSON.parse(
   readFileSync(new URL('results/client-correctness.json', import.meta.url), 'utf8'),
 );
+clientScreen.candidates.sort((a, b) => compareLibraries(a.id, b.id));
 export const clientIds = clientScreen.candidates.map((c) => c.id);
 
 /** @typedef {{ id: string, version: string, pass: number, fail: number, na: number }} ClientTally */

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Existing benchmark figures are unchanged.
+- Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Use sigflint first and alphabetical alternatives consistently across tables and charts. Existing benchmark figures are unchanged.
 
 - Compare the signing cores of s3mini, tiny-oss, lean-s3 and s3-lite-client against the botocore corpus, with supported subsets and a shared-request comparison. This adds correctness evidence only.
 

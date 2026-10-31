@@ -1,6 +1,6 @@
 # Benchmarks, tests and limits
 
-How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md).
+How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md). Library comparisons put sigflint first as the reference, then alternatives alphabetically by displayed name. Correctness rows stay grouped by input method.
 
 The speed, memory, import and size figures were measured on 2026-10-29 for release 1.0.2, on Node.js 26.12.1 and Bun 1.4.4. The measured files are the unminified Bun-built files that ship, from source tree `90a032d5` at commit `c610c42`; their SHA-256 hashes are in [`bench/results/release-1.0.2-artifacts.sha256`](../bench/results/release-1.0.2-artifacts.sha256). Builds, checks and publishing use Bun 1.4.4. Dependencies and corpora were not upgraded.
 
@@ -18,17 +18,17 @@ The run follows the existing admitted-pair protocol: three rounds, extending a p
 |---|:-:|:-:|:-:|:-:|:-:|
 | **sigflint** | ✓ | ✓ | ✓ | ✓ | ✓ |
 | **sigflint/web** | ✓ | ✓ | ✓ | ✓ | ✓ |
-| aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
 | aws4 | ✓ | ✓ | ✓ | ✓ | ✗ |
+| aws4fetch | ✓ | ✓ | ✓ | ✓ | ✓ |
+| aws-sig | ✓ | ✓ | ✓ | ✓ | ✓ |
+| lean-s3 | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| minio | ✓ | ✓ | ✓ | ✓ | ✗ |
+| s3-lite-client | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| s3mini | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
 | @smithy/signature-v4 | ✓ | ✓ | ✓ | ✗ | ✗ |
 | @smithy/signature-v4 (web hash) | ✓ | ✓ | ✓ | ✓ | ✓ |
-| aws-sig | ✓ | ✓ | ✓ | ✓ | ✓ |
-| @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
-| minio | ✓ | ✓ | ✓ | ✓ | ✗ |
-| s3mini | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
 | tiny-oss | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
-| lean-s3 | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
-| s3-lite-client | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
 <!-- END runtimes -->
@@ -48,17 +48,17 @@ Matches against botocore with the same key and clock. Compare libraries within a
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
 | **sigflint** | Serialized URL | 1.0.1 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
-| aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not assessed |
 | aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 268 / 1,522 | Not assessed |
+| aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not assessed |
+| aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not assessed |
+| minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not assessed |
 | @smithy/signature-v4 | Serialized URL | 5.7.4 | 904 / 1,520 | 0 | 236 / 1,522 | Not assessed |
 | @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 666 / 1,520 | 0 | 44 / 1,522 | Not assessed |
-| minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not assessed |
-| aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not assessed |
 | **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | Not assessed | 578 / 578 |
-| s3mini | Decoded key | 1.0.3 | 494 / 578 | 942 | Not assessed | 494 / 578 |
-| tiny-oss | Decoded key | 1.2.0 source | 316 / 578 | 942 | Not assessed | 316 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | Not assessed | 458 / 578 |
 | s3-lite-client | Decoded key | 1.0.1 | 1,519 / 1,520 | 0 | Not assessed | 578 / 578 |
+| s3mini | Decoded key | 1.0.3 | 494 / 578 | 942 | Not assessed | 494 / 578 |
+| tiny-oss | Decoded key | 1.2.0 source | 316 / 578 | 942 | Not assessed | 316 / 578 |
 <!-- END correctness -->
 
 The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token; the others were not run on those. The serialized-URL sigflint row shows version 1.0.1, the version in `package.json` during the 1.0.2 release screen, before its version bump. `npm test` checks the shipped code against the same corpus (`test/corpus.json`, 3,360 requests).
@@ -121,16 +121,16 @@ Requests whose signature equals botocore's, from `bench/compat-more.mjs` (each l
 | Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |
 |---|--:|--:|--:|
 | **sigflint** | 1,622 (100%) | 696 (100%) | 777 (100%) |
-| @smithy/signature-v4 | 1,622 (100%) | 696 (100%) | 777 (100%) |
-| aws4fetch | 1,371 (84.5%), 251 it cannot express | 696 (100%) | 777 (100%) |
 | aws4 | 930 (57.3%) | 696 (100%) | 777 (100%) |
+| aws4fetch | 1,371 (84.5%), 251 it cannot express | 696 (100%) | 777 (100%) |
 | aws-sig | 776 (47.8%) | 183 (26.3%) | 0 |
-| @wdl-dev/aws-sigv4 | 826 (50.9%), 223 it cannot express | cannot presign | cannot presign |
-| minio | S3 only | S3 only | 598 (77%) |
-| s3mini | Not assessed | Not assessed | Not assessed |
-| tiny-oss | Not assessed | Not assessed | Not assessed |
 | lean-s3 | Not assessed | Not assessed | Not assessed |
+| minio | S3 only | S3 only | 598 (77%) |
 | s3-lite-client | Not assessed | Not assessed | Not assessed |
+| s3mini | Not assessed | Not assessed | Not assessed |
+| @smithy/signature-v4 | 1,622 (100%) | 696 (100%) | 777 (100%) |
+| tiny-oss | Not assessed | Not assessed | Not assessed |
+| @wdl-dev/aws-sigv4 | 826 (50.9%), 223 it cannot express | cannot presign | cannot presign |
 
 Read the `aws4` row with care: all 692 differences are headers that `aws4` itself adds and signs (`content-length`, a default `content-type`), which is its documented behaviour, so its signature is valid for the request it sends. The reference does not add them. Presigned URLs where the caller opts out of payload signing (127 cases) are not shown: every library differed from botocore there, which points at the comparison rather than at the libraries. `aws-sig` differs on special characters, session tokens and unsigned payloads; the cause was not investigated. SigV4a, chunked uploads and event streams have no counterpart in the original URL-input libraries (except `@smithy/signature-v4` for chunks and events, against which they are tested).
 
@@ -149,32 +149,32 @@ Microseconds per signature, median of 3 processes. “wrong signature” means t
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
 | **sigflint** | **0.97** | **1.25** | **1.69** | **1.66** |
-| aws4fetch | 24.67 | 27.12 | 26.94 | 26.94 |
 | aws4 | 5.11 | 6.06 | 7.28 | 5.38 |
-| @smithy/signature-v4 | 8.79 | 9.10 | wrong signature | 9.80 |
+| aws4fetch | 24.67 | 27.12 | 26.94 | 26.94 |
 | aws-sig | 47.18 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 72.43 | 65.97 | 72.84 | wrong signature |
-| minio | 10.29 | 10.05 | wrong signature | 11.31 |
-| s3mini | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured |
+| minio | 10.29 | 10.05 | wrong signature | 11.31 |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 | 8.79 | 9.10 | wrong signature | 9.80 |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 | 72.43 | 65.97 | 72.84 | wrong signature |
 
 **Bun 1.4.4**
 
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
 | **sigflint** | **0.66** | **0.96** | **1.51** | **1.25** |
-| aws4fetch | 19.13 | 19.27 | 20.86 | 20.04 |
 | aws4 | 3.39 | 4.28 | 5.51 | 3.71 |
-| @smithy/signature-v4 | 5.05 | 6.01 | wrong signature | 6.11 |
+| aws4fetch | 19.13 | 19.27 | 20.86 | 20.04 |
 | aws-sig | 30.21 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 45.78 | 49.80 | 55.57 | wrong signature |
-| minio | 3.51 | 3.80 | wrong signature | 4.14 |
-| s3mini | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured |
+| minio | 3.51 | 3.80 | wrong signature | 4.14 |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 | 5.05 | 6.01 | wrong signature | 6.11 |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 | 45.78 | 49.80 | 55.57 | wrong signature |
 
 Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.1 bench-download: 5%; node 26.12.1 bench-part-put: 5%; node 26.12.1 bench-encode: 6%; node 26.12.1 bench-body-1k: 6%; bun 1.4.4 bench-download: 3%; bun 1.4.4 bench-part-put: 3%; bun 1.4.4 bench-encode: 6%; bun 1.4.4 bench-body-1k: 13%. Every gap between sigflint and another library is far outside its band.
 
@@ -185,16 +185,16 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | Library | GET, plain key | part upload (query, headers) | GET, key and query to encode | PUT, 1 KiB body |
 |---|--:|--:|--:|--:|
 | **sigflint** | **1.65** | **2.02** | **2.45** | **2.65** |
-| aws4fetch | 33.51 | 34.42 | 36.77 | 36.87 |
 | aws4 | 6.26 | 8.00 | 9.49 | 7.74 |
-| @smithy/signature-v4 | 13.45 | 12.64 | wrong signature | 19.13 |
+| aws4fetch | 33.51 | 34.42 | 36.77 | 36.87 |
 | aws-sig | 50.71 | wrong signature | wrong signature | wrong signature |
-| @wdl-dev/aws-sigv4 | 89.45 | 87.17 | 89.94 | wrong signature |
-| minio | 26.54 | 28.99 | wrong signature | 41.31 |
-| s3mini | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured |
+| minio | 26.54 | 28.99 | wrong signature | 41.31 |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 | 13.45 | 12.64 | wrong signature | 19.13 |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 | 89.45 | 87.17 | 89.94 | wrong signature |
 
 The Deno table comes from a separate run and its own declaration, [protocol-deno.md](../bench/protocol-deno.md): 3 rounds, the same eight arms, the per-process CPU gate only, with no host admission and no Node process paired against each Deno one. Its two control arms agree within 1.3%, and every gap against another library is far wider than that. The chart above covers Node.js and Bun; Deno is in the table only.
 
@@ -226,13 +226,13 @@ The separate comparison against the older, pre-split S3 implementation is retain
 </picture>
 <!-- END pic-speed-more-node -->
 
-| Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio | s3mini | tiny-oss | lean-s3 | s3-lite-client |
-|---|--:|--:|--:|--:|--:|--:|--:| --: | --: | --: | --: |
-| DynamoDB POST, JSON body | **1.31** | wrong signature | 32.35 (24.7×) | 10.36 (7.9×) | 48.64 (37.2×) | wrong signature | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| API Gateway GET, session token | **1.16** | 4.45 (3.8×) | 30.13 (26.1×) | 8.74 (7.6×) | wrong signature | 74.12 (64.1×) | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| SQS, query parameters | **1.43** | 5.74 (4.0×) | 30.44 (21.3×) | 9.94 (7.0×) | 49.81 (34.9×) | 73.98 (51.9×) | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| presigned URL, API Gateway | **2.98** | 9.92 (3.3×) | 43.87 (14.7×) | 10.52 (3.5×) | wrong signature | wrong signature | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| presigned URL, S3 | **3.19** | 10.21 (3.2×) | 35.53 (11.1×) | 11.10 (3.5×) | wrong signature | wrong signature | 12.55 (3.9×) | Not measured | Not measured | Not measured | Not measured |
+| Request | sigflint | aws4 | aws4fetch | aws-sig | lean-s3 | minio | s3-lite-client | s3mini | @smithy/signature-v4 | tiny-oss | @wdl-dev/aws-sigv4 |
+| --- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: |
+| DynamoDB POST, JSON body | **1.31** | wrong signature | 32.35 (24.7×) | 48.64 (37.2×) | Not measured | wrong signature | Not measured | Not measured | 10.36 (7.9×) | Not measured | wrong signature |
+| API Gateway GET, session token | **1.16** | 4.45 (3.8×) | 30.13 (26.1×) | wrong signature | Not measured | wrong signature | Not measured | Not measured | 8.74 (7.6×) | Not measured | 74.12 (64.1×) |
+| SQS, query parameters | **1.43** | 5.74 (4.0×) | 30.44 (21.3×) | 49.81 (34.9×) | Not measured | wrong signature | Not measured | Not measured | 9.94 (7.0×) | Not measured | 73.98 (51.9×) |
+| presigned URL, API Gateway | **2.98** | 9.92 (3.3×) | 43.87 (14.7×) | wrong signature | Not measured | wrong signature | Not measured | Not measured | 10.52 (3.5×) | Not measured | wrong signature |
+| presigned URL, S3 | **3.19** | 10.21 (3.2×) | 35.53 (11.1×) | wrong signature | Not measured | 12.55 (3.9×) | Not measured | Not measured | 11.10 (3.5×) | Not measured | wrong signature |
 
 **Bun 1.4.4**, microseconds per call (times as long as sigflint in brackets):
 
@@ -243,13 +243,13 @@ The separate comparison against the older, pre-split S3 implementation is retain
 </picture>
 <!-- END pic-speed-more-bun -->
 
-| Request | sigflint | aws4 | aws4fetch | @smithy/signature-v4 | aws-sig | @wdl-dev/aws-sigv4 | minio | s3mini | tiny-oss | lean-s3 | s3-lite-client |
-|---|--:|--:|--:|--:|--:|--:|--:| --: | --: | --: | --: |
-| DynamoDB POST, JSON body | **0.89** | wrong signature | 17.45 (19.6×) | 6.36 (7.1×) | 30.20 (33.9×) | wrong signature | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| API Gateway GET, session token | **0.78** | 2.77 (3.6×) | 18.03 (23.3×) | 5.83 (7.5×) | wrong signature | 53.06 (68.5×) | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| SQS, query parameters | **1.15** | 3.87 (3.4×) | 19.04 (16.5×) | 7.23 (6.3×) | 31.33 (27.2×) | 56.86 (49.4×) | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| presigned URL, API Gateway | **2.76** | 8.38 (3.0×) | 24.70 (9.0×) | 9.04 (3.3×) | wrong signature | wrong signature | wrong signature | Not measured | Not measured | Not measured | Not measured |
-| presigned URL, S3 | **2.99** | 8.42 (2.8×) | 26.05 (8.7×) | 9.38 (3.1×) | wrong signature | wrong signature | 5.96 (2.0×) | Not measured | Not measured | Not measured | Not measured |
+| Request | sigflint | aws4 | aws4fetch | aws-sig | lean-s3 | minio | s3-lite-client | s3mini | @smithy/signature-v4 | tiny-oss | @wdl-dev/aws-sigv4 |
+| --- | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: | --: |
+| DynamoDB POST, JSON body | **0.89** | wrong signature | 17.45 (19.6×) | 30.20 (33.9×) | Not measured | wrong signature | Not measured | Not measured | 6.36 (7.1×) | Not measured | wrong signature |
+| API Gateway GET, session token | **0.78** | 2.77 (3.6×) | 18.03 (23.3×) | wrong signature | Not measured | wrong signature | Not measured | Not measured | 5.83 (7.5×) | Not measured | 53.06 (68.5×) |
+| SQS, query parameters | **1.15** | 3.87 (3.4×) | 19.04 (16.5×) | 31.33 (27.2×) | Not measured | wrong signature | Not measured | Not measured | 7.23 (6.3×) | Not measured | 56.86 (49.4×) |
+| presigned URL, API Gateway | **2.76** | 8.38 (3.0×) | 24.70 (9.0×) | wrong signature | Not measured | wrong signature | Not measured | Not measured | 9.04 (3.3×) | Not measured | wrong signature |
+| presigned URL, S3 | **2.99** | 8.42 (2.8×) | 26.05 (8.7×) | wrong signature | Not measured | 5.96 (2.0×) | Not measured | Not measured | 9.38 (3.1×) | Not measured | wrong signature |
 
 “Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting bands: Node 3.0% to 7.4%, Bun 3.6% to 13.9%. All measured library comparisons are outside their bands and have non-overlapping ranges.
 
@@ -274,15 +274,15 @@ Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads 
 |---|--:|--:|--:|--:|--:|
 | **sigflint** | **2.6 KiB** | **6** | **0.5 ms** | **86.8 MiB** | **2.2 ms** |
 | aws4 | 9.8 KiB (3.8×) | 24 (4.0×) | 3.3 ms (6.7×) | 86.3 MiB (no clear change) | 3.0 ms (no clear change) |
-| minio | 8.3 KiB (3.2×) | 19 (3.2×) | 17.7 ms (36×) | 88.4 MiB (no clear change) | 15.6 ms (7.1×) |
 | aws4fetch | 29.3 KiB (11×) | 90 (15×) | 16.6 ms (34×) | 103.5 MiB (1.2×) | 17.2 ms (7.8×) |
-| @smithy/signature-v4 | 17.8 KiB (7.0×) | 45 (7.5×) | 17.5 ms (36×) | 87.2 MiB (no clear change) | 10.8 ms (4.9×) |
 | aws-sig | 69.4 KiB (27×) | 46 (7.7×) | 26.7 ms (54×) | 141.0 MiB (1.6×) | 7.9 ms (3.6×) |
-| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 174 (29×) | 36.5 ms (74×) | 99.9 MiB (1.2×) | 17.2 ms (7.8×) |
-| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured | Not measured |
+| minio | 8.3 KiB (3.2×) | 19 (3.2×) | 17.7 ms (36×) | 88.4 MiB (no clear change) | 15.6 ms (7.1×) |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 | 17.8 KiB (7.0×) | 45 (7.5×) | 17.5 ms (36×) | 87.2 MiB (no clear change) | 10.8 ms (4.9×) |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 | 58.0 KiB (23×) | 174 (29×) | 36.5 ms (74×) | 99.9 MiB (1.2×) | 17.2 ms (7.8×) |
 
 **Bun 1.4.4**, plain GET of one key:
 
@@ -290,15 +290,15 @@ Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads 
 |---|--:|--:|--:|--:|--:|
 | **sigflint** | **1.4 KiB** | **3** | **1.0 ms** | **69.4 MiB** | **1.9 ms** |
 | aws4 | 6.4 KiB (4.6×) | 14 (4.7×) | 6.0 ms (6.1×) | 73.3 MiB (no clear change) | 2.5 ms (no clear change) |
-| minio | 7.1 KiB (5.0×) | 16 (5.3×) | 8.4 ms (8.6×) | 73.3 MiB (no clear change) | 14.9 ms (7.9×) |
 | aws4fetch | 14.6 KiB (10×) | 27 (9.0×) | 8.6 ms (8.7×) | 69.8 MiB (no clear change) | 2.8 ms (no clear change) |
-| @smithy/signature-v4 | 13.1 KiB (9.4×) | 24 (8.0×) | 11.0 ms (11×) | 79.0 MiB (1.1×) | 9.6 ms (5.1×) |
 | aws-sig | 47.8 KiB (34×) | 80 (27×) | 30.4 ms (31×) | 83.2 MiB (1.2×) | 3.3 ms (no clear change) |
-| @wdl-dev/aws-sigv4 | 28.3 KiB (20×) | 47 (16×) | 20.0 ms (20×) | 82.2 MiB (1.2×) | 3.5 ms (no clear change) |
-| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured | Not measured |
+| minio | 7.1 KiB (5.0×) | 16 (5.3×) | 8.4 ms (8.6×) | 73.3 MiB (no clear change) | 14.9 ms (7.9×) |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 | 13.1 KiB (9.4×) | 24 (8.0×) | 11.0 ms (11×) | 79.0 MiB (1.1×) | 9.6 ms (5.1×) |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 | 28.3 KiB (20×) | 47 (16×) | 20.0 ms (20×) | 82.2 MiB (1.2×) | 3.5 ms (no clear change) |
 
 Median of 5 rounds, one fresh process per library, runtime and round (for import, each round is the median of 7 fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band, the ranges over the rounds overlap, or the gap is within twice the band (a comparison still unsettled at the cap is shown this way even where its median gap is outside the band, as with most retained-heap comparisons). Across all four workloads, the libraries that sign them correctly allocate 2.0 to 34 times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): heap per call 6%; GC pause 35% to 161%; peak memory 3%; import + first signature 23% to 26%. Every gap shown with a multiplier is more than twice its band, with ranges that do not overlap.
 <!-- END memory -->
@@ -320,16 +320,16 @@ All figures use five rounds on the shipped built files, with seven fresh import 
 | Library | Source, all signers (bytes) | Bundled + minified (bytes) | + gzip | + brotli | Direct dependencies | Installed on disk (bytes) |
 |---|--:|--:|--:|--:|--:|--:|
 | **sigflint** | 42,043 | 5,677 | 2,769 | 2,560 | 0 |  |
-| aws4fetch |  | 7,428 | 2,927 | 2,626 | 0 | 65,541 |
 | aws4 |  | 9,026 | 3,249 | 2,971 | 0 | 23,399 |
-| @smithy/signature-v4 |  | 140,787 | 45,963 | 39,907 | 3 | 106,103 |
+| aws4fetch |  | 7,428 | 2,927 | 2,626 | 0 | 65,541 |
 | aws-sig |  | 9,942 | 4,173 | 3,787 | 0 | 270,403 |
-| @wdl-dev/aws-sigv4 |  | 15,979 | 5,504 | 4,986 | 0 | 82,832 |
-| minio |  | 330,170 | 84,973 | 74,103 | 13 | 2,092,892 |
-| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
-| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
 | lean-s3 | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| minio |  | 330,170 | 84,973 | 74,103 | 13 | 2,092,892 |
 | s3-lite-client | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @smithy/signature-v4 |  | 140,787 | 45,963 | 39,907 | 3 | 106,103 |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| @wdl-dev/aws-sigv4 |  | 15,979 | 5,504 | 4,986 | 0 | 82,832 |
 <!-- END size -->
 
 What a bundle contains depends on what it imports. Minified size of the `node` entry with only the named signers imported (`bench/tiers.mjs`, `bun build --minify`; the other libraries' rows above are the header signer only):

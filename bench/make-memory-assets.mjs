@@ -2,6 +2,7 @@
 // Usage: node make-memory-assets.mjs [summary.json] [out dir]   (defaults: results/memory-summary.json, ../docs/)
 // One chart per resource (bars per signer, one panel per runtime, start at zero, median with the min-max range of the rounds as a whisker).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { compareLibraries } from './comparison-order.mjs';
 import { clientIds } from './client-correctness-data.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
@@ -54,7 +55,9 @@ const NAMES = {
   wdl: '@wdl-dev/aws-sigv4',
   minio: 'minio',
 };
-const ORDER = ['sigflint-A', 'aws4', 'minio', 'aws4fetch', 'smithy', 'aws-sig', 'wdl'];
+const ORDER = [...Object.keys(NAMES), ...clientIds].sort((a, b) =>
+  compareLibraries(NAMES[a] ?? a, NAMES[b] ?? b),
+);
 /** @param {unknown} s */
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const FONT = `font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"`;
@@ -247,7 +250,7 @@ console.log(`wrote ${CHARTS.length * 2} charts to ${outDir}`);
 const fmtCell = (c, arm, unit) => {
   const a = c?.arms[arm];
   if (!a) {
-    return '';
+    return 'Not measured';
   }
   const v = /** @type {(v: number) => string} */ (unitFmt[unit])(a.median);
   if (arm === 'sigflint-A') {
@@ -289,11 +292,8 @@ let md = '';
 for (const rt of ['node', 'bun']) {
   md += `\n**${rt === 'node' ? 'Node 26.12.1' : 'Bun 1.4.4'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
   for (const arm of ORDER) {
-    md += `| ${FULL[arm]} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
+    md += `| ${FULL[arm] ?? arm} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
   }
-  md +=
-    clientIds.map((id) => `| ${id} | ${COLS.map(() => 'Not measured').join(' | ')} |`).join('\n') +
-    '\n';
 }
 // the spread of the allocation ratio over every workload the library signs correctly
 const ratios = /** @type {number[]} */ (

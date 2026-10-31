@@ -1,6 +1,7 @@
 // Draws the README charts as static SVG (a dark and a light file for each) and writes the Markdown tables, all from the
 // files in results/. Usage: node make-assets.mjs  ->  ../docs/*.svg and ../docs/tables.md
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { compareLibraries, sortComparisonTables } from './comparison-order.mjs';
 import { clientGroups, clientIds, ordinaryClientTotal } from './client-correctness-data.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
@@ -177,15 +178,7 @@ for (const g of groups) {
     return { id, version: c.version, pass, fail, na: g.total - pass - fail };
   });
 }
-const order = groups[0].rows
-  .map((r, i) => ({
-    id: r.id,
-    k:
-      /** @type {ScreenRow} */ (groups[0].rows[i]).pass +
-      /** @type {ScreenRow} */ (groups[1].rows[i]).pass,
-  }))
-  .sort((a, b) => b.k - a.k)
-  .map((r) => r.id);
+const order = ids.toSorted((a, b) => compareLibraries(name(a), name(b)));
 out.correctness = (t) => {
   const x0 = 190,
     plotW = 520,
@@ -318,7 +311,7 @@ const runtimes = [
  * @param {string} lib
  */
 const cell = (rt, w, lib) => speed.cells[`${rt}|${w}`].arms[/** @type {string} */ (arm[lib])];
-const libs = Object.keys(arm);
+const libs = Object.keys(arm).sort((a, b) => compareLibraries(name(a), name(b)));
 out.speed = (t) => {
   const panelW = 700,
     x0 = 190,
@@ -341,7 +334,7 @@ out.speed = (t) => {
     const rows = libs
       .map((l) => ({ l, ns: cell(rt, 'bench-download', l)?.medianNs }))
       .filter((r) => r.ns)
-      .sort((a, b) => a.ns - b.ns)
+      .sort((a, b) => compareLibraries(name(a.l), name(b.l)))
       .map((r) => ({
         label: name(r.l),
         value: r.ns / 1000,
@@ -403,6 +396,7 @@ out.speed = (t) => {
     md += `\n**${hdr(rt)}**\n\n| Library | ${workloads.map((w) => w[1]).join(' | ')} |\n|---|${workloads.map(() => '--:').join('|')}|\n`;
     md +=
       [...libs, ...clientIds]
+        .sort((a, b) => compareLibraries(name(a), name(b)))
         .map(
           (l) =>
             `| ${l === 'sigflint' ? '**sigflint**' : name(l)} | ${workloads.map(([w]) => (l === 'sigflint' ? `**${cellText(rt, w, l)}**` : cellText(rt, w, l))).join(' | ')} |`,
@@ -431,7 +425,7 @@ const sizeRows = [
 out.size = (t) => {
   const rows = sizeRows
     .map(([id, lib]) => ({ lib, s: sizes[id] }))
-    .sort((a, b) => a.s.gzipBytes - b.s.gzipBytes)
+    .sort((a, b) => compareLibraries(name(a.lib), name(b.lib)))
     .map(({ lib, s }) => ({
       label: name(lib),
       value: s.gzipBytes / 1000,
@@ -502,7 +496,7 @@ const cLibs = [
   'wdl',
   'minio',
   ...clientIds,
-];
+].sort((a, b) => compareLibraries(name(a), name(b)));
 /**
  * @param {string} lib
  * @param {string} col
@@ -658,7 +652,9 @@ out['compat-more'] = (t) => {
   const x0 = 190,
     plotW = 520,
     rowH = 28;
-  const idsMore = Object.keys(/** @type {(typeof moreGroups)[number]} */ (moreGroups[0]).rows);
+  const idsMore = Object.keys(/** @type {(typeof moreGroups)[number]} */ (moreGroups[0]).rows).sort(
+    (a, b) => compareLibraries(name(a), name(b)),
+  );
   let o = header(
     t,
     'Same signature as botocore: other services and presigned URLs (higher is better)',
@@ -788,7 +784,7 @@ const moreRows = (r) => {
       });
     }
   }
-  rows.sort((a, b) => a.value - b.value);
+  rows.sort((a, b) => compareLibraries(a.label, b.label));
   return { rows, wrong, cannot };
 };
 /** @param {string} runtime */
@@ -942,7 +938,7 @@ for (const [id, draw] of Object.entries(out)) {
     writeFileSync(`${docs}${id}-${mode}.svg`, draw(t));
   }
 }
-writeFileSync(`${docs}tables.md`, tables.join('\n\n') + '\n');
+writeFileSync(`${docs}tables.md`, sortComparisonTables(tables.join('\n\n') + '\n'));
 
 // fill the marked blocks in the README: the chart (dark and light) and the table under it
 const sections = [
@@ -983,7 +979,7 @@ for (const [key, alt] of [
   }
   readme = readme.replace(block, (_, a, b) => `${a}\n${picture}\n${b}`);
 }
-writeFileSync(`${here}../docs/benchmarks.md`, readme);
+writeFileSync(`${here}../docs/benchmarks.md`, sortComparisonTables(readme));
 console.log(
   'wrote',
   Object.keys(out)
