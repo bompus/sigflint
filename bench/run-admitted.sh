@@ -47,7 +47,7 @@ BASE=${BASE:-$HERE/frozen}
   exit 4
 }
 LOCK=${BENCH_LOCK:-$HOME/.cache/setupLinuxHost/post-upgrade-bench.lock}
-mkdir -p "${LOCK%/*}"
+mkdir -p "$(dirname "$LOCK")"
 exec 9>"$LOCK"
 flock -n 9 || {
   echo "lock held by another phase; blocked, nothing waited for $(date -u +%FT%TZ)"
