@@ -7,7 +7,20 @@ const rows = readFileSync(/** @type {string} */ (rawPath), 'utf8')
   .split('\n')
   .filter(Boolean)
   .map((l) => JSON.parse(l));
-const ARMS = ['sigflint-A', 'aws4fetch', 'aws4', 'smithy', 'aws-sig', 'wdl', 'minio', 'sigflint-B'];
+const ARMS = [
+  'sigflint-A',
+  'aws4fetch',
+  'aws4',
+  'smithy',
+  'aws-sig',
+  'wdl',
+  'minio',
+  's3mini',
+  'tiny-oss',
+  'lean-s3',
+  's3-lite-client',
+  'sigflint-B',
+];
 const BASE = 'sigflint-A',
   CONTROL = 'sigflint-B';
 

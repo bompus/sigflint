@@ -86,8 +86,8 @@ rtseq() {
 }
 LOGDIR=$R/memory-logs
 mkdir -p "$LOGDIR"
-ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio sigflint-B)
-declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio [none]=none)
+ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio s3mini tiny-oss lean-s3 s3-lite-client sigflint-B)
+declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio [s3mini]=s3mini ["tiny-oss"]=tiny-oss ["lean-s3"]=lean-s3 ["s3-lite-client"]=s3-lite-client [none]=none)
 
 busy() {
   read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ </proc/stat
