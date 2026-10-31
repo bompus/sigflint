@@ -94,16 +94,16 @@ Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd thro
 
 ### Other services and presigned URLs
 
-| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |
-|---|--:|--:|--:|
-| **sigflint** | 1,622 / 1,622 | 696 / 696 | 777 / 777 |
-| aws4 | 930 / 1,622 | 696 / 696 | 777 / 777 |
-| aws4fetch | 1,371 / 1,371 (251 unsupported) | 696 / 696 | 777 / 777 |
-| aws-sig | 776 / 1,622 | 183 / 696 | 0 / 777 |
-| lean-s3 | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 128 (649 unsupported) |
-| minio | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 598 / 777 |
-| s3-lite-client | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 673 / 673 (104 unsupported) |
-| s3mini | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 263 / 337 (440 unsupported) |
-| @smithy/signature-v4 | 1,622 / 1,622 | 696 / 696 | 777 / 777 |
-| tiny-oss | 1,190 / 1,301 (321 unsupported) | 0 / 0 (696 unsupported) | 224 / 453 (324 unsupported) |
-| @wdl-dev/aws-sigv4 | 826 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (777 unsupported) |
+| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, other services, payload opt-out (127) | Presigned URLs, S3 (777) |
+|---|--:|--:|--:|--:|
+| **sigflint** | 1,622 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| aws4 | 930 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| aws4fetch | 1,371 / 1,371 (251 unsupported) | 696 / 696 | 0 / 127 | 777 / 777 |
+| aws-sig | 776 / 1,622 | 183 / 696 | 0 / 0 (127 unsupported) | 0 / 777 |
+| lean-s3 | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 128 (649 unsupported) |
+| minio | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 598 / 777 |
+| s3-lite-client | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 673 / 673 (104 unsupported) |
+| s3mini | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 263 / 337 (440 unsupported) |
+| @smithy/signature-v4 | 1,622 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| tiny-oss | 1,190 / 1,301 (321 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 224 / 453 (324 unsupported) |
+| @wdl-dev/aws-sigv4 | 826 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 0 (777 unsupported) |

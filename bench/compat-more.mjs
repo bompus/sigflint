@@ -231,6 +231,16 @@ const header = {
       .slice(-64);
   },
 };
+/**
+ * aws-sig always hashes the body: sending `x-amz-content-sha256` does not make it sign `UNSIGNED-PAYLOAD`, and it
+ * offers no payload-hash option, so it cannot express a payload opt-out outside S3.
+ * @param {MCase} c
+ */
+const optOutUnsigned = (c) => {
+  if (c.service !== 's3' && c.unsigned) {
+    throw new Error('no payload opt-out');
+  }
+};
 // presigned URLs: returns the X-Amz-Signature value
 /** @type {Record<string, Signer>} */
 const presign = {
@@ -246,6 +256,8 @@ const presign = {
           service: c.service,
           region: c.region,
           signQuery: true,
+          // the payload opt-out header carries the hash and is not signed, as the reference signs without it
+          extraHeadersToIgnore: c.unsigned ? { 'x-amz-content-sha256': true } : undefined,
         },
         creds(c),
       ),
@@ -264,13 +276,15 @@ const presign = {
     return sigFromUrl(r.url);
   },
   async smithy(c) {
-    const s3 = c.service === 's3';
+    // S3 presigns with an unsigned payload; any other service does when the caller opts out. The header carries the
+    // payload hash to the signer and is left unhoisted and unsigned, as the reference signs only `host`.
+    const unsigned = c.service === 's3' || c.unsigned;
     const u = new URL(c.href);
     const r = await smithyFor(c).presign(
       smithyReq(
         c,
         u,
-        s3
+        unsigned
           ? { headers: { host: u.host, ...c.headers, 'x-amz-content-sha256': 'UNSIGNED-PAYLOAD' } }
           : {},
       ),
@@ -278,12 +292,13 @@ const presign = {
         expiresIn: c.expires,
         signingDate: date(c),
         unhoistableHeaders: new Set(['x-amz-content-sha256', ...Object.keys(c.headers)]),
-        unsignableHeaders: new Set(s3 ? ['x-amz-content-sha256'] : []),
+        unsignableHeaders: new Set(unsigned ? ['x-amz-content-sha256'] : []),
       },
     );
     return r.query['X-Amz-Signature'];
   },
   'aws-sig'(c) {
+    optOutUnsigned(c);
     const s = frozen(c, () =>
       signedQuery(
         {
