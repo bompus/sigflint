@@ -1,5 +1,5 @@
 // Bundles each signer's entry with its dependencies (node and bun builtins external) and measures it.
-// Usage: node sizes.mjs -> results/sizes.json (needs bun to bundle)
+// Usage: node sizes.mjs -> results/sizes.json (needs bun to bundle; run compat/build-clients.mjs first for the four S3 clients)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync, statSync, readdirSync } from 'node:fs';
 import { gzipSync, brotliCompressSync, constants } from 'node:zlib';
@@ -16,6 +16,28 @@ const entries = {
   'aws-sig': { entry: 'aws-sig.mjs', pkg: 'aws-sig' },
   wdl: { entry: 'wdl.mjs', pkg: '@wdl-dev/aws-sigv4' },
   minio: { entry: 'minio.mjs', pkg: 'minio' },
+  // The four S3 clients: tiny-oss and lean-s3 are pinned GitHub sources (their packages do not export the signing core), so they
+  // have no package size; s3mini's signer is private to its client class, so its bundle is the whole client.
+  s3mini: {
+    entry: 's3mini.mjs',
+    pkg: 's3mini',
+    note: 'the whole client class: its signer is not exported',
+  },
+  'tiny-oss': {
+    entry: 'tiny-oss.mjs',
+    pkg: null,
+    note: 'signing core from the pinned source, as compiled by compat/build-clients.mjs',
+  },
+  'lean-s3': {
+    entry: 'lean-s3.mjs',
+    pkg: null,
+    note: 'signing core from the pinned source, as compiled by compat/build-clients.mjs',
+  },
+  's3-lite-client': {
+    entry: 's3-lite-client.mjs',
+    pkg: '@bradenmacdonald/s3-lite-client',
+    note: 'signing function only, as compiled by compat/build-clients.mjs',
+  },
 };
 /**
  * @param {string} d
