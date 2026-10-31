@@ -1,1 +1,1 @@
-export * from '../compat/compiled/tiny-oss.mjs';
+export { getAwsSignature, awsUriEscapePath } from '../compat/compiled/tiny-oss.mjs';
