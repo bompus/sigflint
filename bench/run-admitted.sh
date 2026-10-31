@@ -195,13 +195,10 @@ memproc() { # memproc <alloc|run> <arm> <rt> <round>
   if [ "$rt" != node ] && ((rc == 0)); then jsc_rows "$err" "$arm" "$round" "$mode" "$rt"; fi
   [ "$rt" = node ] && rm -f "$err"
 }
-shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
-  local kind=$1 arm=$2 rt=$3 round=$4 rep=$5 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
+shortproc() { # shortproc cache <arm> <rt> <round> <rep>
+  local arm=$2 rt=$3 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
   sw0=$(swapfree)
-  if [ "$kind" = import ]; then
-    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/import-time.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 2>&1)
-    rc=$?
-  elif [ "$rt" = node ]; then
+  if [ "$rt" = node ]; then
     out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" --expose-gc "$HERE/cache.mjs" "$NEW/node.js" 2>&1)
     rc=$?
   else
@@ -244,20 +241,30 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
       ;;
   esac done
 }
-run_import_round() { # part D: one unit is a whole round; REPS fresh processes per arm and runtime, the control `none` included, interleaved
-  local round=$1 rt rep arm
+run_import_round() { # part D: one unit is a whole round; Hyperfine times REPS cold starts of each arm and of the control `none` (the harness without a library) for each runtime
+  local round=$1 rt arm hf
   : >"$TMP"
   local RTS
   mapfile -t RTS < <(rtseq "$round")
   local ORDER=("${ARMS[@]}")
   ((round % 2 == 0)) && mapfile -t ORDER < <(printf '%s\n' "${ARMS[@]}" | tac)
-  for rt in "${RTS[@]}"; do for rep in $(seq 1 "$REPS"); do
+  for rt in "${RTS[@]}"; do
     gate || {
-      echo "{\"round\":$round,\"rep\":$rep,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
       continue
     }
-    for arm in none "${ORDER[@]}"; do shortproc import "$arm" "$rt" "$round" "$rep"; done
-  done; done
+    hf="$LOGDIR/import-$rt-r$round.json"
+    local args=(-N --style none --warmup 1 --runs "$REPS" --ignore-failure --export-json "$hf")
+    for arm in none "${ORDER[@]}"; do
+      args+=(--command-name "$arm" "$(printf '%q ' "$(rtbin "$rt")" "$HERE/import-once.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")")")
+    done
+    rm -f "$hf"
+    if hyperfine "${args[@]}" >/dev/null 2>&1 && [ -s "$hf" ]; then
+      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
+    else
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine failed\"}" >>"$TMP"
+    fi
+  done
 }
 
 # the units of one round, in this round's order

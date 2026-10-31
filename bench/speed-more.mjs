@@ -1,6 +1,7 @@
 // <bun|node> speed-more.mjs <candidate> [secs=1] : one candidate (sigflint or another library), one process; the workloads beyond S3 headers. See protocol-more.md.
 // Each workload: validate the signature against botocore with a frozen clock (outside the timed region), warm up, then time ~50 ms batches with the real clock.
 import { readFileSync } from 'node:fs';
+import { timeOperation } from './timing.mjs';
 /** @typedef {import('./adapters-more.mjs').MCase} MCase */
 const [candidate, secsArg = '1'] = process.argv.slice(2);
 const secs = Number(secsArg);
@@ -109,47 +110,16 @@ const emit = (o) => console.log(JSON.stringify({ arm, candidate, runtime, ...o }
  * @param {boolean} isSync
  */
 async function measure(id, fn, isSync) {
-  let sink = 0;
-  /** @param {number} n */
-  const batch = async (n) => {
-    const t0 = performance.now();
-    if (isSync) {
-      for (let i = 0; i < n; i++) {
-        sink += fn().length;
-      }
-    } else {
-      for (let i = 0; i < n; i++) {
-        sink += (await fn()).length;
-      }
-    }
-    return performance.now() - t0;
-  };
-  let n = 100,
-    ms = 0;
-  const warmEnd = performance.now() + 300;
-  while (performance.now() < warmEnd) {
-    ms = await batch(n);
-    if (ms < 25) {
-      n *= 2;
-    }
-  }
-  n = Math.max(10, Math.round((n * 50) / Math.max(ms, 1)));
-  /** @type {number[]} */
-  const samples = [];
-  const end = performance.now() + secs * 1000;
-  while (performance.now() < end) {
-    samples.push((await batch(n)) / n);
-  }
-  samples.sort((x, y) => x - y);
-  const ns = /** @type {number} */ (samples[Math.floor(samples.length / 2)]) * 1e6;
+  const t = await timeOperation(fn, isSync, secs);
   emit({
     workload: id,
     status: 'ok',
-    nsPerOp: Math.round(ns),
-    opsPerSec: Math.round(1e9 / ns),
-    batches: samples.length,
-    batchSize: n,
-    sink,
+    nsPerOp: t.nsPerOp,
+    opsPerSec: Math.round(1e9 / t.nsPerOp),
+    batches: t.batches,
+    batchSize: t.batchSize,
+    rmePct: t.rmePct,
+    sink: t.sink,
   });
 }
 for (const [id, w] of Object.entries(workloads)) {

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Historical: this script ran the earlier protocols that cite it, with the timing harness of the commit those protocols record (a hand-written batch timer and import-time.mjs). Current measurements use run-admitted.sh, Tinybench and Hyperfine.
 # The runs of protocol-more.md: part A (regression against bench/frozen) -> results/speed-regression.jsonl, part B (other services, presigned URLs) -> results/speed-more.jsonl.
 # Usage: bench/run-more.sh   (holds the host lock for the whole run; prints one progress line per round)
 set -u

@@ -8,11 +8,11 @@
 //   bracketed by two eden collections and by marker lines on stderr; parse-jsc-log.mjs adds up the heap bytes allocated between collections.
 //   Native memory (the hash state) is outside both numbers.
 // candidate calib: not a signer; allocates a known amount per call (arrays of 512 and 2048 elements) to check both methods.
-// mode run: warm-up, forced full GC, baseline; pass 1 of N1 calls (GC count and time on Node, CPU time, wall time, peak RSS);
+// mode run: warm-up, forced full GC, baseline; pass 1 of N1 calls (GC count and time on Node, CPU time from process.cpuUsage, peak RSS);
 //   forced GC; pass 2 of N2 calls; forced GC. Retained growth = managed heap after a forced GC minus the previous forced-GC reading.
 //   Forced collections are never inside a timed or counted pass.
 import { readFileSync } from 'node:fs';
-import { performance, PerformanceObserver } from 'node:perf_hooks';
+import { PerformanceObserver } from 'node:perf_hooks';
 import v8 from 'node:v8';
 import { freezeClock } from './adapters.mjs';
 import { loadCandidate } from './adapters-clients.mjs';
@@ -243,7 +243,6 @@ for (const id of workloads) {
   // pass 1: heap-size drops are counted in chunks of CHUNK on both runtimes (a lower bound on collections); Node's GC observer gives the exact count and time
   mark(`BEGIN ${id} run-pass1 ${N1}`);
   const cpu0 = process.cpuUsage();
-  const t0 = performance.now();
   let drops = 0,
     prev = heap(),
     peakHeap = prev,
@@ -260,7 +259,6 @@ for (const id of workloads) {
     }
     prev = h;
   }
-  const wallMs = performance.now() - t0;
   const cpu = process.cpuUsage(cpu0);
   mark('END');
   const gcs = isBun ? null : await takeGc();
@@ -300,9 +298,7 @@ for (const id of workloads) {
       heapDrops: drops,
       cpuUserMs: cpu.user / 1000,
       cpuSysMs: cpu.system / 1000,
-      wallMs,
       cpuUsPerCall: (cpu.user + cpu.system) / N1,
-      wallUsPerCall: (wallMs * 1000) / N1,
     }),
   );
 }

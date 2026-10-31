@@ -1,4 +1,5 @@
 #!/bin/bash
+# Historical: this script ran the earlier protocols that cite it, with the timing harness of the commit those protocols record (a hand-written batch timer and import-time.mjs). Current measurements use run-admitted.sh, Tinybench and Hyperfine.
 # Memory matrix (see memory-protocol.md): allocation, GC / CPU / growth, import time and key-cache retention.
 # One process per (round, runtime, arm, kind); arm order reversed on even rounds; every process under a cgroup memory cap.
 # Linux only (/proc). Usage: [BENCH_LOCK=/path/to/lockfile] [REPS=7] [KINDS="alloc run cache import"] run-memory.sh <dir with node.js and bun.js, SHA256SUMS> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5)

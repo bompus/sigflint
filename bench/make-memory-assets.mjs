@@ -110,7 +110,7 @@ const CHARTS = [
     metric: 'firstMs',
     workload: '-',
     title: 'Start-up: import and first signature',
-    sub: 'Fresh process, runtime start-up excluded, lower is better',
+    sub: 'Fresh process, command time minus the same process without the library, lower is better',
   },
 ];
 

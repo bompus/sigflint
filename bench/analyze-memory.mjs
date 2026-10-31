@@ -39,8 +39,12 @@ const METRICS = {
   gcMs: { label: 'GC pause per 10,000 calls', unit: 'ms', rel: 3, abs: 1 },
   cpuUs: { label: 'CPU time per call (user+system, whole process)', unit: 'µs', rel: 3, abs: 0.1 },
   maxRss: { label: 'peak RSS of the whole process', unit: 'B', rel: 3, abs: 2 * 1048576 },
-  importMs: { label: 'import + client build', unit: 'ms', rel: 3, abs: 1 },
-  firstMs: { label: 'import + first signature', unit: 'ms', rel: 3, abs: 1 },
+  firstMs: {
+    label: 'start-up cost: import + first signature (command time minus the no-library control)',
+    unit: 'ms',
+    rel: 3,
+    abs: 1,
+  },
   cacheEntry: {
     label: 'heap per cached signing key (slope 0 to 1,000 entries)',
     unit: 'B',
@@ -123,18 +127,22 @@ for (const [k, v] of Object.entries(bunAlloc)) {
     );
   }
 }
-// import time: median of the REPS processes of a round
+// start-up cost: the median command time of a round's REPS cold starts of the arm, minus the median of the same round's cold
+// starts of the control (the harness without a library), both timed by Hyperfine
 /** @type {Record<string, any[]>} */
 const imp = {};
-for (const r of ok.filter((x) => x.kind === 'import' && x.ok)) {
+for (const r of ok.filter((x) => x.kind === 'import')) {
   (imp[`${r.rt}|${r.armTag}|${r.round}`] ??= []).push(r);
 }
 for (const [k, list] of Object.entries(imp)) {
   const [rt, arm, round] = /** @type {[string, string, string]} */ (k.split('|'));
-  put({ m: 'importMs', rt, wl: '-', arm, round: Number(round) }, med(list.map((x) => x.importMs)));
+  const control = imp[`${rt}|none|${round}`];
+  if (arm === 'none' || !control) {
+    continue;
+  }
   put(
     { m: 'firstMs', rt, wl: '-', arm, round: Number(round) },
-    med(list.map((x) => x.importMs + x.firstSignMs)),
+    med(list.map((x) => x.wallMs)) - med(control.map((x) => x.wallMs)),
   );
 }
 
