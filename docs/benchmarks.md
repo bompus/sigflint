@@ -143,7 +143,7 @@ baseline is checked against botocore for every supported new comparison.
 | s3mini | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 263 / 337 (440 unsupported) |
 | @smithy/signature-v4 | 1,622 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
 | tiny-oss | 1,190 / 1,301 (321 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 224 / 453 (324 unsupported) |
-| @wdl-dev/aws-sigv4 | 826 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 0 (777 unsupported) |
+| @wdl-dev/aws-sigv4 | 906 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 0 (777 unsupported) |
 <!-- END compat-table -->
 
 lean-s3 adds `X-Amz-Content-Sha256=UNSIGNED-PAYLOAD` to its presigned URL,
