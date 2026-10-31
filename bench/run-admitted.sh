@@ -34,7 +34,7 @@ NOTADM=$R/rerun-3-not-admitted.jsonl
 # carries the memory cap (CAP), so the observer can subtract the phase's own CPU and watch its counters.
 # PHASE_SCOPE=1 marks the copy that runs inside it.
 if [ -z "${PHASE_SCOPE:-}" ]; then
-  exec systemd-run --user --scope --quiet --collect -p "MemoryMax=${CAP:-2G}" env PHASE_SCOPE=1 bash "$0" "$@"
+  exec systemd-run --user --scope --quiet --collect --expand-environment=no -p "MemoryMax=${CAP:-2G}" env PHASE_SCOPE=1 bash "$0" "$@"
 fi
 case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B) OUT=$R/speed-more.jsonl ;; C | D) OUT=$R/memory-raw.jsonl ;; *)
   echo "unknown part $PART"
@@ -362,7 +362,10 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       exit 6
     }
     PRE_SEQ=$CHECK_SEQ
-    echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC"
+    echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC" || {
+      echo "could not record the start of $UNIT in $REC; not measuring without a counted attempt"
+      exit 7
+    }
     observe_start "$UNIT" "$attempt"
     : >"$TMP"
     OBS_READY=0
@@ -374,19 +377,23 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     fi
     observe_stop
     bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
+    errs=$(grep -c '"status":"error"' "$TMP" || true)
     if check "after $UNIT" && ((bad == 0)) && ((OBS_READY)) && ((OBS_CLEAN)); then
       cat "$TMP" >>"$OUT" || {
         echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"
         exit 7
       }
-      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"observer\":\"$OBS_OUT\"}" >>"$REC"
+      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"observer\":\"$OBS_OUT\"}" >>"$REC" || {
+        echo "could not record the admission of $UNIT in $REC; stopping"
+        exit 7
+      }
       echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
       continue
     fi
     sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
     echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad,\"observerReady\":$OBS_READY,\"observerClean\":$OBS_CLEAN,\"observer\":\"$OBS_OUT\"}" >>"$REC"
     echo "$UNIT not admitted (attempt $attempt of 4, $bad bad rows, observer ready $OBS_READY, clean $OBS_CLEAN); giving up the lock, nothing retried $(date -u +%FT%TZ)"
-    ((bad > 0)) && exit 7
+    ((${errs:-0} > 0)) && exit 7
     exit 6
   done
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
