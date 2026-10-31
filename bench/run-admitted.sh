@@ -16,7 +16,7 @@
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
 # RUNTIMES="node bun143 bun144" measures every unit under each listed runtime label (default "node bun"), in this order in odd rounds and the reverse in even rounds;
 #   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (characters of the label outside A-Za-z0-9_ become _ in the variable name; default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
-# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock held, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
+# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock held, 4 hashes, 6 host not quiet (run again), 7 a unit has errors or its results could not be written, or the part ended with units out of their four attempts (named in the output), 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}
 NEW=${2:?dir}
@@ -367,6 +367,7 @@ observe_stop() { # sets OBS_CLEAN to 1 when the observer ended clean, else 0
   OBS_CLEAN=0
   ((OBS_EARLY == 0)) && ((OBS_RC == 0)) && [ -s "$OBS_OUT" ] && [ "$(bun -e 'try{const o=JSON.parse(await Bun.file(process.argv[1]).text());process.stdout.write(o&&o.clean===true?"1":"0")}catch{process.stdout.write("0")}' "$OBS_OUT")" = 1 ] && OBS_CLEAN=1
 }
+OUT_OF_ATTEMPTS=()
 trap 'observe_terminate; rm -f "$TMP"' EXIT
 for round in $(seq "$FROM" "$ROUNDS"); do
   for arm in $(units_of "$round"); do
@@ -376,8 +377,9 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     prior=$(grep -c "\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\"" "$REC" 2>/dev/null || true)
     attempt=$((${prior:-0} + 1)) # every start counts, an interrupted attempt included
     if ((attempt > 4)); then
-      echo "$UNIT has used its 4 attempts; not measuring it again"
-      exit 7
+      echo "$UNIT has used its 4 attempts; not measuring it again, the rest of the part continues"
+      OUT_OF_ATTEMPTS+=("$UNIT")
+      continue
     fi
     check "before $UNIT" || {
       echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
@@ -421,3 +423,7 @@ for round in $(seq "$FROM" "$ROUNDS"); do
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
 done
 echo "part $PART finished $(date -u +%FT%TZ)"
+if ((${#OUT_OF_ATTEMPTS[@]})); then
+  echo "units left unmeasured after four attempts: ${OUT_OF_ATTEMPTS[*]}"
+  exit 7
+fi

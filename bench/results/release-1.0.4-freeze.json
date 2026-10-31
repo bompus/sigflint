@@ -1,0 +1,32 @@
+{
+  "frozenAt": "2026-10-31T21:38:24Z",
+  "sourceCommit": "c662f0e615f4afa6388696073c043490e826e6da",
+  "sourceTree": "9ff074a5d427f3e6628317b71a4affa7cdb8ca87",
+  "artifacts": {
+    "node.js": "7153026dd6ac0cd8bd7875b665c23beca078aeb968aaefe9fd0fd2ae2d34c2ff",
+    "bun.js": "69009b478cae42d0d920df1b20aaa4f6b2a1e77230ea836dde3c7f790a2d62fd",
+    "note": "identical to the release 1.0.2 artifacts: src is unchanged since v1.0.3 apart from the version field"
+  },
+  "inputs": {
+    "test/corpus.json": "a4f907d61241c241f2bc13edf4cd81f71f7b8d93043cea891b0360191efb9cfe",
+    "test/corpus-presign.json": "b87350155d161c69312ea40b03b1ad98d6434afe1831377cd915c247718fac19",
+    "test/corpus-general.json": "014989b79e5499d1932fc822868f1de6d345e0e778a877a7b326b0aca4b60d7b",
+    "bench/package-lock.json": "d07ad4d0d6ac9702c7e05b93a4d0f0419b11e4249a4748612a8496c5a2436952",
+    "package-lock.json": "d6ef82ece4f687006cc6c79b884ebcab7ae5f49c62d18572f19c9812571088dc"
+  },
+  "runtimes": {
+    "node": "26.13.0",
+    "bun": "1.4.4"
+  },
+  "runners": {
+    "tinybench": "6.2.2",
+    "hyperfine": "2.0.0"
+  },
+  "host": {
+    "kernel": "7.2.12-x64v3-xanmod1",
+    "cpus": 24
+  },
+  "srcTree": "90a032d5d5296cca4471ac13dcacd154e5459ded",
+  "harnessCommit": "c662f0e615f4afa6388696073c043490e826e6da",
+  "harnessNote": "bench/ outside bench/results must equal this commit at the end of the run: git diff <harnessCommit> -- bench \":!bench/results\" is empty"
+}
