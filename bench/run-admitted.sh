@@ -7,7 +7,7 @@
 # past 4 exits 7.
 # Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet>
 #        OBSERVER=<command that samples the host until SIGTERM, then writes one JSON line with "clean": true|false to $OBSERVER_OUT and exits 0 when clean;
-#        bench/observe-unit.py is the one the protocols use> [BENCH_LOCK=<lock file>] [FROM_ROUND=n]
+#        bench/observe-unit.py is the one the protocols use> [BENCH_LOCK=<lock file; default ~/.cache/setupLinuxHost/post-upgrade-bench.lock, the one scheduled jobs honor>] [FROM_ROUND=n]
 #        run-admitted.sh <A|R|B|C|D> <dir with node.js, bun.js and SHA256SUMS> [rounds=3]
 #   A  S3 header matrix, 8 arms                       -> results/speed-raw.jsonl
 #   R  regression check against frozen/ (BASE=<dir> compares against that build instead) -> results/speed-regression.jsonl
@@ -46,7 +46,7 @@ BASE=${BASE:-$HERE/frozen}
   echo "artifact hashes differ; refusing to run"
   exit 4
 }
-exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
+exec 9>"${BENCH_LOCK:-$HOME/.cache/setupLinuxHost/post-upgrade-bench.lock}"
 flock -n 9 || {
   echo "lock held by another phase; blocked, nothing waited for $(date -u +%FT%TZ)"
   exit 3
