@@ -5,6 +5,7 @@
 // the Authorization value; the same adapter work is in every candidate). Prints one JSON line per workload.
 import { readFileSync } from 'node:fs';
 import { loadAdapters, freezeClock } from './adapters.mjs';
+import { timeOperation } from './timing.mjs';
 import { CLIENT_IDS, loadClientAdapters } from './adapters-clients.mjs';
 /** @typedef {import('./adapters.mjs').Case & { sig: string, canonical: string }} CorpusCase */
 
@@ -70,40 +71,8 @@ for (const id of workloads) {
     continue;
   }
 
-  let sink = 0;
-  /** @param {number} n */
-  const batch = async (n) => {
-    const t0 = performance.now();
-    if (a.kind === 'sync') {
-      for (let i = 0; i < n; i++) {
-        sink += a.sign(c).length;
-      }
-    } else {
-      for (let i = 0; i < n; i++) {
-        sink += (await a.sign(c)).length;
-      }
-    }
-    return performance.now() - t0;
-  };
-  // warm up ~0.3 s, learn a batch size of about 50 ms
-  let n = 100,
-    ms = 0;
-  const warmEnd = performance.now() + 300;
-  while (performance.now() < warmEnd) {
-    ms = await batch(n);
-    if (ms < 25) {
-      n *= 2;
-    }
-  }
-  n = Math.max(10, Math.round((n * 50) / Math.max(ms, 1)));
-  /** @type {number[]} */
-  const samples = [];
-  const end = performance.now() + secs * 1000;
-  while (performance.now() < end) {
-    samples.push((await batch(n)) / n);
-  }
-  samples.sort((x, y) => x - y);
-  const nsPerOp = /** @type {number} */ (samples[Math.floor(samples.length / 2)]) * 1e6;
+  const adapter = /** @type {import('./adapters.mjs').Adapter} */ (a);
+  const t = await timeOperation(() => adapter.sign(c), adapter.kind === 'sync', secs);
   console.log(
     JSON.stringify({
       arm,
@@ -111,11 +80,12 @@ for (const id of workloads) {
       runtime,
       workload: id,
       status: 'ok',
-      nsPerOp: Math.round(nsPerOp),
-      opsPerSec: Math.round(1e9 / nsPerOp),
-      batches: samples.length,
-      batchSize: n,
-      sink,
+      nsPerOp: t.nsPerOp,
+      opsPerSec: Math.round(1e9 / t.nsPerOp),
+      batches: t.batches,
+      batchSize: t.batchSize,
+      rmePct: t.rmePct,
+      sink: t.sink,
     }),
   );
 }

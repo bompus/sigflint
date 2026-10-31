@@ -7,7 +7,7 @@
 # past 4 exits 7.
 # Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet>
 #        OBSERVER=<command that samples the host until SIGTERM, then writes one JSON line with "clean": true|false to $OBSERVER_OUT and exits 0 when clean;
-#        bench/observe-unit.py is the one the protocols use> [BENCH_LOCK=<lock file>] [FROM_ROUND=n]
+#        bench/observe-unit.py is the one the protocols use> [BENCH_LOCK=<lock file; default ~/.cache/setupLinuxHost/post-upgrade-bench.lock, the one scheduled jobs honor>] [FROM_ROUND=n]
 #        run-admitted.sh <A|R|B|C|D> <dir with node.js, bun.js and SHA256SUMS> [rounds=3]
 #   A  S3 header matrix, 8 arms                       -> results/speed-raw.jsonl
 #   R  regression check against frozen/ (BASE=<dir> compares against that build instead) -> results/speed-regression.jsonl
@@ -46,7 +46,9 @@ BASE=${BASE:-$HERE/frozen}
   echo "artifact hashes differ; refusing to run"
   exit 4
 }
-exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
+LOCK=${BENCH_LOCK:-$HOME/.cache/setupLinuxHost/post-upgrade-bench.lock}
+mkdir -p "$(dirname "$LOCK")"
+exec 9>"$LOCK"
 flock -n 9 || {
   echo "lock held by another phase; blocked, nothing waited for $(date -u +%FT%TZ)"
   exit 3
@@ -195,13 +197,10 @@ memproc() { # memproc <alloc|run> <arm> <rt> <round>
   if [ "$rt" != node ] && ((rc == 0)); then jsc_rows "$err" "$arm" "$round" "$mode" "$rt"; fi
   [ "$rt" = node ] && rm -f "$err"
 }
-shortproc() { # shortproc <import|cache> <arm> <rt> <round> <rep>
-  local kind=$1 arm=$2 rt=$3 round=$4 rep=$5 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
+shortproc() { # shortproc cache <arm> <rt> <round> <rep>
+  local arm=$2 rt=$3 out rc sw0 sw1 tag="\"round\":$4,\"rep\":$5,\"kind\":\"$1\",\"armTag\":\"$2\",\"rt\":\"$3\""
   sw0=$(swapfree)
-  if [ "$kind" = import ]; then
-    out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/import-time.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 2>&1)
-    rc=$?
-  elif [ "$rt" = node ]; then
+  if [ "$rt" = node ]; then
     out=$(ARM=$arm "$CAPPED" "$CAP" "$(rtbin "$rt")" --expose-gc "$HERE/cache.mjs" "$NEW/node.js" 2>&1)
     rc=$?
   else
@@ -244,20 +243,37 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
       ;;
   esac done
 }
-run_import_round() { # part D: one unit is a whole round; REPS fresh processes per arm and runtime, the control `none` included, interleaved
-  local round=$1 rt rep arm
+run_import_round() { # part D: one unit is a whole round; Hyperfine times REPS cold starts of each arm and of the control `none` (the harness without a library) for each runtime
+  local round=$1 rt arm hf
   : >"$TMP"
   local RTS
   mapfile -t RTS < <(rtseq "$round")
   local ORDER=("${ARMS[@]}")
   ((round % 2 == 0)) && mapfile -t ORDER < <(printf '%s\n' "${ARMS[@]}" | tac)
-  for rt in "${RTS[@]}"; do for rep in $(seq 1 "$REPS"); do
+  for rt in "${RTS[@]}"; do
     gate || {
-      echo "{\"round\":$round,\"rep\":$rep,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-load\",\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
       continue
     }
-    for arm in none "${ORDER[@]}"; do shortproc import "$arm" "$rt" "$round" "$rep"; done
-  done; done
+    hf="$LOGDIR/import-$rt-r$round.json"
+    local args=(-N --style none --warmup 1 --runs "$REPS" --ignore-failure --export-json "$hf")
+    for arm in none "${ORDER[@]}"; do
+      args+=(--command-name "$arm" "$(printf '%q ' "$(rtbin "$rt")" "$HERE/import-once.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")")")
+    done
+    rm -f "$hf"
+    local sw0 sw1
+    sw0=$(swapfree)
+    hyperfine "${args[@]}" >/dev/null 2>&1
+    local hrc=$?
+    sw1=$(swapfree)
+    if (($((sw1 - sw0)) < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the processes ran
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$((sw1 - sw0))}" >>"$TMP"
+    elif ((hrc == 0)) && [ -s "$hf" ]; then
+      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
+    else
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine failed\"}" >>"$TMP"
+    fi
+  done
 }
 
 # the units of one round, in this round's order

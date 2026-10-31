@@ -1,4 +1,5 @@
 #!/bin/bash
+# Historical: this script ran the earlier protocols that cite it, with the timing harness of the commit those protocols record (a hand-written batch timer and import-time.mjs). Current measurements use run-admitted.sh, Tinybench and Hyperfine.
 # Speed matrix: arms x runtimes x rounds, one process per (round, runtime, arm), arm order reversed on even rounds.
 # Records the machine state (whole-machine CPU busy, load, swap) around every process; Linux only (/proc).
 # Usage: [BENCH_LOCK=/path/to/lockfile] [FROM_ROUND=n] [RUNTIMES="bun node"] [DENO=deno] run-matrix.sh <frozen dir with node.js and bun.js> <out.jsonl> [rounds=3]   (FROM_ROUND=4 with rounds=5 adds rounds 4 and 5 to an earlier file)
