@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Existing benchmark figures are unchanged.
+
 - Compare the signing cores of s3mini, tiny-oss, lean-s3 and s3-lite-client against the botocore corpus, with supported subsets and a shared-request comparison. This adds correctness evidence only.
 
 - Documentation only: Cloudflare R2 agrees with signing a raw `+` in an S3 path as a space. Four read-only `GET` requests: R2 accepted the signature for `+` signed as `%20` and rejected the same URL signed as `%2B`. Which object it then names was not tested. `docs/guide.md` and the README say so.

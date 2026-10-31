@@ -2,6 +2,7 @@
 // Usage: node make-memory-assets.mjs [summary.json] [out dir]   (defaults: results/memory-summary.json, ../docs/)
 // One chart per resource (bars per signer, one panel per runtime, start at zero, median with the min-max range of the rounds as a whisker).
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { clientIds } from './client-correctness-data.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
 const [summaryPath = `${here}results/memory-summary.json`, outDir = `${here}../docs/`] =
@@ -227,6 +228,8 @@ for (const ch of CHARTS) {
       { size: 11, fill: t.muted },
     );
     y += 20;
+    body += text(20, y, `Not measured: ${clientIds.join(', ')}.`, { size: 11, fill: t.muted });
+    y += 20;
     writeFileSync(
       `${outDir}${ch.file}-${name}.svg`,
       `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${y}" viewBox="0 0 ${w} ${y}" role="img" aria-labelledby="t" ${FONT}>\n<title id="t">${esc(ch.title)}</title>\n<rect width="${w}" height="${y}" rx="8" fill="${t.bg}"/>\n${body}\n</svg>\n`,
@@ -288,6 +291,9 @@ for (const rt of ['node', 'bun']) {
   for (const arm of ORDER) {
     md += `| ${FULL[arm]} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
   }
+  md +=
+    clientIds.map((id) => `| ${id} | ${COLS.map(() => 'Not measured').join(' | ')} |`).join('\n') +
+    '\n';
 }
 // the spread of the allocation ratio over every workload the library signs correctly
 const ratios = /** @type {number[]} */ (

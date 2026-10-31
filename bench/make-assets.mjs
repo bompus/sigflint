@@ -1,6 +1,7 @@
 // Draws the README charts as static SVG (a dark and a light file for each) and writes the Markdown tables, all from the
 // files in results/. Usage: node make-assets.mjs  ->  ../docs/*.svg and ../docs/tables.md
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { clientGroups, clientIds, ordinaryClientTotal } from './client-correctness-data.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
 const docs = `${here}../docs/`;
@@ -80,9 +81,13 @@ const header = (t, title, sub) =>
 
 /**
  * @param {Theme} t
- * @param {{ w: number, h: number, title: string, desc: string, body: string }} parts
+ * @param {{ w: number, h: number, title: string, desc: string, body: string, note?: string }} parts
  */
-function doc(t, { w, h, title, desc, body }) {
+function doc(t, { w, h, title, desc, body, note }) {
+  if (note) {
+    h += 28;
+    body += text(20, h - 12, note, { size: 11, fill: t.muted });
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="t d" ${FONT}>
 <title id="t">${esc(title)}</title><desc id="d">${esc(desc)}</desc>
 <rect width="${w}" height="${h}" rx="8" fill="${t.bg}"/>
@@ -149,13 +154,14 @@ const tables = [];
 // Two groups: ordinary requests, and the edge cases (stray %, a raw + in the path, empty query names, headers some
 // libraries never sign). Session-token cases are left out: only sigflint is run on them (316 of 316 pass).
 const screen = read('screen-node.json');
+const unmeasured = `Not measured: ${clientIds.join(', ')}.`;
 /** @typedef {{ id: string, version: string } & Tally} ScreenRow */
 /** @typedef {{ key: string, title: string, tags: string[], total: number, rows: ScreenRow[] }} Group */
 const groups = /** @type {[Group, Group]} */ ([
-  { key: 'ordinary', title: 'Ordinary requests', tags: ['well-formed'] },
+  { key: 'ordinary', title: 'Serialized URL input: ordinary requests', tags: ['well-formed'] },
   {
     key: 'edge',
-    title: 'Edge cases',
+    title: 'Serialized URL input: edge cases',
     tags: ['malformed', 'plus-in-path', 'empty-query-name', 'unsigned-header'],
   },
 ]);
@@ -187,17 +193,17 @@ out.correctness = (t) => {
   let o = header(
     t,
     'Same signature as botocore (higher is better)',
-    'Every library signs the same request with the same key and clock. A signature that differs by one character fails.',
+    'Compare rows within each input group. Different signatures are not necessarily rejected requests.',
   );
   let y = 74;
-  for (const g of groups) {
+  for (const g of [...groups, ...clientGroups]) {
     o += text(20, y, `${g.title}: ${fmtInt(g.total)} requests`, {
       size: 13,
       fill: t.text,
       weight: 600,
     });
     y += 14;
-    for (const id of order) {
+    for (const id of g.key.startsWith('client-') ? g.rows.map((r) => r.id) : order) {
       const r = /** @type {ScreenRow} */ (g.rows.find((x) => x.id === id)),
         ours = id === 'sigflint';
       o += text(x0 - 10, y + 14, name(id), {
@@ -218,7 +224,7 @@ out.correctness = (t) => {
         }
         x += w;
       }
-      o += text(x0 + plotW + 10, y + 14, `${((100 * r.pass) / g.total).toFixed(1)}%`, {
+      o += text(x0 + plotW + 10, y + 14, `${fmtInt(r.pass)}/${fmtInt(g.total - r.na)}`, {
         size: 12,
         fill: t.text,
         weight: ours ? 700 : 400,
@@ -230,20 +236,22 @@ out.correctness = (t) => {
   for (const [dx, col, label] of /** @type {[number, string, string][]} */ ([
     [0, t.pass, 'same signature'],
     [130, t.fail, 'different signature or error'],
+    [350, t.na, 'unsupported'],
   ])) {
     o +=
       `<rect x="${x0 + dx}" y="${y - 10}" width="12" height="12" fill="${col}"/>` +
       text(x0 + dx + 18, y, label, { size: 12, fill: t.muted });
   }
   return doc(t, {
-    w: 780,
+    w: 840,
     h: y + 20,
     title: 'Correctness against botocore',
-    desc: groups
+    desc: [...groups, ...clientGroups]
       .map(
         (g) =>
           `${g.title}: ` +
-          order
+          g.rows
+            .map((r) => r.id)
             .map(
               (id) =>
                 `${name(id)} ${/** @type {ScreenRow} */ (g.rows.find((r) => r.id === id)).pass}/${g.total}`,
@@ -255,19 +263,20 @@ out.correctness = (t) => {
   });
 };
 tables.push(
-  "### Correctness\n\nRequests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: the screen records the candidate's package version before the release version bump.\n\n| Library | Version | Ordinary requests (" +
-    fmtInt(groups[0].total) +
-    ') | Edge cases (' +
-    fmtInt(groups[1].total) +
-    ') |\n|---|---|--:|--:|\n' +
+  '### Correctness\n\nMatches against botocore with the same key and clock. Compare libraries within an input method. Counts show matches / supported requests; Not assessed means no result was collected. Versions identify the recorded runs.\n\n| Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |\n|---|---|---|--:|--:|--:|--:|\n' +
     order
       .map((id) => {
-        /** @param {Group} g */
-        const cell = (g) => {
-          const r = /** @type {ScreenRow} */ (g.rows.find((x) => x.id === id));
-          return `${fmtInt(r.pass)} (${((100 * r.pass) / g.total).toFixed(1)}%)`;
-        };
-        return `| ${id === 'sigflint' ? '**sigflint**' : name(id)} | ${/** @type {ScreenRow} */ (groups[0].rows.find((r) => r.id === id)).version} | ${cell(groups[0])} | ${cell(groups[1])} |`;
+        const ordinary = /** @type {ScreenRow} */ (groups[0].rows.find((r) => r.id === id));
+        const edge = /** @type {ScreenRow} */ (groups[1].rows.find((r) => r.id === id));
+        return `| ${id === 'sigflint' ? '**sigflint**' : name(id)} | Serialized URL | ${ordinary.version} | ${fmtInt(ordinary.pass)} / ${fmtInt(groups[0].total)} | ${ordinary.na} | ${fmtInt(edge.pass)} / ${fmtInt(groups[1].total)} | Not assessed |`;
+      })
+      .join('\n') +
+    '\n' +
+    clientGroups[0].rows
+      .map((r) => {
+        const common = /** @type {ScreenRow} */ (clientGroups[1].rows.find((c) => c.id === r.id));
+        const version = ['lean-s3', 'tiny-oss'].includes(r.id) ? `${r.version} source` : r.version;
+        return `| ${r.id === 'sigflint' ? '**sigflint**' : name(r.id)} | Decoded key | ${version} | ${fmtInt(r.pass)} / ${fmtInt(ordinaryClientTotal - r.na)} | ${fmtInt(r.na)} | Not assessed | ${fmtInt(common.pass)} / ${fmtInt(clientGroups[1].total)} |`;
       })
       .join('\n'),
 );
@@ -358,6 +367,7 @@ out.speed = (t) => {
     w: panelW + 60,
     h: y,
     title: 'Signing time per request',
+    note: unmeasured,
     desc: libs
       .map(
         (l) =>
@@ -378,7 +388,7 @@ out.speed = (t) => {
   const cellText = (rt, w, lib) => {
     const s = cell(rt, w, lib);
     if (!s) {
-      return '';
+      return 'Not measured';
     }
     if (s.status === 'wrong-result') {
       return 'wrong signature';
@@ -392,7 +402,7 @@ out.speed = (t) => {
   for (const rt of runtimes) {
     md += `\n**${hdr(rt)}**\n\n| Library | ${workloads.map((w) => w[1]).join(' | ')} |\n|---|${workloads.map(() => '--:').join('|')}|\n`;
     md +=
-      libs
+      [...libs, ...clientIds]
         .map(
           (l) =>
             `| ${l === 'sigflint' ? '**sigflint**' : name(l)} | ${workloads.map(([w]) => (l === 'sigflint' ? `**${cellText(rt, w, l)}**` : cellText(rt, w, l))).join(' | ')} |`,
@@ -442,6 +452,7 @@ out.size = (t) => {
     w: 760,
     h: g.height,
     title: 'Size of the code you ship',
+    note: unmeasured,
     desc: sizeRows.map(([id, lib]) => `${lib} ${sizes[id].gzipBytes} B`).join(', '),
     body:
       header(
@@ -458,6 +469,10 @@ tables.push(
         const s = sizes[id];
         return `| ${lib === 'sigflint' ? '**sigflint**' : name(lib)} | ${s.source ? fmtInt(s.source.bytes) : ''} | ${fmtInt(s.minifiedBytes)} | ${fmtInt(s.gzipBytes)} | ${fmtInt(s.brotliBytes)} | ${s.directDependencies} | ${s.unpackedBytes ? fmtInt(s.unpackedBytes) : ''} |`;
       })
+      .join('\n') +
+    '\n' +
+    clientIds
+      .map((id) => `| ${name(id)} | ${Array(6).fill('Not measured').join(' | ')} |`)
       .join('\n'),
 );
 
@@ -486,6 +501,7 @@ const cLibs = [
   'aws-sig',
   'wdl',
   'minio',
+  ...clientIds,
 ];
 /**
  * @param {string} lib
@@ -514,7 +530,7 @@ out.runtimes = (t) => {
   let o = header(
     t,
     'Where each library runs',
-    'Each library signs one S3 GET on each runtime; a tick means the signature equals botocore’s, a cross that it failed or did not load.',
+    'One S3 GET per runtime: tick = same signature; cross = failed or did not load; Not assessed = no public-API probe.',
   );
   rtCols.forEach(([, label], i) => {
     o += text(x0 + cw * i + cw / 2, top - 14, label, {
@@ -534,7 +550,16 @@ out.runtimes = (t) => {
       weight: ours ? 700 : 400,
     });
     rtCols.forEach(([col], i) => {
+      const measured = status(lib, col) !== '?';
       const ok = status(lib, col) === 'ok';
+      if (!measured) {
+        o += text(x0 + cw * i + cw / 2, y + 16, 'Not assessed', {
+          size: 11,
+          fill: t.muted,
+          anchor: 'middle',
+        });
+        return;
+      }
       o += `<rect x="${x0 + cw * i + 4}" y="${y}" width="${cw - 8}" height="${rowH - 6}" rx="4" fill="${ok ? t.pass : t.fail}" fill-opacity="0.22" stroke="${ok ? t.pass : t.fail}"/>`;
       const cx = x0 + cw * i + cw / 2,
         cy = y + (rowH - 6) / 2,
@@ -552,7 +577,7 @@ out.runtimes = (t) => {
     desc: cLibs
       .map(
         (l) =>
-          `${name(l)}: ${rtCols.map(([c]) => (status(l, c) === 'ok' ? 'yes' : 'no')).join('/')}`,
+          `${name(l)}: ${rtCols.map(([c]) => (status(l, c) === '?' ? 'not assessed' : status(l, c) === 'ok' ? 'yes' : 'no')).join('/')}`,
       )
       .join('; '),
     body: o,
@@ -567,7 +592,7 @@ tables.push(
     cLibs
       .map(
         (l) =>
-          `| ${l.startsWith('sigflint') ? `**${name(l)}**` : name(l)} | ${rtCols.map(([c]) => (status(l, c) === 'ok' ? '✓' : '✗')).join(' | ')} |`,
+          `| ${l.startsWith('sigflint') ? `**${name(l)}**` : name(l)} | ${rtCols.map(([c]) => (status(l, c) === '?' ? 'Not assessed' : status(l, c) === 'ok' ? '✓' : '✗')).join(' | ')} |`,
       )
       .join('\n') +
     `\n\nRuntimes: ${compatVersions.join(', ')}; Workers run in local workerd through wrangler ${'(see bench/frozen/versions.txt)'}. ✗ cells: ` +
@@ -698,6 +723,7 @@ out['compat-more'] = (t) => {
     w: 780,
     h: y + 6,
     title: 'Correctness against botocore: other services and presigned URLs',
+    note: `Not assessed: ${clientIds.join(', ')}.`,
     desc: moreGroups
       .map(
         (g) =>
@@ -839,6 +865,7 @@ const speedMore = (runtime) => (/** @type {Theme} */ t) => {
     w: 800,
     h: y,
     title: `Signing time, other services and presigned URLs, ${runtimeName}`,
+    note: unmeasured,
     desc: moreWorkloads
       .map(([w, label]) => {
         const r = findMore(runtime, w);

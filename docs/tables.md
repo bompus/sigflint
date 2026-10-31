@@ -1,16 +1,21 @@
 ### Correctness
 
-Requests whose signature equals botocore’s (same key, same clock). The version in the table is the one `package.json` said when the corpus ran: the screen records the candidate's package version before the release version bump.
+Matches against botocore with the same key and clock. Compare libraries within an input method. Counts show matches / supported requests; Not assessed means no result was collected. Versions identify the recorded runs.
 
-| Library | Version | Ordinary requests (1,520) | Edge cases (1,522) |
-|---|---|--:|--:|
-| **sigflint** | 1.0.1 | 1,520 (100.0%) | 1,522 (100.0%) |
-| aws4fetch | 1.0.20 | 1,408 (92.6%) | 595 (39.1%) |
-| aws4 | 1.13.2 | 1,264 (83.2%) | 268 (17.6%) |
-| @smithy/signature-v4 | 5.7.4 | 904 (59.5%) | 236 (15.5%) |
-| @wdl-dev/aws-sigv4 | 3.0.4 | 666 (43.8%) | 44 (2.9%) |
-| minio | 8.0.7 | 526 (34.6%) | 3 (0.2%) |
-| aws-sig | 2.1.0 | 226 (14.9%) | 12 (0.8%) |
+| Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
+|---|---|---|--:|--:|--:|--:|
+| **sigflint** | Serialized URL | 1.0.1 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not assessed |
+| aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not assessed |
+| aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 268 / 1,522 | Not assessed |
+| @smithy/signature-v4 | Serialized URL | 5.7.4 | 904 / 1,520 | 0 | 236 / 1,522 | Not assessed |
+| @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 666 / 1,520 | 0 | 44 / 1,522 | Not assessed |
+| minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not assessed |
+| aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not assessed |
+| **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | Not assessed | 578 / 578 |
+| s3mini | Decoded key | 1.0.3 | 494 / 578 | 942 | Not assessed | 494 / 578 |
+| tiny-oss | Decoded key | 1.2.0 source | 316 / 578 | 942 | Not assessed | 316 / 578 |
+| lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | Not assessed | 458 / 578 |
+| s3-lite-client | Decoded key | 1.0.1 | 1,519 / 1,520 | 0 | Not assessed | 578 / 578 |
 
 ### Speed
 
@@ -27,6 +32,10 @@ Microseconds per signature, median of 3 processes. “wrong signature” means t
 | aws-sig | 47.18 | wrong signature | wrong signature | wrong signature |
 | @wdl-dev/aws-sigv4 | 72.43 | 65.97 | 72.84 | wrong signature |
 | minio | 10.29 | 10.05 | wrong signature | 11.31 |
+| s3mini | Not measured | Not measured | Not measured | Not measured |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured |
+| lean-s3 | Not measured | Not measured | Not measured | Not measured |
+| s3-lite-client | Not measured | Not measured | Not measured | Not measured |
 
 **Bun 1.4.4**
 
@@ -39,6 +48,10 @@ Microseconds per signature, median of 3 processes. “wrong signature” means t
 | aws-sig | 30.21 | wrong signature | wrong signature | wrong signature |
 | @wdl-dev/aws-sigv4 | 45.78 | 49.80 | 55.57 | wrong signature |
 | minio | 3.51 | 3.80 | wrong signature | 4.14 |
+| s3mini | Not measured | Not measured | Not measured | Not measured |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured |
+| lean-s3 | Not measured | Not measured | Not measured | Not measured |
+| s3-lite-client | Not measured | Not measured | Not measured | Not measured |
 
 Reporting band (the larger of 3% and twice the larger run-to-run range of the two sigflint control arms): node 26.12.1 bench-download: 5%; node 26.12.1 bench-part-put: 5%; node 26.12.1 bench-encode: 6%; node 26.12.1 bench-body-1k: 6%; bun 1.4.4 bench-download: 3%; bun 1.4.4 bench-part-put: 3%; bun 1.4.4 bench-encode: 6%; bun 1.4.4 bench-body-1k: 13%. Every gap between sigflint and another library is far outside its band.
 
@@ -54,6 +67,10 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | aws-sig |  | 9,942 | 4,173 | 3,787 | 0 | 270,403 |
 | @wdl-dev/aws-sigv4 |  | 15,979 | 5,504 | 4,986 | 0 | 82,832 |
 | minio |  | 330,170 | 84,973 | 74,103 | 13 | 2,092,892 |
+| s3mini | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| tiny-oss | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| lean-s3 | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
+| s3-lite-client | Not measured | Not measured | Not measured | Not measured | Not measured | Not measured |
 
 ### Runtimes
 
@@ -68,5 +85,9 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | aws-sig | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 | minio | ✓ | ✓ | ✓ | ✓ | ✗ |
+| s3mini | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| tiny-oss | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| lean-s3 | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
+| s3-lite-client | Not assessed | Not assessed | Not assessed | Not assessed | Not assessed |
 
 Runtimes: node 26.12.0, bun 1.4.3, deno 2.9.6; Workers run in local workerd through wrangler (see bench/frozen/versions.txt). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error).
