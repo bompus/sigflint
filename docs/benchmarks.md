@@ -131,19 +131,19 @@ baseline is checked against botocore for every supported new comparison.
 <!-- END pic-compat-more -->
 
 <!-- BEGIN compat-table -->
-| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |
-|---|--:|--:|--:|
-| **sigflint** | 1,622 / 1,622 | 696 / 696 | 777 / 777 |
-| aws4 | 930 / 1,622 | 696 / 696 | 777 / 777 |
-| aws4fetch | 1,371 / 1,371 (251 unsupported) | 696 / 696 | 777 / 777 |
-| aws-sig | 776 / 1,622 | 183 / 696 | 0 / 777 |
-| lean-s3 | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 128 (649 unsupported) |
-| minio | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 598 / 777 |
-| s3-lite-client | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 673 / 673 (104 unsupported) |
-| s3mini | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 263 / 337 (440 unsupported) |
-| @smithy/signature-v4 | 1,622 / 1,622 | 696 / 696 | 777 / 777 |
-| tiny-oss | 1,190 / 1,301 (321 unsupported) | 0 / 0 (696 unsupported) | 224 / 453 (324 unsupported) |
-| @wdl-dev/aws-sigv4 | 826 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (777 unsupported) |
+| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, other services, payload opt-out (127) | Presigned URLs, S3 (777) |
+|---|--:|--:|--:|--:|
+| **sigflint** | 1,622 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| aws4 | 930 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| aws4fetch | 1,371 / 1,371 (251 unsupported) | 696 / 696 | 0 / 127 | 777 / 777 |
+| aws-sig | 776 / 1,622 | 183 / 696 | 0 / 0 (127 unsupported) | 0 / 777 |
+| lean-s3 | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 128 (649 unsupported) |
+| minio | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 598 / 777 |
+| s3-lite-client | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 673 / 673 (104 unsupported) |
+| s3mini | 0 / 0 (1,622 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 263 / 337 (440 unsupported) |
+| @smithy/signature-v4 | 1,622 / 1,622 | 696 / 696 | 127 / 127 | 777 / 777 |
+| tiny-oss | 1,190 / 1,301 (321 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 224 / 453 (324 unsupported) |
+| @wdl-dev/aws-sigv4 | 826 / 1,399 (223 unsupported) | 0 / 0 (696 unsupported) | 0 / 0 (127 unsupported) | 0 / 0 (777 unsupported) |
 <!-- END compat-table -->
 
 lean-s3 adds `X-Amz-Content-Sha256=UNSIGNED-PAYLOAD` to its presigned URL,
@@ -160,7 +160,7 @@ certain headers from signing. Raw results retain these reasons and every
 differing ID. The lean-s3 probe uses the installed undici Agent because Bun's
 built-in shim lacks Agent.close; the signing code is unchanged.
 
-Read the `aws4` row with care: all 692 differences are headers that `aws4` itself adds and signs (`content-length`, a default `content-type`), which is its documented behaviour, so its signature is valid for the request it sends. The reference does not add them. Presigned URLs where the caller opts out of payload signing (127 cases) are not shown: every library differed from botocore there, which points at the comparison rather than at the libraries. `aws-sig` differs on special characters, session tokens and unsigned payloads; the cause was not investigated. SigV4a, chunked uploads and event streams have no counterpart in the original URL-input libraries (except `@smithy/signature-v4` for chunks and events, against which they are tested).
+Read the `aws4` row with care: all 692 differences are headers that `aws4` itself adds and signs (`content-length`, a default `content-type`), which is its documented behaviour, so its signature is valid for the request it sends. The reference does not add them. Presigned URLs for services other than S3 where the caller opts out of payload signing (127 cases) are the table's fourth column. `@smithy/signature-v4` and `aws4` sign all 127 as botocore does once the opt-out header (`x-amz-content-sha256`) is left unsigned: Smithy through its `unhoistableHeaders` and `unsignableHeaders` options, `aws4` through `extraHeadersToIgnore`. `aws4fetch` accepts the opt-out only as that header and signs it too (SignedHeaders adds `x-amz-content-sha256`, which the reference does not sign), so all 127 differ. `aws-sig` always hashes the body and has no payload-hash option, so it is counted as unsupported. An earlier version of this page left the 127 cases out because every library differed; the comparison had not used the opt-out options of Smithy and `aws4`. `aws-sig` differs on special characters, session tokens and unsigned payloads; the cause was not investigated. SigV4a, chunked uploads and event streams have no counterpart in the original URL-input libraries (except `@smithy/signature-v4` for chunks and events, against which they are tested).
 
 ## Speed
 

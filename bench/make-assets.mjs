@@ -627,9 +627,10 @@ for (const line of readFileSync(`${here}results/compat-more.txt`, 'utf8').split(
 const moreGroups = [
   ['any service, header signing', 'Header signing, 15 other services'],
   ['presigned URLs, any service but S3, payload signed', 'Presigned URLs, other services'],
+  ['presigned URLs, any service but S3, caller opts', 'Presigned URLs, other services, opt-out'],
   ['presigned URLs, S3', 'Presigned URLs, S3'],
 ].map(([key, title]) => {
-  const g = parsedMore.find((p) => p.title === key);
+  const g = parsedMore.find((p) => p.title.startsWith(/** @type {string} */ (key)));
   if (!g) {
     throw new Error(`compat-more.txt has no section "${key}"`);
   }
@@ -712,7 +713,8 @@ out['compat-more'] = (t) => {
   y += 24;
   for (const line of [
     'aws4’s differences are headers it adds and signs itself (content-length, a default content-type), so its signature is valid for what it sends.',
-    'sigflint is not in the comparison run: it signs all of the same cases in its own test suite (npm test). 127 presigned URLs without payload signing are left out.',
+    'sigflint is not in the comparison run: it signs all of the same cases in its own test suite (npm test).',
+    'Payload opt-out outside S3: aws4fetch signs the opt-out header too; aws-sig has no opt-out, so it is counted as unsupported.',
   ]) {
     o += text(20, y, line, { size: 11, fill: t.muted });
     y += 16;

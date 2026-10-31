@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Documentation only: the comparison against other libraries now includes the 127 presigned URLs for services other than S3 where the caller opts out of payload signing, which an earlier version left out. `@smithy/signature-v4` and `aws4` match all 127 once their options for leaving the opt-out header unsigned are used; `aws4fetch` signs that header too and differs on all 127; `aws-sig` has no opt-out and is counted as unsupported.
 - Update the benchmark comparison to Smithy signature-v4 5.7.5 and the local Workers probe to Wrangler 4.156.0. Refresh correctness and runtime evidence for the pinned dependencies.
 
 - Complete the four S3 signing-core comparisons for edge cases, session credentials and supported presign APIs. Exercise tiny-oss signed-payload and other-service header options; keep unsupported capabilities and input methods explicit.

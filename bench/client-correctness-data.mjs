@@ -145,14 +145,13 @@ export function completeClientComparison(moreGroups, name, fmtInt) {
             ? 'header-other'
             : 'presign-other',
       );
-      g.rows[id] =
-        g.title === 'Presigned URLs, other services'
-          ? { pass: 0, fail: 0, na: g.total }
-          : { pass: coverage.pass, fail: coverage.fail, na: coverage.total - coverage.tested };
+      g.rows[id] = g.title?.startsWith('Presigned URLs, other services')
+        ? { pass: 0, fail: 0, na: g.total }
+        : { pass: coverage.pass, fail: coverage.fail, na: coverage.total - coverage.tested };
     }
   }
   return (
-    '| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, S3 (777) |\n|---|--:|--:|--:|\n' +
+    '| Library | Header signing, other services (1,622) | Presigned URLs, other services (696) | Presigned URLs, other services, payload opt-out (127) | Presigned URLs, S3 (777) |\n|---|--:|--:|--:|--:|\n' +
     Object.keys(/** @type {MoreGroup} */ (moreGroups[0]).rows)
       .sort((a, b) => compareLibraries(name(a), name(b)))
       .map(
