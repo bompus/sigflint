@@ -30,6 +30,12 @@ REC=$R/rerun-3-admission.jsonl
 NOTADM=$R/rerun-3-not-admitted.jsonl
 : "${ADMIT:?set ADMIT to the host admission command}"
 : "${OBSERVER:?set OBSERVER to the continuous observer command}"
+# One cgroup for the whole phase: this driver, its observer and every measured child run in one transient scope that
+# carries the memory cap (CAP), so the observer can subtract the phase's own CPU and watch its counters.
+# PHASE_SCOPE=1 marks the copy that runs inside it.
+if [ -z "${PHASE_SCOPE:-}" ]; then
+  exec systemd-run --user --scope --quiet --collect --expand-environment=no -p "MemoryMax=${CAP:-2G}" env PHASE_SCOPE=1 bash "$0" "$@"
+fi
 case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B) OUT=$R/speed-more.jsonl ;; C | D) OUT=$R/memory-raw.jsonl ;; *)
   echo "unknown part $PART"
   exit 2
@@ -51,7 +57,7 @@ if ! { mkdir -p "$R" && TMP=$(mktemp "$R/.unit.XXXXXX"); }; then
   exit 2
 fi
 trap 'rm -f "$TMP"' EXIT
-CAPPED=$HOME/.local/bin/run-capped
+CAPPED=$HERE/in-scope.sh # the scope already carries the cap; children are not given scopes of their own
 read -r -a RUNTIME_LIST <<<"${RUNTIMES:-node bun}"
 rtbin() { # rtbin <label>: the executable of a runtime label: RT_BIN_<label with every character outside A-Za-z0-9_ replaced by _>, else node or bun from PATH
   local v="RT_BIN_${1//[^A-Za-z0-9_]/_}"
@@ -121,6 +127,12 @@ emit() {
   local tag=$1 rc=$2 post=$3 sd=$4 text=$5 l et=${ERRTAG:-$1}
   if ((rc != 0)); then
     echo "{$et,\"status\":\"error\",\"exit\":$rc,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
+    return
+  fi
+  local swaplim=51200                  # protocol-more.md (speed parts A, R, B): free swap fell by more than 50 MB while the process ran
+  [[ $PART == [CD] ]] && swaplim=65536 # memory-protocol.md (parts C, D): more than 64 MiB
+  if ((sd < -swaplim)); then
+    echo "{$et,\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$sd,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
     return
   fi
   printf '%s\n' "$text" | while IFS= read -r l; do case "$l" in
@@ -356,7 +368,10 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       exit 6
     }
     PRE_SEQ=$CHECK_SEQ
-    echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC"
+    echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC" || {
+      echo "could not record the start of $UNIT in $REC; not measuring without a counted attempt"
+      exit 7
+    }
     observe_start "$UNIT" "$attempt"
     : >"$TMP"
     OBS_READY=0
@@ -367,20 +382,24 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       echo "the observer gave no first sample for $UNIT; the unit is not measured"
     fi
     observe_stop
-    bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
+    bad=$(grep -c '"status":"rejected-load"\|"status":"rejected-swap"\|"status":"error"' "$TMP" || true)
+    errs=$(grep -c '"status":"error"' "$TMP" || true)
     if check "after $UNIT" && ((bad == 0)) && ((OBS_READY)) && ((OBS_CLEAN)); then
       cat "$TMP" >>"$OUT" || {
         echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"
         exit 7
       }
-      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"observer\":\"$OBS_OUT\"}" >>"$REC"
+      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"observer\":\"$OBS_OUT\"}" >>"$REC" || {
+        echo "could not record the admission of $UNIT in $REC; stopping"
+        exit 7
+      }
       echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
       continue
     fi
     sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
     echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad,\"observerReady\":$OBS_READY,\"observerClean\":$OBS_CLEAN,\"observer\":\"$OBS_OUT\"}" >>"$REC"
     echo "$UNIT not admitted (attempt $attempt of 4, $bad bad rows, observer ready $OBS_READY, clean $OBS_CLEAN); giving up the lock, nothing retried $(date -u +%FT%TZ)"
-    ((bad > 0)) && exit 7
+    ((${errs:-0} > 0)) && exit 7
     exit 6
   done
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
