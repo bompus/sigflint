@@ -73,7 +73,8 @@ def start_ticks():
 
 
 def sample():
-    return (time.time(), *cpu(), psi("memory"), psi("io"), avail_gib())
+    # intervals and coverage use the monotonic clock, which a wall-clock step cannot reverse
+    return (time.monotonic(), *cpu(), psi("memory"), psi("io"), avail_gib())
 
 
 signal.signal(signal.SIGTERM, on_signal)
@@ -81,6 +82,7 @@ signal.signal(signal.SIGINT, on_signal)
 hz = float(os.sysconf("SC_CLK_TCK"))
 have_psi = psi("memory") is not None
 v0 = vmstat()
+wall_first = time.time()
 samples = [sample()]
 if os.environ.get("OBSERVER_OUT"):
     open(
@@ -89,6 +91,7 @@ if os.environ.get("OBSERVER_OUT"):
 while not stop:
     time.sleep(1)
     samples.append(sample())
+wall_last = time.time()
 v1 = vmstat()
 steps = list(zip(samples, samples[1:], strict=False))
 delta = {k: v1[k] - v0[k] for k in v0}
@@ -113,11 +116,11 @@ if steps:
         busy_cores_max_second=round(max(cores), 2),
         avail_gib_min=round(min_avail, 3),
         observer_cpu_s=round(sum(os.times()[:2]), 2),
-        first_sample=samples[0][0],
-        last_sample=samples[-1][0],
+        first_sample=wall_first,
+        last_sample=wall_last,
     )
-    if max(gaps) > MAX_GAP_S:
-        reasons.append("sampling gap above 2.5 s")
+    if min(gaps) <= 0 or max(gaps) > MAX_GAP_S:
+        reasons.append("sampling interval not positive or gap above 2.5 s")
     if have_psi:
         mem = [(b[3] - a[3]) / 1000 / (b[0] - a[0]) for a, b in steps]
         io = [(b[4] - a[4]) / 1000 / (b[0] - a[0]) for a, b in steps]

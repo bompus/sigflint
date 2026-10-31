@@ -298,8 +298,8 @@ fi
 OBS_PID=
 OBS_START=
 OBS_OUT=
-pid_start() { awk '{ sub(/^.*\) /, ""); print $20 }' "/proc/$1/stat" 2>/dev/null; } # the process start time in ticks, empty when it is gone
-observe_start() {                                                                   # observe_start <unit> <attempt>
+pid_start() { awk '{ sub(/^.*\) /, ""); if ($1 != "Z") print $20 }' "/proc/$1/stat" 2>/dev/null; } # the process start time in ticks, empty when it is gone or a zombie
+observe_start() {                                                                                  # observe_start <unit> <attempt>
   mkdir -p "$R/observer"
   OBS_OUT=$R/observer/$1.attempt$2.json
   rm -f "$OBS_OUT" "$OBS_OUT.ready"
@@ -315,10 +315,13 @@ observe_ready() { # waits up to 10 s, once a second, for the observer's first sa
     t=$((t + 1))
   done
 }
-observe_terminate() { # ends the recorded observer if it is the same process (same start time); sets OBS_RC
+observe_terminate() { # ends the recorded observer if it is the same process (same start time); sets OBS_RC, and OBS_EARLY=1 when it was already gone
   OBS_RC=1
+  OBS_EARLY=0
   [ -n "$OBS_PID" ] || return 0
-  if [ "$(pid_start "$OBS_PID")" = "$OBS_START" ]; then
+  if [ "$(pid_start "$OBS_PID")" != "$OBS_START" ]; then
+    OBS_EARLY=1 # it exited before the driver asked it to, so coverage ended before the unit did
+  else
     kill -TERM "$OBS_PID" 2>/dev/null
     local t=0
     while [ "$(pid_start "$OBS_PID")" = "$OBS_START" ] && ((t < 10)); do
@@ -334,7 +337,7 @@ observe_terminate() { # ends the recorded observer if it is the same process (sa
 observe_stop() { # sets OBS_CLEAN to 1 when the observer ended clean, else 0
   observe_terminate
   OBS_CLEAN=0
-  ((OBS_RC == 0)) && [ -s "$OBS_OUT" ] && [ "$(bun -e 'try{const o=JSON.parse(await Bun.file(process.argv[1]).text());process.stdout.write(o&&o.clean===true?"1":"0")}catch{process.stdout.write("0")}' "$OBS_OUT")" = 1 ] && OBS_CLEAN=1
+  ((OBS_EARLY == 0)) && ((OBS_RC == 0)) && [ -s "$OBS_OUT" ] && [ "$(bun -e 'try{const o=JSON.parse(await Bun.file(process.argv[1]).text());process.stdout.write(o&&o.clean===true?"1":"0")}catch{process.stdout.write("0")}' "$OBS_OUT")" = 1 ] && OBS_CLEAN=1
 }
 trap 'observe_terminate; rm -f "$TMP"' EXIT
 for round in $(seq "$FROM" "$ROUNDS"); do
@@ -356,14 +359,16 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC"
     observe_start "$UNIT" "$attempt"
     : >"$TMP"
+    OBS_READY=0
     if observe_ready; then
+      OBS_READY=1
       if [ "$PART" = D ]; then run_import_round "$round"; else run_unit "$round" "$arm"; fi
     else
       echo "the observer gave no first sample for $UNIT; the unit is not measured"
     fi
     observe_stop
     bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
-    if check "after $UNIT" && ((bad == 0)) && ((OBS_CLEAN)); then
+    if check "after $UNIT" && ((bad == 0)) && ((OBS_READY)) && ((OBS_CLEAN)); then
       cat "$TMP" >>"$OUT" || {
         echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"
         exit 7
@@ -373,8 +378,8 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       continue
     fi
     sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
-    echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad,\"observerClean\":$OBS_CLEAN,\"observer\":\"$OBS_OUT\"}" >>"$REC"
-    echo "$UNIT not admitted (attempt $attempt of 4, $bad bad rows, observer clean $OBS_CLEAN); giving up the lock, nothing retried $(date -u +%FT%TZ)"
+    echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad,\"observerReady\":$OBS_READY,\"observerClean\":$OBS_CLEAN,\"observer\":\"$OBS_OUT\"}" >>"$REC"
+    echo "$UNIT not admitted (attempt $attempt of 4, $bad bad rows, observer ready $OBS_READY, clean $OBS_CLEAN); giving up the lock, nothing retried $(date -u +%FT%TZ)"
     ((bad > 0)) && exit 7
     exit 6
   done
