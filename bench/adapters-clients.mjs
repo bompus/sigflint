@@ -1,5 +1,6 @@
 // Signing cores of S3 clients, with decoded object keys rather than serialized URLs.
-// Source dependencies are pinned because lean-s3 and tiny-oss do not export their cores.
+// Source dependencies are pinned because lean-s3 and tiny-oss do not export their cores. The TypeScript cores run from bundles
+// that compat/build-clients.mjs compiles (run it first), so Node and Bun load the same JavaScript: Node does not strip types under node_modules.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { CREDS, REGION } from './adapters.mjs';
@@ -8,6 +9,8 @@ import { CREDS, REGION } from './adapters.mjs';
 
 /** @param {string} path */
 const source = (path) => new URL(`node_modules/${path}`, import.meta.url).href;
+/** @param {string} name the bundle compat/build-clients.mjs wrote */
+const compiled = (name) => new URL(`compat/compiled/${name}.mjs`, import.meta.url).href;
 /** @param {string} name */
 const version = (name) =>
   JSON.parse(readFileSync(new URL(source(`${name}/package.json`)), 'utf8')).version;
@@ -18,12 +21,24 @@ const date = (c) =>
   new Date(
     stamp(c).replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'),
   );
+/**
+ * The decoded key and query pairs come from the reference canonical request, which a caller of these clients already holds
+ * as a key and options. They are parsed once per case so the timed call holds only each client's own signing work.
+ * @type {WeakMap<object, { key: string, pairs: [string, string][], query: Record<string, string>, host: string, origin: string }>}
+ */
+const inputs = new WeakMap();
 /** @param {CorpusCase} c */
 function input(c) {
-  const [, path, query] = c.canonical.split('\n');
-  const key = decodeURIComponent(/** @type {string} */ (path).slice(1));
-  const pairs = [...new URLSearchParams(query)];
-  return { key, pairs, query: Object.fromEntries(pairs), host: new URL(c.href).host };
+  let got = inputs.get(c);
+  if (!got) {
+    const [, path, query] = c.canonical.split('\n');
+    const key = decodeURIComponent(/** @type {string} */ (path).slice(1));
+    const pairs = [...new URLSearchParams(query)];
+    const url = new URL(c.href);
+    got = { key, pairs, query: Object.fromEntries(pairs), host: url.host, origin: url.origin };
+    inputs.set(c, got);
+  }
+  return got;
 }
 const ignored = new Set(['authorization', 'content-length', 'content-type', 'user-agent']);
 export const tinyIgnored = new Set([...ignored, 'presigned-expires', 'expect', 'x-amzn-trace-id']);
@@ -50,22 +65,22 @@ const headers = (c) => ({
   ...c.headers,
 });
 
-/** @returns {Promise<Adapter[]>} */
-export async function loadClientAdapters() {
-  const { S3mini } = await import('s3mini');
-  const { uriResourceEscape } = await import(source('s3mini/src/utils.ts'));
-  const { getAwsSignature, awsUriEscapePath } = await import(
-    source('tiny-oss/src/aws/signature.ts')
-  );
-  const { getAuthorizationHeader } = await import(source('lean-s3/src/request.ts'));
-  const { buildRequestUrl, prepareHeadersForSigning } = await import(source('lean-s3/src/url.ts'));
-  const { encodeURIComponentExtended } = await import(source('lean-s3/src/encode.ts'));
-  const { getAmzDate } = await import(source('lean-s3/src/AmzDate.ts'));
-  const { default: KeyCache } = await import(source('lean-s3/src/KeyCache.ts'));
-  const { signV4 } = await import(source('@bradenmacdonald/s3-lite-client/signing.js'));
-  const cache = new KeyCache();
-  return [
-    {
+/**
+ * @param {string[]} [only] client ids to load (s3mini, tiny-oss, lean-s3, s3-lite-client); without it all four load. A memory or
+ * import-time process loads just its own client, so it carries none of the others.
+ * @returns {Promise<Adapter[]>}
+ */
+export async function loadClientAdapters(only) {
+  /** @param {string} k */
+  const want = (k) => !only || only.includes(k);
+  /** @type {Adapter[]} */
+  const adapters = [];
+  if (want('s3mini')) {
+    const { S3mini } = await import('s3mini');
+    const { uriResourceEscape } = await import(compiled('s3mini-utils'));
+    /** @type {Map<string, InstanceType<typeof S3mini>>} */
+    const s3miniClients = new Map();
+    adapters.push({
       id: 's3mini',
       label: 's3mini signing core',
       kind: 'async',
@@ -74,12 +89,15 @@ export async function loadClientAdapters() {
         !c.unsigned ? 'signed payload' : unsupported(/** @type {CorpusCase} */ (c)),
       async sign(c) {
         const { key, query } = input(/** @type {CorpusCase} */ (c));
-        // No request is sent: _sign is the installed client's internal signer.
-        const client = new S3mini({
-          ...CREDS,
-          endpoint: new URL(c.href).origin,
-          region: c.region ?? REGION,
-        });
+        // No request is sent: _sign is the installed client's internal signer. A caller builds the client once.
+        const { origin } = input(/** @type {CorpusCase} */ (c));
+        const region = c.region ?? REGION;
+        const clientKey = `${origin}|${region}`;
+        let client = s3miniClients.get(clientKey);
+        if (!client) {
+          client = new S3mini({ ...CREDS, endpoint: origin, region });
+          s3miniClients.set(clientKey, client);
+        }
         const signer =
           /** @type {{ _sign: (...args: any[]) => Promise<{ headers: Record<string, string> }> }} */ (
             /** @type {unknown} */ (client)
@@ -90,8 +108,11 @@ export async function loadClientAdapters() {
         });
         return /** @type {string} */ (result.headers.authorization).slice(-64);
       },
-    },
-    {
+    });
+  }
+  if (want('tiny-oss')) {
+    const { getAwsSignature, awsUriEscapePath } = await import(compiled('tiny-oss'));
+    adapters.push({
       id: 'tiny-oss',
       label: 'tiny-oss signing core',
       kind: 'sync',
@@ -119,8 +140,19 @@ export async function loadClientAdapters() {
           date: stamp(/** @type {CorpusCase} */ (c)),
         }).signature;
       },
-    },
-    {
+    });
+  }
+  if (want('lean-s3')) {
+    const {
+      getAuthorizationHeader,
+      buildRequestUrl,
+      prepareHeadersForSigning,
+      encodeURIComponentExtended,
+      getAmzDate,
+      KeyCache,
+    } = await import(compiled('lean-s3'));
+    const cache = new KeyCache();
+    adapters.push({
       id: 'lean-s3',
       label: 'lean-s3 signing core',
       kind: 'sync',
@@ -129,7 +161,7 @@ export async function loadClientAdapters() {
       sign(c) {
         const { key, pairs } = input(/** @type {CorpusCase} */ (c));
         const url = buildRequestUrl(
-          new URL(c.href).origin + '/{bucket}',
+          input(/** @type {CorpusCase} */ (c)).origin + '/{bucket}',
           '',
           c.region ?? REGION,
           key,
@@ -151,8 +183,11 @@ export async function loadClientAdapters() {
           CREDS.secretAccessKey,
         ).slice(-64);
       },
-    },
-    {
+    });
+  }
+  if (want('s3-lite-client')) {
+    const { signV4 } = await import(source('@bradenmacdonald/s3-lite-client/signing.js'));
+    adapters.push({
       id: 's3-lite-client',
       label: 's3-lite-client signing core',
       kind: 'async',
@@ -173,6 +208,22 @@ export async function loadClientAdapters() {
           })
         ).slice(-64);
       },
-    },
-  ];
+    });
+  }
+  return adapters;
+}
+
+export const CLIENT_IDS = new Set(['s3mini', 'tiny-oss', 'lean-s3', 's3-lite-client']);
+/**
+ * The one adapter a memory or import-time process measures: a client's own signing core, or an older library through loadAdapters.
+ * @param {string} oursPath
+ * @param {string} candidate
+ * @returns {Promise<Adapter[]>}
+ */
+export async function loadCandidate(oursPath, candidate) {
+  if (CLIENT_IDS.has(candidate)) {
+    return loadClientAdapters([candidate]);
+  }
+  const { loadAdapters } = await import('./adapters.mjs');
+  return loadAdapters(oursPath, null, [candidate]);
 }

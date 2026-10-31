@@ -8,7 +8,8 @@
 // Candidate `none` imports nothing and signs nothing: the process-start control.
 import { readFileSync } from 'node:fs';
 import { performance } from 'node:perf_hooks';
-import { loadAdapters, freezeClock } from './adapters.mjs';
+import { freezeClock } from './adapters.mjs';
+import { loadCandidate } from './adapters-clients.mjs';
 /** @typedef {import('./adapters.mjs').Case & { sig: string }} CorpusCase */
 
 const [candidate, oursPath] = process.argv.slice(2);
@@ -40,15 +41,20 @@ if (candidate === 'none') {
   );
 } else {
   freezeClock();
-  const adapters = await loadAdapters(/** @type {string} */ (oursPath), null, [
+  const adapters = await loadCandidate(
+    /** @type {string} */ (oursPath),
     /** @type {string} */ (candidate),
-  ]);
+  );
   const t1 = performance.now();
   // the candidate was loaded by name above (an unknown name throws in the next line, as before)
   const a = /** @type {import('./adapters.mjs').Adapter} */ (
     adapters.find((x) => x.id === candidate)
   );
-  const got = a.kind === 'sync' ? a.sign(c) : await a.sign(c);
+  // s3mini signs only unsigned-payload requests: it signs the unsigned part upload instead, and the row names the case
+  const sc = a.unsupported(c)
+    ? /** @type {CorpusCase} */ (corpus.find((x) => x.id === 'bench-part-put'))
+    : c;
+  const got = a.kind === 'sync' ? a.sign(sc) : await a.sign(sc);
   const t2 = performance.now();
   console.log(
     JSON.stringify({
@@ -60,7 +66,8 @@ if (candidate === 'none') {
       importMs: t1 - startMs,
       firstSignMs: t2 - t1,
       totalMs: t2,
-      ok: got === c.sig,
+      workload: sc.id,
+      ok: got === sc.sig,
     }),
   );
 }

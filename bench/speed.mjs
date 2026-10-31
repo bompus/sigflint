@@ -5,9 +5,11 @@
 // the Authorization value; the same adapter work is in every candidate). Prints one JSON line per workload.
 import { readFileSync } from 'node:fs';
 import { loadAdapters, freezeClock } from './adapters.mjs';
+import { CLIENT_IDS, loadClientAdapters } from './adapters-clients.mjs';
 /** @typedef {import('./adapters.mjs').Case & { sig: string, canonical: string }} CorpusCase */
 
-const [candidate, oursPath, secsArg = '1'] = process.argv.slice(2);
+const [candidateArg, oursPath, secsArg = '1'] = process.argv.slice(2);
+const candidate = /** @type {string} */ (candidateArg);
 const secs = Number(secsArg);
 // JSON.parse reads the Buffer as UTF-8 text (the casts are for the type checker only)
 /** @type {CorpusCase[]} */
@@ -20,7 +22,11 @@ const cases = corpus;
 const expected = Object.fromEntries(
   corpus.map((c) => [c.id, { sig: c.sig, canonical: c.canonical }]),
 );
-const adapters = await loadAdapters(/** @type {string} */ (oursPath), expected);
+// the four S3 clients' signing cores load only for their own arm: they are TypeScript sources the other arms do not import
+const adapters = [
+  ...(await loadAdapters(/** @type {string} */ (oursPath), expected)),
+  ...(CLIENT_IDS.has(candidate) ? await loadClientAdapters([candidate]) : []),
+];
 const a = adapters.find((x) => x.id === candidate);
 if (!a) {
   throw new Error(`unknown candidate ${candidate}`);

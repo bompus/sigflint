@@ -6,10 +6,13 @@ writeFileSync(
   `${out}lean-source.mjs`,
   `export { getAuthorizationHeader } from '../../node_modules/lean-s3/src/request.ts';
 export { default as KeyCache } from '../../node_modules/lean-s3/src/KeyCache.ts';
-export { getAmzDate } from '../../node_modules/lean-s3/src/AmzDate.ts';`,
+export { getAmzDate } from '../../node_modules/lean-s3/src/AmzDate.ts';
+export { buildRequestUrl, prepareHeadersForSigning } from '../../node_modules/lean-s3/src/url.ts';
+export { encodeURIComponentExtended } from '../../node_modules/lean-s3/src/encode.ts';`,
 );
 for (const [id, source] of [
   ['tiny-oss', '../node_modules/tiny-oss/src/aws/signature.ts'],
+  ['s3mini-utils', '../node_modules/s3mini/src/utils.ts'],
   ['lean-s3', './compiled/lean-source.mjs'],
   ['s3-lite-client', '../node_modules/@bradenmacdonald/s3-lite-client/signing.js'],
 ]) {
