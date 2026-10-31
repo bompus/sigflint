@@ -198,7 +198,8 @@ const header = {
       method: c.method,
       url: c.href,
       headers: c.headers,
-      body: c.body ? c.body : undefined,
+      // bytes, not a string: a string body makes wdl add (and sign) a Content-Type header
+      body: c.body ? new TextEncoder().encode(c.body) : undefined,
       signingDate: c.stamp,
       signAllHeaders: true,
       unsignedPayload: c.unsigned,
