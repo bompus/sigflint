@@ -46,12 +46,17 @@ const sha = (s) => createHash('sha256').update(s).digest('hex');
 const payloadOf = (c) => (c.unsigned ? 'UNSIGNED-PAYLOAD' : sha(c.body));
 /** @param {string} auth */
 const sigOf = (auth) => auth.slice(-64); // validated against the reference before any timing
-/** @param {Case} c */
-const hasBody = (c) => !['GET', 'HEAD'].includes(c.method) && c.body !== '';
 const require = createRequire(import.meta.url);
 // the URL object is built once per case: callers of these signers already hold a parsed URL
 /** @param {Case} c */
 const U = (c) => (c.url ??= new URL(c.href));
+// A session token travels as `x-amz-security-token`, signed with the other headers, as the SDKs send it. Libraries with
+// a credentials option for it use that instead.
+/**
+ * @param {Case} c
+ * @returns {Record<string, string>}
+ */
+const tok = (c) => (c.token ? { 'x-amz-security-token': c.token } : {});
 
 // freezes `new Date()` and Date.now() for libraries that read the clock themselves
 /** @param {string} [iso] */
@@ -149,6 +154,7 @@ export async function loadAdapters(oursPath, expected, only) {
         const r = await aws4fetch.sign(c.href, {
           method: c.method,
           headers: { 'x-amz-content-sha256': payloadOf(c), ...c.headers },
+          ...(c.token && { aws: { sessionToken: c.token } }),
         });
         return sigOf(/** @type {string} */ (r.headers.get('authorization')));
       },
@@ -174,7 +180,7 @@ export async function loadAdapters(oursPath, expected, only) {
             service: 's3',
             region: REGION,
           },
-          CREDS,
+          c.token ? { ...CREDS, sessionToken: c.token } : CREDS,
         );
         return sigOf(o.headers.Authorization);
       },
@@ -215,7 +221,7 @@ export async function loadAdapters(oursPath, expected, only) {
           port: u.port ? Number(u.port) : undefined,
           path: u.pathname,
           query,
-          headers: { host: u.host, 'x-amz-content-sha256': payloadOf(c), ...c.headers },
+          headers: { host: u.host, 'x-amz-content-sha256': payloadOf(c), ...c.headers, ...tok(c) },
         });
         const signed = await smithy.sign(req, { signingDate: FIXED });
         return sigOf(/** @type {string} */ (signed.headers.authorization));
@@ -258,7 +264,12 @@ export async function loadAdapters(oursPath, expected, only) {
             port: u.port ? Number(u.port) : undefined,
             path,
             query,
-            headers: { host: u.host, 'x-amz-content-sha256': payloadOf(c), ...c.headers },
+            headers: {
+              host: u.host,
+              'x-amz-content-sha256': payloadOf(c),
+              ...c.headers,
+              ...tok(c),
+            },
           });
           return sigOf(
             /** @type {string} */ (
@@ -304,7 +315,7 @@ export async function loadAdapters(oursPath, expected, only) {
           port: u.port ? Number(u.port) : undefined,
           path: u.pathname,
           query,
-          headers: { host: u.host, 'x-amz-content-sha256': payloadOf(c), ...c.headers },
+          headers: { host: u.host, 'x-amz-content-sha256': payloadOf(c), ...c.headers, ...tok(c) },
         });
         return sigOf(
           /** @type {string} */ (
@@ -330,11 +341,14 @@ export async function loadAdapters(oursPath, expected, only) {
             url: c.href,
             region: REGION,
             service: 's3',
+            // aws-sig hashes the body it is given and ignores the hash header, so the body goes in whatever the method
+            body: c.body,
             headers: {
               host: U(c).host,
               'X-Amz-Date': '20130524T000000Z',
               'x-amz-content-sha256': payloadOf(c),
               ...c.headers,
+              ...tok(c),
             },
           },
           { ...CREDS, region: REGION, service: 's3' },
@@ -356,12 +370,14 @@ export async function loadAdapters(oursPath, expected, only) {
       async sign(c) {
         const r = await signAwsRequest({
           ...CREDS,
+          sessionToken: c.token,
           service: 's3',
           region: REGION,
           method: c.method,
           url: c.href,
           headers: c.headers,
-          body: hasBody(c) ? c.body : undefined,
+          // bytes, not a string: a string body makes wdl add (and sign) a Content-Type header; any method may carry one
+          body: c.body === '' ? undefined : new TextEncoder().encode(c.body),
           signingDate: '20130524T000000Z',
           signAllHeaders: true,
           unsignedPayload: c.unsigned,
@@ -387,6 +403,7 @@ export async function loadAdapters(oursPath, expected, only) {
           'x-amz-date': '20130524T000000Z',
           'x-amz-content-sha256': payload,
           ...c.headers,
+          ...tok(c),
         };
         return sigOf(
           signV4(
@@ -426,6 +443,7 @@ export async function loadAdapters(oursPath, expected, only) {
             'x-amz-date': '20130524T000000Z',
             'x-amz-content-sha256': payload,
             ...c.headers,
+            ...tok(c),
           };
           return sigOf(
             signV4(
