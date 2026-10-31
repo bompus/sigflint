@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Update the benchmark comparison to Smithy signature-v4 5.7.5 and the local Workers probe to Wrangler 4.156.0. Refresh correctness and runtime evidence for the pinned dependencies.
+
 - Complete the four S3 signing-core comparisons for edge cases, session credentials and supported presign APIs. Exercise tiny-oss signed-payload and other-service header options; keep unsupported capabilities and input methods explicit.
 
 - Complete the signing-path runtime grid for all comparison libraries on Node, Bun, Deno and local Workers; show current-version benchmark figures without historical release comparisons.

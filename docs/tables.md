@@ -9,7 +9,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not applicable |
 | aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not applicable |
 | minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not applicable |
-| @smithy/signature-v4 | Serialized URL | 5.7.4 | 904 / 1,520 | 0 | 236 / 1,522 | Not applicable |
+| @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 236 / 1,522 | Not applicable |
 | @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 666 / 1,520 | 0 | 44 / 1,522 | Not applicable |
 | **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | 1,013 / 1,252 (588 unsupported) | 458 / 578 |
@@ -90,7 +90,7 @@ Reporting band (the larger of 3% and twice the larger run-to-run range of the tw
 | tiny-oss | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.149.0, workerd 1.20261006.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).
+Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.156.0, workerd 1.20261023.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).
 
 ### Other services and presigned URLs
 

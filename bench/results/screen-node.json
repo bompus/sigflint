@@ -147,7 +147,7 @@
   },
   "smithy": {
    "label": "@smithy/signature-v4",
-   "version": "5.7.4",
+   "version": "5.7.5",
    "unsupported": 316,
    "byTag": {
     "well-formed": {
@@ -196,7 +196,7 @@
   },
   "smithy-pre": {
    "label": "@smithy/signature-v4 (pre-encoded input)",
-   "version": "5.7.4",
+   "version": "5.7.5",
    "unsupported": 316,
    "byTag": {
     "well-formed": {
@@ -232,7 +232,7 @@
   },
   "smithy-web": {
    "label": "@smithy/signature-v4 (web SHA-256)",
-   "version": "5.7.4",
+   "version": "5.7.5",
    "unsupported": 316,
    "byTag": {
     "well-formed": {

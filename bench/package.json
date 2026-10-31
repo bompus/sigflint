@@ -8,7 +8,7 @@
     "@bradenmacdonald/s3-lite-client": "^1.0.1",
     "@smithy/hash-node": "^4.5.2",
     "@smithy/protocol-http": "^5.6.2",
-    "@smithy/signature-v4": "^5.7.4",
+    "@smithy/signature-v4": "5.7.5",
     "@wdl-dev/aws-sigv4": "^3.0.4",
     "aws-sig": "^2.1.0",
     "aws4": "^1.13.2",
@@ -20,6 +20,6 @@
     "tiny-oss": "https://codeload.github.com/Alex1990/tiny-oss/tar.gz/a0e9b54ee5d59c2f0a03d374680fd138d0a7c3fe"
   },
   "devDependencies": {
-    "wrangler": "latest"
+    "wrangler": "4.156.0"
   }
 }

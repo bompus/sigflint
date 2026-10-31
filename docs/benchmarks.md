@@ -30,7 +30,7 @@ The speed matrices use three fresh processes per library and runtime; memory and
 | tiny-oss | ✓ | ✓ | ✓ | ✓ | ✓ |
 | @wdl-dev/aws-sigv4 | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.149.0, workerd 1.20261006.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).
+Runtimes: node 26.13.0, bun 1.4.4, deno 2.9.6; Workers run in local workerd through wrangler 4.156.0, workerd 1.20261023.1 (run 2026-10-31; see bench/results/compat-environment.json). ✗ cells: smithy on Workers + nodejs_compat: Hash.bind is not a function; aws4 on Workers, no flag: does not load (bundle error); smithy on Workers, no flag: Hash.bind is not a function; minio on Workers, no flag: does not load (bundle error); lean-s3 on Workers, no flag: does not load (needs a node: module).
 <!-- END runtimes -->
 
 Each library signed one S3 GET on each runtime and was checked against botocore's signature. These are signing-path checks, not full client integration tests. “Workers” runs in local workerd through wrangler, not on Cloudflare's network. s3mini and tiny-oss use an unsigned payload, checked against a separately computed botocore reference. tiny-oss and lean-s3 use pinned source signing cores; s3-lite-client uses its locked package core. These three are compiled with Bun, with `node:` imports preserved and no polyfills. Other rows use the same entry points as the correctness comparison. The smithy “web hash” row supplies `@aws-crypto/sha256-js`; its default row supplies the Node hash implementation. Sigflint selects Bun's hasher, Node/Deno's `node:crypto`, or Workers' WebCrypto implementation through package export conditions.
@@ -52,7 +52,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not applicable |
 | aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not applicable |
 | minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not applicable |
-| @smithy/signature-v4 | Serialized URL | 5.7.4 | 904 / 1,520 | 0 | 236 / 1,522 | Not applicable |
+| @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 236 / 1,522 | Not applicable |
 | @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 666 / 1,520 | 0 | 44 / 1,522 | Not applicable |
 | **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | 1,013 / 1,252 (588 unsupported) | 458 / 578 |
@@ -382,6 +382,7 @@ Each runs against the synchronous source, the built file that Node and Bun load,
 
 ## Methodology and limits
 
+- Correctness and runtime probes use the dependencies pinned in `bench/package-lock.json`. Performance and size figures use the separately recorded cohort in `bench/frozen/versions.txt`; a dependency update does not remeasure those figures.
 - Speed: three rounds per library and runtime for both matrices. Node and Bun run back to back for each library and round, with runtime and library order reversed on even rounds. Sigflint runs twice as an A/A noise control. Each process validates its signature before timing batches for one second. The band is the larger of 3% and twice the larger A/A spread. All library-against-sigflint speed comparisons settled after three rounds. Protocol: [measurement protocol](../bench/protocol-release-1.0.2.md).
 - Memory: 5 rounds, each process under a 2 GB cgroup cap; allocation is counted differently on Node (heap growth between collections) and Bun (the engine's collector log), checked against a known allocator to within 10%, so Node and Bun numbers are not compared with each other. The protocol was written before the run ([`bench/memory-protocol.md`](../bench/memory-protocol.md)).
 - The requests are synthetic and the signing date is fixed, so each library's signing-key cache behaves as it would within one day. Nothing here measures a network request, and a single signature is microseconds beside it.
