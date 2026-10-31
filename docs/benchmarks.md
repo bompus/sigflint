@@ -71,7 +71,7 @@ Some of the other libraries expect the caller to canonicalize the path and query
 
 The table and chart above include both input methods and the decoded-key edge screen. The serialized-URL screen tests
 URL parsing as well as signing. The decoded-key screen ran on Bun 1.4.4 on
-2026-10-31 with `bun bench/compat-clients.mjs`. It uses decoded keys and query
+2026-10-31 with `bun bench/compat-clients.mjs` (run `bun bench/compat/build-clients.mjs` first, which compiles the pinned lean-s3 and tiny-oss source cores and s3mini's key escaper). It uses decoded keys and query
 pairs from normalized canonical requests, so it does not test arbitrary URL
 parsing or complete client operations. Both screens use sigflint 1.0.3. These
 are distinct input methods, not directly comparable rankings.

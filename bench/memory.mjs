@@ -14,7 +14,8 @@
 import { readFileSync } from 'node:fs';
 import { performance, PerformanceObserver } from 'node:perf_hooks';
 import v8 from 'node:v8';
-import { loadAdapters, freezeClock } from './adapters.mjs';
+import { freezeClock } from './adapters.mjs';
+import { loadCandidate } from './adapters-clients.mjs';
 /** @typedef {import('./adapters.mjs').Case & { sig: string }} CorpusCase */
 /** @typedef {{ duration: number, kind?: number, detail?: { kind?: number } }} GcEntry */
 
@@ -94,7 +95,7 @@ const adapters = CALIB
         /** @type {unknown} */ ({ id: 'calib', kind: 'sync', unsupported: () => null })
       ),
     ]
-  : await loadAdapters(/** @type {string} */ (oursPath), null, [/** @type {string} */ (candidate)]);
+  : await loadCandidate(/** @type {string} */ (oursPath), /** @type {string} */ (candidate));
 const a = adapters.find((x) => x.id === candidate);
 if (!a) {
   throw new Error(`unknown candidate ${candidate}`);
