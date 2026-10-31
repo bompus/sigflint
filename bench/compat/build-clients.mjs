@@ -26,22 +26,25 @@ for (const [id, source] of [
   }
 }
 
-const version = (/** @type {string} */ name) =>
-  JSON.parse(readFileSync(new URL(`../node_modules/${name}/package.json`, import.meta.url), 'utf8'))
-    .version;
-writeFileSync(
-  new URL('../results/compat-environment.json', import.meta.url),
-  JSON.stringify(
-    {
-      date: new Date().toISOString().slice(0, 10),
-      bun: Bun.version,
-      wrangler: version('wrangler'),
-      workerd: version('workerd'),
-      sourceBuilds: ['tiny-oss', 'lean-s3', 's3-lite-client'],
-      sourceBuildTarget: 'browser, node:* external, no polyfills',
-      unsignedReference: 'botocore S3SigV4Auth; bench-download with unsigned=true',
-    },
-    null,
-    2,
-  ) + '\n',
-);
+if (process.argv.includes('--record-environment')) {
+  const version = (/** @type {string} */ name) =>
+    JSON.parse(
+      readFileSync(new URL(`../node_modules/${name}/package.json`, import.meta.url), 'utf8'),
+    ).version;
+  writeFileSync(
+    new URL('../results/compat-environment.json', import.meta.url),
+    JSON.stringify(
+      {
+        date: new Date().toISOString().slice(0, 10),
+        bun: Bun.version,
+        wrangler: version('wrangler'),
+        workerd: version('workerd'),
+        sourceBuilds: ['tiny-oss', 'lean-s3', 's3-lite-client'],
+        sourceBuildTarget: 'browser, node:* external, no polyfills',
+        unsignedReference: 'botocore S3SigV4Auth; bench-download with unsigned=true',
+      },
+      null,
+      2,
+    ) + '\n',
+  );
+}

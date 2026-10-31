@@ -64,7 +64,7 @@
     "pretypes:streams": "npm ci --prefix conformance/streams",
     "types:streams": "bun --check --tsconfig-override conformance/streams/tsconfig.json",
     "pretypes:bench": "npm ci --prefix bench",
-    "types:bench": "bun --check --tsconfig-override bench/tsconfig.json",
+    "types:bench": "bun bench/compat/build-clients.mjs && bun --check --tsconfig-override bench/tsconfig.json",
     "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
     "prepack": "tsc -p tsconfig.build.json && npm run build",
     "lint": "tsc -p tsconfig.build.json && oxlint --deny-warnings",

@@ -13,3 +13,5 @@ DENO=${DENO:-deno}
   rm -rf workers
   bun run-workerd.mjs
 } >"$OUT"
+
+bun build-clients.mjs --record-environment
