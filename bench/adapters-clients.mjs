@@ -24,7 +24,7 @@ const date = (c) =>
 /**
  * The decoded key and query pairs come from the reference canonical request, which a caller of these clients already holds
  * as a key and options. They are parsed once per case so the timed call holds only each client's own signing work.
- * @type {WeakMap<object, { key: string, pairs: [string, string][], query: Record<string, string>, host: string, origin: string }>}
+ * @type {WeakMap<object, { key: string, pairs: [string, string][], query: Record<string, string>, rawQuery: string, host: string, origin: string }>}
  */
 const inputs = new WeakMap();
 /** @param {CorpusCase} c */
@@ -35,7 +35,14 @@ function input(c) {
     const key = decodeURIComponent(/** @type {string} */ (path).slice(1));
     const pairs = [...new URLSearchParams(query)];
     const url = new URL(c.href);
-    got = { key, pairs, query: Object.fromEntries(pairs), host: url.host, origin: url.origin };
+    got = {
+      key,
+      pairs,
+      query: Object.fromEntries(pairs),
+      rawQuery: /** @type {string} */ (query),
+      host: url.host,
+      origin: url.origin,
+    };
     inputs.set(c, got);
   }
   return got;
@@ -56,11 +63,14 @@ function unsupported(c) {
 /** @param {CorpusCase} c */
 const payload = (c) =>
   c.unsigned ? 'UNSIGNED-PAYLOAD' : createHash('sha256').update(c.body).digest('hex');
-/** @param {CorpusCase} c */
-const headers = (c) => ({
+/**
+ * @param {CorpusCase} c
+ * @param {string} hash the payload hash, computed once per call by the caller
+ */
+const headers = (c, hash) => ({
   host: input(c).host,
   'x-amz-date': stamp(c),
-  'x-amz-content-sha256': payload(c),
+  'x-amz-content-sha256': hash,
   ...(c.token ? { 'x-amz-security-token': c.token } : {}),
   ...c.headers,
 });
@@ -125,6 +135,7 @@ export async function loadClientAdapters(only) {
       },
       sign(c) {
         const { key, pairs } = input(/** @type {CorpusCase} */ (c));
+        const hash = payload(/** @type {CorpusCase} */ (c));
         const query = /** @type {Record<string, string | string[]>} */ (Object.create(null));
         for (const [k, v] of pairs) {
           query[k] = k in query ? [...[/** @type {string | string[]} */ (query[k])].flat(), v] : v;
@@ -133,10 +144,10 @@ export async function loadClientAdapters(only) {
           method: c.method,
           pathname: '/' + awsUriEscapePath(key),
           query,
-          headers: headers(/** @type {CorpusCase} */ (c)),
+          headers: headers(/** @type {CorpusCase} */ (c), hash),
           ...CREDS,
           region: c.region ?? REGION,
-          payloadHash: payload(/** @type {CorpusCase} */ (c)),
+          payloadHash: hash,
           date: stamp(/** @type {CorpusCase} */ (c)),
         }).signature;
       },
@@ -160,6 +171,7 @@ export async function loadClientAdapters(only) {
       unsupported: () => null,
       sign(c) {
         const { key, pairs } = input(/** @type {CorpusCase} */ (c));
+        const hash = payload(/** @type {CorpusCase} */ (c));
         const url = buildRequestUrl(
           input(/** @type {CorpusCase} */ (c)).origin + '/{bucket}',
           '',
@@ -176,9 +188,9 @@ export async function loadClientAdapters(only) {
           url.pathname,
           query,
           getAmzDate(date(/** @type {CorpusCase} */ (c))),
-          prepareHeadersForSigning(headers(/** @type {CorpusCase} */ (c))),
+          prepareHeadersForSigning(headers(/** @type {CorpusCase} */ (c), hash)),
           c.region ?? REGION,
-          payload(/** @type {CorpusCase} */ (c)),
+          hash,
           CREDS.accessKeyId,
           CREDS.secretAccessKey,
         ).slice(-64);
@@ -194,13 +206,13 @@ export async function loadClientAdapters(only) {
       version: version('@bradenmacdonald/s3-lite-client'),
       unsupported: () => null,
       async sign(c) {
-        const { key } = input(/** @type {CorpusCase} */ (c));
-        const query = /** @type {CorpusCase} */ (c).canonical.split('\n')[2];
+        const { key, rawQuery: query } = input(/** @type {CorpusCase} */ (c));
+        const hash = payload(/** @type {CorpusCase} */ (c));
         return (
           await signV4({
             method: c.method,
             path: '/' + key + (query ? '?' + query : ''),
-            headers: new Headers(headers(/** @type {CorpusCase} */ (c))),
+            headers: new Headers(headers(/** @type {CorpusCase} */ (c), hash)),
             date: date(/** @type {CorpusCase} */ (c)),
             region: c.region ?? REGION,
             accessKey: CREDS.accessKeyId,
