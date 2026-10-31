@@ -129,6 +129,10 @@ emit() {
     echo "{$et,\"status\":\"error\",\"exit\":$rc,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
     return
   fi
+  if [[ $PART == [CD] ]] && ((sd < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the process ran
+    echo "{$et,\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$sd,\"preBusyPct\":$PRE,\"load1\":$LOAD}" >>"$TMP"
+    return
+  fi
   printf '%s\n' "$text" | while IFS= read -r l; do case "$l" in
     \{*) echo "${l%\}},$tag,\"preBusyPct\":$PRE,\"postBusyPct\":$post,\"load1\":$LOAD,\"swapFreeDeltaKb\":$sd,\"unit\":\"$UNIT\"}" >>"$TMP" ;;
     "") ;; *) case "$l" in *arn* | *eparsing* | *liminate*) ;; *) echo "{$et,\"status\":\"error\",\"msg\":\"$(printf '%s' "$l" | tr '\\"' "  " | cut -c1-120)\"}" >>"$TMP" ;; esac ;; esac done
@@ -376,7 +380,7 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       echo "the observer gave no first sample for $UNIT; the unit is not measured"
     fi
     observe_stop
-    bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
+    bad=$(grep -c '"status":"rejected-load"\|"status":"rejected-swap"\|"status":"error"' "$TMP" || true)
     errs=$(grep -c '"status":"error"' "$TMP" || true)
     if check "after $UNIT" && ((bad == 0)) && ((OBS_READY)) && ((OBS_CLEAN)); then
       cat "$TMP" >>"$OUT" || {
