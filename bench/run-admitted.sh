@@ -319,7 +319,7 @@ observe_terminate() { # ends the recorded observer if it is the same process (sa
   OBS_RC=1
   OBS_EARLY=0
   [ -n "$OBS_PID" ] || return 0
-  if [ "$(pid_start "$OBS_PID")" != "$OBS_START" ]; then
+  if [ -z "$OBS_START" ] || [ "$(pid_start "$OBS_PID")" != "$OBS_START" ]; then
     OBS_EARLY=1 # it exited before the driver asked it to, so coverage ended before the unit did
   else
     kill -TERM "$OBS_PID" 2>/dev/null
