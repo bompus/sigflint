@@ -2,7 +2,7 @@
 // Source dependencies are pinned because lean-s3 and tiny-oss do not export their cores.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { CREDS, REGION, FIXED } from './adapters.mjs';
+import { CREDS, REGION } from './adapters.mjs';
 /** @typedef {import('./screen.mjs').CorpusCase} CorpusCase */
 /** @typedef {import('./adapters.mjs').Adapter} Adapter */
 
@@ -12,6 +12,13 @@ const source = (path) => new URL(`node_modules/${path}`, import.meta.url).href;
 const version = (name) =>
   JSON.parse(readFileSync(new URL(source(`${name}/package.json`)), 'utf8')).version;
 /** @param {CorpusCase} c */
+const stamp = (c) => /** @type {CorpusCase & { stamp?: string }} */ (c).stamp ?? '20130524T000000Z';
+/** @param {CorpusCase} c */
+const date = (c) =>
+  new Date(
+    stamp(c).replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/, '$1-$2-$3T$4:$5:$6Z'),
+  );
+/** @param {CorpusCase} c */
 function input(c) {
   const [, path, query] = c.canonical.split('\n');
   const key = decodeURIComponent(/** @type {string} */ (path).slice(1));
@@ -19,11 +26,9 @@ function input(c) {
   return { key, pairs, query: Object.fromEntries(pairs), host: new URL(c.href).host };
 }
 const ignored = new Set(['authorization', 'content-length', 'content-type', 'user-agent']);
+export const tinyIgnored = new Set([...ignored, 'presigned-expires', 'expect', 'x-amzn-trace-id']);
 /** @param {CorpusCase} c */
 function unsupported(c) {
-  if (c.token) {
-    return 'session token';
-  }
   if (Object.keys(c.headers).some((h) => ignored.has(h.toLowerCase()))) {
     return 'header excluded by client';
   }
@@ -39,8 +44,9 @@ const payload = (c) =>
 /** @param {CorpusCase} c */
 const headers = (c) => ({
   host: input(c).host,
-  'x-amz-date': '20130524T000000Z',
+  'x-amz-date': stamp(c),
   'x-amz-content-sha256': payload(c),
+  ...(c.token ? { 'x-amz-security-token': c.token } : {}),
   ...c.headers,
 });
 
@@ -79,6 +85,7 @@ export async function loadClientAdapters() {
             /** @type {unknown} */ (client)
           );
         const result = await signer._sign(c.method, uriResourceEscape(key), query, {
+          ...(c.token ? { 'x-amz-security-token': c.token } : {}),
           ...c.headers,
         });
         return /** @type {string} */ (result.headers.authorization).slice(-64);
@@ -89,10 +96,18 @@ export async function loadClientAdapters() {
       label: 'tiny-oss signing core',
       kind: 'sync',
       version: version('tiny-oss'),
-      unsupported: (c) =>
-        !c.unsigned ? 'signed payload' : unsupported(/** @type {CorpusCase} */ (c)),
+      unsupported: (c) => {
+        if (Object.keys(c.headers).some((h) => tinyIgnored.has(h.toLowerCase()))) {
+          return 'header excluded by client';
+        }
+        return null;
+      },
       sign(c) {
-        const { key, query } = input(/** @type {CorpusCase} */ (c));
+        const { key, pairs } = input(/** @type {CorpusCase} */ (c));
+        const query = /** @type {Record<string, string | string[]>} */ (Object.create(null));
+        for (const [k, v] of pairs) {
+          query[k] = k in query ? [...[/** @type {string | string[]} */ (query[k])].flat(), v] : v;
+        }
         return getAwsSignature({
           method: c.method,
           pathname: '/' + awsUriEscapePath(key),
@@ -100,7 +115,8 @@ export async function loadClientAdapters() {
           headers: headers(/** @type {CorpusCase} */ (c)),
           ...CREDS,
           region: c.region ?? REGION,
-          date: '20130524T000000Z',
+          payloadHash: payload(/** @type {CorpusCase} */ (c)),
+          date: stamp(/** @type {CorpusCase} */ (c)),
         }).signature;
       },
     },
@@ -127,7 +143,7 @@ export async function loadClientAdapters() {
           c.method,
           url.pathname,
           query,
-          getAmzDate(FIXED),
+          getAmzDate(date(/** @type {CorpusCase} */ (c))),
           prepareHeadersForSigning(headers(/** @type {CorpusCase} */ (c))),
           c.region ?? REGION,
           payload(/** @type {CorpusCase} */ (c)),
@@ -150,7 +166,7 @@ export async function loadClientAdapters() {
             method: c.method,
             path: '/' + key + (query ? '?' + query : ''),
             headers: new Headers(headers(/** @type {CorpusCase} */ (c))),
-            date: FIXED,
+            date: date(/** @type {CorpusCase} */ (c)),
             region: c.region ?? REGION,
             accessKey: CREDS.accessKeyId,
             secretKey: CREDS.secretAccessKey,

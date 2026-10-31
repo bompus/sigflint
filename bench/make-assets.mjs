@@ -2,7 +2,12 @@
 // files in results/. Usage: node make-assets.mjs  ->  ../docs/*.svg and ../docs/tables.md
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { compareLibraries, sortComparisonTables } from './comparison-order.mjs';
-import { clientGroups, clientIds, ordinaryClientTotal } from './client-correctness-data.mjs';
+import {
+  completeClientComparison,
+  clientGroups,
+  clientIds,
+  clientCorrectnessRow,
+} from './client-correctness-data.mjs';
 
 const here = new URL('.', import.meta.url).pathname;
 const docs = `${here}../docs/`;
@@ -260,22 +265,16 @@ out.correctness = (t) => {
   });
 };
 tables.push(
-  '### Correctness\n\nMatches against botocore with the same key and clock. Compare libraries within an input method. Counts show matches / supported requests; Not assessed means no result was collected. Versions identify the recorded runs.\n\n| Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |\n|---|---|---|--:|--:|--:|--:|\n' +
+  '### Correctness\n\nMatches against botocore with the same key and clock. Compare libraries within an input method. Counts show matches / supported requests. The common decoded-key column does not apply to serialized-URL inputs. Versions identify the recorded runs.\n\n| Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |\n|---|---|---|--:|--:|--:|--:|\n' +
     order
       .map((id) => {
         const ordinary = /** @type {ScreenRow} */ (groups[0].rows.find((r) => r.id === id));
         const edge = /** @type {ScreenRow} */ (groups[1].rows.find((r) => r.id === id));
-        return `| ${id === 'sigflint' ? '**sigflint**' : name(id)} | Serialized URL | ${ordinary.version} | ${fmtInt(ordinary.pass)} / ${fmtInt(groups[0].total)} | ${ordinary.na} | ${fmtInt(edge.pass)} / ${fmtInt(groups[1].total)} | Not assessed |`;
+        return `| ${id === 'sigflint' ? '**sigflint**' : name(id)} | Serialized URL | ${ordinary.version} | ${fmtInt(ordinary.pass)} / ${fmtInt(groups[0].total)} | ${ordinary.na} | ${fmtInt(edge.pass)} / ${fmtInt(groups[1].total)} | Not applicable |`;
       })
       .join('\n') +
     '\n' +
-    clientGroups[0].rows
-      .map((r) => {
-        const common = /** @type {ScreenRow} */ (clientGroups[1].rows.find((c) => c.id === r.id));
-        const version = ['lean-s3', 'tiny-oss'].includes(r.id) ? `${r.version} source` : r.version;
-        return `| ${r.id === 'sigflint' ? '**sigflint**' : name(r.id)} | Decoded key | ${version} | ${fmtInt(r.pass)} / ${fmtInt(ordinaryClientTotal - r.na)} | ${fmtInt(r.na)} | Not assessed | ${fmtInt(common.pass)} / ${fmtInt(clientGroups[1].total)} |`;
-      })
-      .join('\n'),
+    clientGroups[0].rows.map((r) => clientCorrectnessRow(r, name, fmtInt)).join('\n'),
 );
 
 // ---- speed --------------------------------------------------------------------------------------------------------
@@ -649,6 +648,8 @@ const moreGroups = [
     }),
   };
 });
+const moreTable = completeClientComparison(moreGroups, name, fmtInt);
+tables.push('### Other services and presigned URLs\n\n' + moreTable);
 out['compat-more'] = (t) => {
   const x0 = 190,
     plotW = 520,
@@ -659,7 +660,7 @@ out['compat-more'] = (t) => {
   let o = header(
     t,
     'Same signature as botocore: other services and presigned URLs (higher is better)',
-    'Each library is called through its normal public API on the same requests, key and clock.',
+    'S3 clients use decoded keys; tiny-oss other-service headers use a caller-prepared canonical path.',
   );
   let y = 78;
   for (const g of moreGroups) {
@@ -720,7 +721,7 @@ out['compat-more'] = (t) => {
     w: 780,
     h: y + 6,
     title: 'Correctness against botocore: other services and presigned URLs',
-    note: `Not assessed: ${clientIds.join(', ')}.`,
+    note: 'S3 clients use decoded keys; gray cells reflect their S3 APIs. A different signature does not establish rejection.',
     desc: moreGroups
       .map(
         (g) =>
@@ -949,6 +950,10 @@ const sections = [
   ['runtimes', 'Grid: which runtimes each library runs on'],
 ];
 let readme = readFileSync(`${here}../docs/benchmarks.md`, 'utf8');
+readme = readme.replace(
+  /(<!-- BEGIN compat-table -->)[\s\S]*?(<!-- END compat-table -->)/,
+  (_, a, b) => `${a}\n${moreTable}\n${b}`,
+);
 sections.forEach(([key, alt], i) => {
   const picture = `<picture>\n  <source media="(prefers-color-scheme: dark)" srcset="${key}-dark.svg">\n  <img alt="${alt}" src="${key}-light.svg">\n</picture>`;
   const body = /** @type {string} */ (tables[i]).replace(/^### [^\n]*\n\n/, '');

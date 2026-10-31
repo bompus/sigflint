@@ -54,7 +54,8 @@ const require = createRequire(import.meta.url);
 const U = (c) => (c.url ??= new URL(c.href));
 
 // freezes `new Date()` and Date.now() for libraries that read the clock themselves
-export function freezeClock() {
+/** @param {string} [iso] */
+export function freezeClock(iso = FIXED_ISO) {
   const RealDate = globalThis.Date;
   // a cast: the subclass has no call signature (Date() without new), which DateConstructor declares
   globalThis.Date = /** @type {DateConstructor} */ (
@@ -62,11 +63,11 @@ export function freezeClock() {
       class extends RealDate {
         /** @param {...any} a */
         constructor(...a) {
-          super(.../** @type {[string]} */ (a.length === 0 ? [FIXED_ISO] : a));
+          super(.../** @type {[string]} */ (a.length === 0 ? [iso] : a));
         }
         /** @override */
         static now() {
-          return FIXED.getTime();
+          return RealDate.parse(iso);
         }
       }
     )

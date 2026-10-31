@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Complete the four S3 signing-core comparisons for edge cases, session credentials and supported presign APIs. Exercise tiny-oss signed-payload and other-service header options; keep unsupported capabilities and input methods explicit.
+
 - Complete the signing-path runtime grid for all comparison libraries on Node, Bun, Deno and local Workers; show current-version benchmark figures without historical release comparisons.
 
 - Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Use sigflint first and alphabetical alternatives consistently across tables and charts. Existing benchmark figures are unchanged.
