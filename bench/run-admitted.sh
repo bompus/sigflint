@@ -1,10 +1,13 @@
 #!/bin/bash
 # Admitted-pair runs of protocol-rerun-3.md. A unit is one library (arm) in one round measured under both runtimes back to back (Node first in odd rounds,
-# Bun first in even rounds; arm order reversed in even rounds). A host admission check runs before the first unit and after every unit; the check after a
-# unit is the check before the next. A unit counts only when the check before it and the check after it both admitted. A unit that fails is kept in
-# results/rerun-3-not-admitted.jsonl and measured again (up to 4 attempts); when the host stays unquiet the run exits 6 and gives up the lock, and
-# running it again continues with the units not yet admitted.
-# Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet> [BENCH_LOCK=<lock file>] [FROM_ROUND=n]
+# Bun first in even rounds; arm order reversed in even rounds). A fresh host admission check runs before every unit and after every unit. A unit counts only when the check before it and the check after it both admitted and its observer ended clean. A unit
+# that fails is kept in results/rerun-3-not-admitted.jsonl and the run exits at once, giving up the lock: it never waits for a quieter host, never sleeps
+# or retries while holding the lock, and never blocks on it (a held lock exits 3). Running it again, from a one-shot timer or by hand, continues with the
+# units not yet admitted; each unit has 4 attempts in all (every start counts, an interrupted one too), counted across runs from the receipts, and a unit
+# past 4 exits 7.
+# Usage: ADMIT=<command that prints one JSON verdict with "admit": true|false and exits 0 when the host is quiet>
+#        OBSERVER=<command that samples the host until SIGTERM, then writes one JSON line with "clean": true|false to $OBSERVER_OUT and exits 0 when clean;
+#        bench/observe-unit.py is the one the protocols use> [BENCH_LOCK=<lock file>] [FROM_ROUND=n]
 #        run-admitted.sh <A|R|B|C|D> <dir with node.js, bun.js and SHA256SUMS> [rounds=3]
 #   A  S3 header matrix, 8 arms                       -> results/speed-raw.jsonl
 #   R  regression check against frozen/ (BASE=<dir> compares against that build instead) -> results/speed-regression.jsonl
@@ -13,7 +16,7 @@
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
 # RUNTIMES="node bun143 bun144" measures every unit under each listed runtime label (default "node bun"), in this order in odd rounds and the reverse in even rounds;
 #   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (characters of the label outside A-Za-z0-9_ become _ in the variable name; default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
-# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
+# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock held, 4 hashes, 6 host not quiet (run again), 7 a unit keeps failing or its results could not be written, 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}
 NEW=${2:?dir}
@@ -26,6 +29,7 @@ R=${RESULTS:-$HERE/results}
 REC=$R/rerun-3-admission.jsonl
 NOTADM=$R/rerun-3-not-admitted.jsonl
 : "${ADMIT:?set ADMIT to the host admission command}"
+: "${OBSERVER:?set OBSERVER to the continuous observer command}"
 case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B) OUT=$R/speed-more.jsonl ;; C | D) OUT=$R/memory-raw.jsonl ;; *)
   echo "unknown part $PART"
   exit 2
@@ -37,9 +41,8 @@ BASE=${BASE:-$HERE/frozen}
   exit 4
 }
 exec 9>"${BENCH_LOCK:-$HOME/.cache/bench-host.lock}"
-echo "waiting for lock $(date -u +%FT%TZ)"
-flock -w 7200 9 || {
-  echo "lock not acquired"
+flock -n 9 || {
+  echo "lock held by another phase; blocked, nothing waited for $(date -u +%FT%TZ)"
   exit 3
 }
 echo "lock held $(date -u +%FT%TZ)"
@@ -91,7 +94,7 @@ swapfree() { awk '/SwapFree/{print $2}' /proc/meminfo; }
 SEQ=$(grep -c '"kind":"admit"' "$REC" 2>/dev/null || true)
 SEQ=${SEQ:-0}
 admit_state() { # admit_state <text>: prints true or false for the top-level "admit" of a JSON object, and invalid for anything else (not JSON, not an object, no boolean true)
-  printf '%s' "$1" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let r="invalid";try{const o=JSON.parse(s);if(o&&typeof o==="object"&&!Array.isArray(o))r=o.admit===true?"true":"false"}catch{}process.stdout.write(r)})'
+  printf '%s' "$1" | bun -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let r="invalid";try{const o=JSON.parse(s);if(o&&typeof o==="object"&&!Array.isArray(o))r=o.admit===true?"true":"false"}catch{}process.stdout.write(r)})'
 }
 check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when admitted
   local out st state
@@ -107,15 +110,9 @@ check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when a
 } # admitted only when the command exited 0 and the top-level "admit" is the boolean true; anything else refuses
 unit_done() { grep -q "\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$1\",\"admitted\":true" "$REC" 2>/dev/null; }
 
-# gate: waits for a quiet machine (whole-machine Linux CPU busy at most 20%, up to 8 retries 15 s apart); sets PRE and LOAD; returns 1 when it never quiets
+# gate: one fresh sample of whole-machine Linux CPU busy, at most 20%; sets PRE and LOAD; returns 1 when the machine is not quiet. It never waits or retries.
 gate() {
-  local tries=0
   PRE=$(busy)
-  while ((PRE > 20 && tries < 8)); do
-    sleep 15
-    PRE=$(busy)
-    tries=$((tries + 1))
-  done
   LOAD=$(cut -d' ' -f1 /proc/loadavg)
   ((PRE <= 20))
 }
@@ -152,7 +149,7 @@ NODE_FLAGS_RUN=(--expose-gc)
 jsc_rows() {
   local log=$1 arm=$2 round=$3 mode=$4 rt=$5 parsed want got l
   local bad="{\"round\":$round,\"kind\":\"$mode\",\"armTag\":\"$arm\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"gc log"
-  parsed=$(node "$HERE/parse-jsc-log.mjs" "$log" "$arm" "$round") || {
+  parsed=$(bun "$HERE/parse-jsc-log.mjs" "$log" "$arm" "$round") || {
     echo "$bad parse failed\"}" >>"$TMP"
     return
   }
@@ -280,7 +277,7 @@ if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl
       NBUN=$((NBUN + 1))
       {
         ARM=calib BUN_JSC_logGC=1 "$CAPPED" "$CAP" "$(rtbin "$rt")" "$HERE/memory.mjs" alloc calib x 2>"$CERR"
-        node "$HERE/parse-jsc-log.mjs" "$CERR" calib 1
+        bun "$HERE/parse-jsc-log.mjs" "$CERR" calib 1
       } | sed "s/}\$/,\"rt\":\"$rt\"}/" >>"$CT"
     fi
   done
@@ -294,50 +291,92 @@ if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl
     exit 8
   fi
 fi
-PREV_OK=0
+# observe_start / observe_stop: the continuous observer runs for exactly one unit attempt, as a process this script started and stops by its recorded
+# PID and start time. The unit counts only when the observer was clean: it exited 0 on SIGTERM and its summary's top-level "clean" is true. It does not
+# inherit the lock descriptor. It must write $OBSERVER_OUT.ready after its first sample (the unit starts after that, within 10 s). After SIGTERM it has 10 s
+# to finish (checked once a second, then SIGKILL); those are the only waits. Summaries: $R/observer/.
+OBS_PID=
+OBS_START=
+OBS_OUT=
+pid_start() { awk '{ sub(/^.*\) /, ""); print $20 }' "/proc/$1/stat" 2>/dev/null; } # the process start time in ticks, empty when it is gone
+observe_start() {                                                                   # observe_start <unit> <attempt>
+  mkdir -p "$R/observer"
+  OBS_OUT=$R/observer/$1.attempt$2.json
+  rm -f "$OBS_OUT" "$OBS_OUT.ready"
+  OBSERVER_OUT=$OBS_OUT UNIT_ID=$1 bash -c "exec $OBSERVER" >/dev/null 2>"$OBS_OUT.err" 9>&- &
+  OBS_PID=$!
+  OBS_START=$(pid_start "$OBS_PID")
+}
+observe_ready() { # waits up to 10 s, once a second, for the observer's first sample; returns 1 when it has none
+  local t=0
+  while [ ! -e "$OBS_OUT.ready" ]; do
+    ((t >= 10)) && return 1
+    sleep 1
+    t=$((t + 1))
+  done
+}
+observe_terminate() { # ends the recorded observer if it is the same process (same start time); sets OBS_RC
+  OBS_RC=1
+  [ -n "$OBS_PID" ] || return 0
+  if [ "$(pid_start "$OBS_PID")" = "$OBS_START" ]; then
+    kill -TERM "$OBS_PID" 2>/dev/null
+    local t=0
+    while [ "$(pid_start "$OBS_PID")" = "$OBS_START" ] && ((t < 10)); do
+      sleep 1
+      t=$((t + 1))
+    done
+    if [ "$(pid_start "$OBS_PID")" = "$OBS_START" ]; then kill -KILL "$OBS_PID" 2>/dev/null; fi
+  fi
+  wait "$OBS_PID" 2>/dev/null
+  OBS_RC=$?
+  OBS_PID=
+}
+observe_stop() { # sets OBS_CLEAN to 1 when the observer ended clean, else 0
+  observe_terminate
+  OBS_CLEAN=0
+  ((OBS_RC == 0)) && [ -s "$OBS_OUT" ] && [ "$(bun -e 'try{const o=JSON.parse(await Bun.file(process.argv[1]).text());process.stdout.write(o&&o.clean===true?"1":"0")}catch{process.stdout.write("0")}' "$OBS_OUT")" = 1 ] && OBS_CLEAN=1
+}
+trap 'observe_terminate; rm -f "$TMP"' EXIT
 for round in $(seq "$FROM" "$ROUNDS"); do
   for arm in $(units_of "$round"); do
     [ -n "${ONLY:-}" ] && [ "$PART" != D ] && [[ " $ONLY " != *" $arm "* ]] && continue # ONLY="arm ..." limits a trial run to some units
     UNIT="$PART-r$round-$arm"
     unit_done "$UNIT" && continue
-    attempt=0
-    while :; do
-      attempt=$((attempt + 1))
-      if ((! PREV_OK)); then
-        t=0
-        until check "before $UNIT"; do
-          t=$((t + 1))
-          ((t >= 3)) && {
-            echo "host not quiet at $(date -u +%FT%TZ); giving up the lock"
-            exit 6
-          }
-          sleep 30
-        done
-      fi
-      PRE_SEQ=$CHECK_SEQ
-      echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC"
+    prior=$(grep -c "\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\"" "$REC" 2>/dev/null || true)
+    attempt=$((${prior:-0} + 1)) # every start counts, an interrupted attempt included
+    if ((attempt > 4)); then
+      echo "$UNIT has used its 4 attempts; not measuring it again"
+      exit 7
+    fi
+    check "before $UNIT" || {
+      echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
+      exit 6
+    }
+    PRE_SEQ=$CHECK_SEQ
+    echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC"
+    observe_start "$UNIT" "$attempt"
+    : >"$TMP"
+    if observe_ready; then
       if [ "$PART" = D ]; then run_import_round "$round"; else run_unit "$round" "$arm"; fi
-      bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
-      if check "after $UNIT" && ((bad == 0)); then
-        cat "$TMP" >>"$OUT" || {
-          echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"
-          exit 7
-        }
-        PREV_OK=1
-        echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ]}" >>"$REC"
-        echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
-        break
-      fi
-      PREV_OK=0
-      sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
-      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad}" >>"$REC"
-      echo "$UNIT not admitted (attempt $attempt, $bad bad rows) $(date -u +%FT%TZ)"
-      if ((attempt >= 4)); then
-        ((bad > 0)) && exit 7
-        exit 6
-      fi
-      sleep 30
-    done
+    else
+      echo "the observer gave no first sample for $UNIT; the unit is not measured"
+    fi
+    observe_stop
+    bad=$(grep -c '"status":"rejected-load"\|"status":"error"' "$TMP" || true)
+    if check "after $UNIT" && ((bad == 0)) && ((OBS_CLEAN)); then
+      cat "$TMP" >>"$OUT" || {
+        echo "could not append $UNIT results to $OUT; stopping with no admitted receipt (the file may hold part of this unit)"
+        exit 7
+      }
+      echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":true,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"observer\":\"$OBS_OUT\"}" >>"$REC"
+      echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
+      continue
+    fi
+    sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
+    echo "{\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"admitted\":false,\"attempt\":$attempt,\"checks\":[$PRE_SEQ,$CHECK_SEQ],\"badRows\":$bad,\"observerClean\":$OBS_CLEAN,\"observer\":\"$OBS_OUT\"}" >>"$REC"
+    echo "$UNIT not admitted (attempt $attempt of 4, $bad bad rows, observer clean $OBS_CLEAN); giving up the lock, nothing retried $(date -u +%FT%TZ)"
+    ((bad > 0)) && exit 7
+    exit 6
   done
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
 done
