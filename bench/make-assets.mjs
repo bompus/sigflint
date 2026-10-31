@@ -158,7 +158,7 @@ const tables = [];
 
 // ---- correctness --------------------------------------------------------------------------------------------------
 // Two groups: ordinary requests, and the edge cases (stray %, a raw + in the path, empty query names, headers some
-// libraries never sign). Session-token cases are left out: only sigflint is run on them (316 of 316 pass).
+// libraries never sign, and the requests with a session token, which each library is given as it takes one).
 const screen = read('screen-node.json');
 const currentVersion = JSON.parse(readFileSync(`${here}../package.json`, 'utf8')).version;
 if (screen.candidates.sigflint.version !== currentVersion) {
@@ -172,7 +172,7 @@ const groups = /** @type {[Group, Group]} */ ([
   {
     key: 'edge',
     title: 'Serialized URL input: edge cases',
-    tags: ['malformed', 'plus-in-path', 'empty-query-name', 'unsigned-header'],
+    tags: ['malformed', 'plus-in-path', 'empty-query-name', 'unsigned-header', 'session-token'],
   },
 ]);
 const ids = ['sigflint', 'aws4fetch', 'aws4', 'smithy', 'wdl', 'minio', 'aws-sig'];

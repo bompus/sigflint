@@ -50,7 +50,7 @@
   "aws4fetch": {
    "label": "aws4fetch",
    "version": "1.0.20",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 1408,
@@ -70,6 +70,11 @@
     "malformed": {
      "pass": 505,
      "fail": 894,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 195,
+     "fail": 121,
      "error": 0
     },
     "empty-query-name": {
@@ -99,7 +104,7 @@
   "aws4": {
    "label": "aws4 (mhart)",
    "version": "1.13.2",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 1264,
@@ -120,6 +125,11 @@
      "pass": 192,
      "fail": 123,
      "error": 1084
+    },
+    "session-token": {
+     "pass": 156,
+     "fail": 31,
+     "error": 129
     },
     "empty-query-name": {
      "pass": 0,
@@ -148,7 +158,7 @@
   "smithy": {
    "label": "@smithy/signature-v4",
    "version": "5.7.5",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 904,
@@ -168,6 +178,11 @@
     "malformed": {
      "pass": 223,
      "fail": 1176,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 97,
+     "fail": 219,
      "error": 0
     },
     "empty-query-name": {
@@ -197,7 +212,7 @@
   "smithy-pre": {
    "label": "@smithy/signature-v4 (pre-encoded input)",
    "version": "5.7.5",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 1519,
@@ -219,6 +234,11 @@
      "fail": 337,
      "error": 0
     },
+    "session-token": {
+     "pass": 269,
+     "fail": 47,
+     "error": 0
+    },
     "empty-query-name": {
      "pass": 31,
      "fail": 0,
@@ -233,7 +253,7 @@
   "smithy-web": {
    "label": "@smithy/signature-v4 (web SHA-256)",
    "version": "5.7.5",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 904,
@@ -253,6 +273,11 @@
     "malformed": {
      "pass": 223,
      "fail": 1176,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 97,
+     "fail": 219,
      "error": 0
     },
     "empty-query-name": {
@@ -282,16 +307,16 @@
   "aws-sig": {
    "label": "aws-sig",
    "version": "2.1.0",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
-     "pass": 226,
-     "fail": 1294,
+     "pass": 379,
+     "fail": 1141,
      "error": 0
     },
     "unsigned-header": {
-     "pass": 1,
-     "fail": 1,
+     "pass": 2,
+     "fail": 0,
      "error": 0
     },
     "plus-in-path": {
@@ -300,13 +325,18 @@
      "error": 0
     },
     "malformed": {
-     "pass": 11,
-     "fail": 1388,
+     "pass": 34,
+     "fail": 1365,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 25,
+     "fail": 291,
      "error": 0
     },
     "empty-query-name": {
-     "pass": 0,
-     "fail": 31,
+     "pass": 4,
+     "fail": 27,
      "error": 0
     }
    },
@@ -315,32 +345,32 @@
     "path-encoded-slash",
     "path-lowercase-hex",
     "query-star-bang",
-    "headers-extra-spaces",
-    "body-unicode",
     "body-empty-unsigned",
     "unsigned-payload",
     "bench-part-put",
     "bench-encode",
-    "bench-body-1k",
     "headers-name-prefix",
-    "headers-around-the-fixed-three",
-    "fuzz-2"
+    "fuzz-2",
+    "fuzz-4",
+    "fuzz-5",
+    "fuzz-8",
+    "fuzz-9"
    ],
    "errIds": []
   },
   "wdl": {
    "label": "@wdl-dev/aws-sigv4",
    "version": "3.0.4",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
-     "pass": 666,
-     "fail": 854,
+     "pass": 1174,
+     "fail": 346,
      "error": 0
     },
     "unsigned-header": {
-     "pass": 1,
-     "fail": 1,
+     "pass": 2,
+     "fail": 0,
      "error": 0
     },
     "plus-in-path": {
@@ -349,13 +379,18 @@
      "error": 0
     },
     "malformed": {
-     "pass": 32,
-     "fail": 205,
+     "pass": 91,
+     "fail": 146,
      "error": 1162
     },
+    "session-token": {
+     "pass": 119,
+     "fail": 58,
+     "error": 139
+    },
     "empty-query-name": {
-     "pass": 11,
-     "fail": 20,
+     "pass": 22,
+     "fail": 9,
      "error": 0
     }
    },
@@ -363,24 +398,24 @@
     "path-encoded-slash",
     "path-lowercase-hex",
     "query-plus-is-space",
-    "headers-extra-spaces",
-    "body-unicode",
-    "bench-body-1k",
-    "headers-name-prefix",
-    "fuzz-2",
     "fuzz-4",
-    "fuzz-5",
-    "fuzz-8",
     "fuzz-9",
     "fuzz-15",
-    "fuzz-16"
+    "fuzz-16",
+    "fuzz-18",
+    "fuzz-26",
+    "fuzz-30",
+    "fuzz-33",
+    "fuzz-34",
+    "fuzz-51",
+    "fuzz-89"
    ],
    "errIds": []
   },
   "minio": {
    "label": "minio signV4",
    "version": "8.0.7",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 526,
@@ -400,6 +435,11 @@
     "malformed": {
      "pass": 0,
      "fail": 1399,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 37,
+     "fail": 279,
      "error": 0
     },
     "empty-query-name": {
@@ -429,7 +469,7 @@
   "minio-pre": {
    "label": "minio signV4 (pre-encoded input)",
    "version": "8.0.7",
-   "unsupported": 316,
+   "unsupported": 0,
    "byTag": {
     "well-formed": {
      "pass": 1320,
@@ -449,6 +489,11 @@
     "malformed": {
      "pass": 1189,
      "fail": 210,
+     "error": 0
+    },
+    "session-token": {
+     "pass": 271,
+     "fail": 45,
      "error": 0
     },
     "empty-query-name": {

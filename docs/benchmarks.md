@@ -47,13 +47,13 @@ Matches against botocore with the same key and clock. Compare libraries within a
 
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
-| **sigflint** | Serialized URL | 1.0.3 | 1,520 / 1,520 | 0 | 1,522 / 1,522 | Not applicable |
-| aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 268 / 1,522 | Not applicable |
-| aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 595 / 1,522 | Not applicable |
-| aws-sig | Serialized URL | 2.1.0 | 226 / 1,520 | 0 | 12 / 1,522 | Not applicable |
-| minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 3 / 1,522 | Not applicable |
-| @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 236 / 1,522 | Not applicable |
-| @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 666 / 1,520 | 0 | 44 / 1,522 | Not applicable |
+| **sigflint** | Serialized URL | 1.0.3 | 1,520 / 1,520 | 0 | 1,838 / 1,838 | Not applicable |
+| aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 424 / 1,838 | Not applicable |
+| aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 790 / 1,838 | Not applicable |
+| aws-sig | Serialized URL | 2.1.0 | 379 / 1,520 | 0 | 65 / 1,838 | Not applicable |
+| minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 40 / 1,838 | Not applicable |
+| @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 333 / 1,838 | Not applicable |
+| @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 1,174 / 1,520 | 0 | 234 / 1,838 | Not applicable |
 | **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | 1,013 / 1,252 (588 unsupported) | 458 / 578 |
 | s3-lite-client | Decoded key | 1.0.1 | 1,519 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
@@ -61,7 +61,7 @@ Matches against botocore with the same key and clock. Compare libraries within a
 | tiny-oss | Decoded key | 1.2.0 source | 993 / 1,519 | 1 | 513 / 1,252 (588 unsupported) | 316 / 578 |
 <!-- END correctness -->
 
-The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). sigflint also passes all 316 requests with a session token. The decoded-key adapters exercise token cases their libraries can express; the older serialized-URL adapters do not wire token support. `npm test` checks the shipped code against the same corpus (`test/corpus.json`, 3,360 requests).
+The reference is botocore's S3 signer (`S3SigV4Auth`), run with a fixed clock on the same requests after `conformance/oracle.py` has normalized each path and query, plus the four example signatures printed in the S3 documentation. “Ordinary requests” are valid S3 requests: keys and queries with spaces, unicode, reserved characters, repeated and unsorted parameters. “Edge cases” are requests a strict reading of the specification covers but most libraries do not: a stray `%` or invalid UTF-8 in the URL, a raw `+` in the path, a query pair with an empty name, and headers some libraries never sign (`date`, `range`). The 316 requests with a session token are edge cases too: each library is given the token as it takes one (a credentials option, or the `x-amz-security-token` header that the SDKs send), and sigflint passes all 316. The `aws-sig` and `@wdl-dev/aws-sigv4` adapters are given the request body whatever the method: `aws-sig` hashes the body it is given and ignores the hash header, and `@wdl-dev/aws-sigv4` adds and signs a Content-Type when its body is a string, so it gets bytes. An earlier version dropped the body of GET and HEAD requests for both, which understated them (ordinary matches 226 and 666, now 379 and 1,174). The decoded-key adapters exercise token cases their libraries can express; the older serialized-URL adapters do not wire token support. `npm test` checks the shipped code against the same corpus (`test/corpus.json`, 3,360 requests).
 
 Some of the other libraries expect the caller to canonicalize the path and query first. When the harness hands `@smithy/signature-v4` botocore's canonical path and query, it matches 1,519 of the 1,520 ordinary requests; `minio` matches 1,320 of them (`bench/results/screen-node.json`). The serialized-URL rows above show what each library produces when given the URL as an application has it.
 

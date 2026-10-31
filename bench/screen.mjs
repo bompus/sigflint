@@ -5,7 +5,7 @@
 //   plus-in-path     a raw '+' in the path: S3 reads it as a space, a strict RFC 3986 reader as a plus
 //   malformed        stray '%', bad hex, or bytes that are not valid UTF-8 (S3 keys cannot contain them)
 //   empty-query-name a query pair with an empty name ("?=x"): the old signer and aws4fetch drop it, the specification keeps it
-//   session-token    a case with a session token: only sigflint is run on these (the others are not wired for them here)
+//   session-token    a case with a session token, passed as each library takes it (a credentials option, else the x-amz-security-token header)
 //   unsigned-header  a header some libraries deliberately never sign (date, range): valid, but a different signature
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { loadAdapters, freezeClock } from './adapters.mjs';
@@ -49,10 +49,6 @@ for (const a of adapters) {
     errIds: [],
   };
   for (const c of cases) {
-    if (c.token && a.id !== 'sigflint') {
-      r.unsupported++;
-      continue;
-    }
     if (a.unsupported(c)) {
       r.unsupported++;
       continue;
