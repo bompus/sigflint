@@ -259,7 +259,14 @@ run_import_round() { # part D: one unit is a whole round; Hyperfine times REPS c
       args+=(--command-name "$arm" "$(printf '%q ' "$(rtbin "$rt")" "$HERE/import-once.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")")")
     done
     rm -f "$hf"
-    if hyperfine "${args[@]}" >/dev/null 2>&1 && [ -s "$hf" ]; then
+    local sw0 sw1
+    sw0=$(swapfree)
+    hyperfine "${args[@]}" >/dev/null 2>&1
+    local hrc=$?
+    sw1=$(swapfree)
+    if (($((sw1 - sw0)) < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the processes ran
+      echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$((sw1 - sw0))}" >>"$TMP"
+    elif ((hrc == 0)) && [ -s "$hf" ]; then
       bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
     else
       echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine failed\"}" >>"$TMP"

@@ -131,7 +131,14 @@ for (const [k, v] of Object.entries(bunAlloc)) {
 // starts of the control (the harness without a library), both timed by Hyperfine
 /** @type {Record<string, any[]>} */
 const imp = {};
-for (const r of ok.filter((x) => x.kind === 'import')) {
+const importRows = ok.filter((x) => x.kind === 'import');
+const oldFormat = importRows.filter((x) => x.wallMs === undefined);
+if (oldFormat.length) {
+  throw new Error(
+    `${oldFormat.length} import rows have no wallMs: they come from the earlier in-process timer, not Hyperfine. Rerun part D with run-admitted.sh; the checked-in memory-summary.json already holds those figures.`,
+  );
+}
+for (const r of importRows) {
   (imp[`${r.rt}|${r.armTag}|${r.round}`] ??= []).push(r);
 }
 for (const [k, list] of Object.entries(imp)) {
