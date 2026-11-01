@@ -36,5 +36,5 @@
   },
   "observerCommit": "e2a593e",
   "compiledClientBundlesNote": "Bun.build output for these bundles differs between builds of the same sources, so the hashes name the files this run used; they are checked again at the end of the run.",
-  "benchTreeSha256": "7834b2e161b20a3c74b3e0d80ff621791bcaa254b569d3bb8ba3b4a335e0886d"
+  "benchTreeSha256": "2f3293f2624d90132ffc4e74272cb2568c9dcec02660dcf1feb3abc0ae6ba20e"
 }
