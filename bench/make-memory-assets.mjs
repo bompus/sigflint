@@ -308,8 +308,7 @@ const allocUnclear = summary.cells
   .flatMap((c) =>
     Object.entries(c.arms)
       .filter(
-        ([a, x]) =>
-          a !== 'sigflint-A' && a !== 'sigflint-B' && x.verdict !== 'more than sigflint',
+        ([a, x]) => a !== 'sigflint-A' && a !== 'sigflint-B' && x.verdict !== 'more than sigflint',
       )
       .map(([a, x]) => `${a} on ${c.runtime} ${c.workload} (${x.ratio.toFixed(2)}×)`),
   );

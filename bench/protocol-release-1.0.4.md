@@ -180,8 +180,8 @@ and observer are in this repository; the host's own lock path is the default.
 ## Limits of the harness that ran
 
 Three behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review after the run and
-did not occur in it. The committed `bench/` tree is the tree that was frozen and measured, so they
-are recorded here, not fixed, in this change, and are to be fixed in a later change before another
+did not occur in it. The `bench/` code that was frozen and measured is unchanged since the freeze commit `2685da5` (only the analysis
+scripts and this protocol changed after it), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
 campaign:
 
 - The controller runs each part from `bench/` and keeps the caller's `RESULTS` and artifact paths as given, so
