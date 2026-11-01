@@ -51,4 +51,5 @@ for part in $PARTS; do
     esac
   done
 done
+bun "$HERE/tidy-results.mjs" "$RESULTS" >>"$PROG" 2>&1
 log "DONE gaps: ${gaps[*]:-none}"

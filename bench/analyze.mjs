@@ -65,7 +65,8 @@ const cellOf = (rt, w) => {
         timesFasterThanBaseline: base.medianNs / s.medianNs,
         // fewer than three processes behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
         clear:
-          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > cell.bandPct &&
+          // a gap within twice the band stays unsettled (protocol-rerun-3.md), as in analyze-more.mjs and analyze-memory.mjs
+          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > 2 * cell.bandPct &&
           !overlap &&
           s.n >= 3 &&
           base.n >= 3,

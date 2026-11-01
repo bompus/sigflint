@@ -60,7 +60,9 @@ which goes first. The reporting band is what the analyzers compute, as in `proto
 the larger of 3% and twice the larger run-to-run range of the two sigflint control arms, with a
 6% floor for allocation and the absolute floors in `analyze-memory.mjs`; in part B it is also
 widened by the gap between the two sigflint (`final-1`, `final-2`) medians (`analyze-more.mjs`).
-A comparison is unsettled as `analyze.mjs`, `analyze-more.mjs` and `analyze-memory.mjs` decide it,
+A comparison is unsettled as `analyze.mjs`, `analyze-more.mjs` and `analyze-memory.mjs` decide it
+(a gap within twice the band, overlapping ranges, or fewer than three rounds behind the arm or its
+baseline),
 and rounds 4 and 5 follow that decision and nothing else.
 
 ## Host, admission and the lock
@@ -75,7 +77,9 @@ reason to refuse, and neither the admission command nor the observer records hos
 page-in diagnostic exists for this campaign). The continuous observer (`observe-unit.py`, the house-rules unit
 observer, vendored from the commit named in its header) must report a clean unit: competing CPU
 (host busy cores minus the workload's own) at most 4, pressure within the same limits per interval,
-counters unchanged and monotonic, and its own cost within 0.05 cores and 128 MiB. Two more rules
+counters unchanged and monotonic, and its own cost within 0.05 cores and 128 MiB of resident memory.
+No separate observer I/O budget is enforced: its logical log bytes are in its receipt, and physical I/O
+is not attributed to it; this is a disclosed limit of the shared observer. Two more rules
 reject a unit: the whole machine more than 20% busy in the second before a process starts (once per
 runtime before part D's Hyperfine call), and free swap falling by more than 51,200 KiB (50 MiB; parts A and B) or
 65,536 KiB (64 MiB; parts C and D) over a process; in part D the swap check wraps one runtime's Hyperfine
@@ -89,7 +93,10 @@ four times. After the fourth, the next invocation skips that unit, runs the othe
 it; the campaign records the gap and goes on. Exit 7 is a real failure (a write error, an errored
 unit, or a part that ended with a unit neither complete nor named as out of attempts) and stops the
 campaign. A unit is complete only with an admitted receipt and its rows in the raw file; rows left by
-an interrupted attempt are dropped before the unit runs again, so no sample is counted twice. A unit
+an interrupted attempt are dropped before the unit runs again, and `tidy-results.mjs` drops any left
+for a unit that never ran again before the analyzers read the files, so no sample is counted twice or
+counted without an admitted receipt. A unit with no rows of its own, a Hyperfine report that lacks a
+command or has the wrong number of runs, and a part in which no unit matched are failures, not data. A unit
 that stays missing leaves its arm's median on the rounds it has, and the number of rounds behind
 every figure is reported; a comparison from fewer than three rounds is not given a clear verdict.
 The host is shared, so refusals are expected; they are retained in the admission receipts and are not

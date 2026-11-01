@@ -282,7 +282,10 @@ run_import_round() { # part D: one unit is a whole round; Hyperfine times REPS c
     if (($((sw1 - sw0)) < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the processes ran
       echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$((sw1 - sw0))}" >>"$TMP"
     elif ((hrc == 0)) && [ -s "$hf" ]; then
-      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" "$UNIT" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
+      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" "$UNIT" "$REPS" "none,$(
+        IFS=,
+        echo "${ORDER[*]}"
+      )" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
     else
       echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine failed\"}" >>"$TMP"
     fi
@@ -390,10 +393,12 @@ observe_stop() { # sets OBS_CLEAN to 1 when the observer ended clean, else 0
   ((OBS_EARLY == 0)) && ((OBS_RC == 0)) && [ -s "$OBS_OUT" ] && [ "$(bun -e 'try{const o=JSON.parse(await Bun.file(process.argv[1]).text());process.stdout.write(o&&o.clean===true?"1":"0")}catch{process.stdout.write("0")}' "$OBS_OUT")" = 1 ] && OBS_CLEAN=1
 }
 OUT_OF_ATTEMPTS=()
+UNITS_SEEN=0
 trap 'observe_terminate; rm -f "$TMP"' EXIT
 for round in $(seq "$FROM" "$ROUNDS"); do
   for arm in $(units_of "$round"); do
     [ -n "${ONLY:-}" ] && [ "$PART" != D ] && [[ " $ONLY " != *" $arm "* ]] && continue # ONLY="arm ..." limits a trial run to some units
+    UNITS_SEEN=$((UNITS_SEEN + 1))
     UNIT="$PART-r$round-$arm"
     unit_complete "$UNIT" && continue
     prior=$(grep -c "\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\"" "$REC" 2>/dev/null || true)
@@ -428,6 +433,8 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     fi
     observe_stop
     bad=$(grep -c '"status":"rejected-load"\|"status":"rejected-swap"\|"status":"error"' "$TMP" || true)
+    # a unit with no rows of its own is not data, whatever the checks said
+    if ! grep -q "\"unit\":\"$UNIT\"" "$TMP"; then bad=$((bad + 1)); fi
     errs=$(grep -c '"status":"error"' "$TMP" || true)
     if check "after $UNIT" && ((bad == 0)) && ((OBS_READY)) && ((OBS_CLEAN)); then
       cat "$TMP" >>"$OUT" || {
@@ -450,6 +457,10 @@ for round in $(seq "$FROM" "$ROUNDS"); do
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
 done
 echo "part $PART finished $(date -u +%FT%TZ)"
+if ((UNITS_SEEN == 0)); then
+  echo "no unit matched (ONLY=${ONLY:-unset}, rounds $FROM to $ROUNDS); nothing was measured"
+  exit 2
+fi
 # the matrix must be whole: every unit of the rounds asked for is complete or named as out of attempts (a trial limited by ONLY is not checked)
 if [ -z "${ONLY:-}" ]; then
   MISSING=()
