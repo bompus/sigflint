@@ -426,7 +426,13 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       continue
     fi
     if [ -s "$OUT" ] && grep -q "\"unit\":\"$UNIT\"" "$OUT"; then # rows left by an attempt that was interrupted between writing them and recording the admission
-      grep -v "\"unit\":\"$UNIT\"" "$OUT" >"$OUT.tmp" || true
+      grep -v "\"unit\":\"$UNIT\"" "$OUT" >"$OUT.tmp"
+      rc=$? # 1 is only "no row left"; a read or write error must not replace the raw results with a partial copy
+      if ((rc > 1)); then
+        rm -f "$OUT.tmp"
+        echo "could not drop the rows of $UNIT from $OUT (grep exit $rc); raw results left as they were"
+        exit 7
+      fi
       mv "$OUT.tmp" "$OUT"
       echo "dropped the rows of $UNIT left by an interrupted attempt"
     fi

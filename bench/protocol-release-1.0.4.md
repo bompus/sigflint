@@ -185,7 +185,9 @@ and observer are in this repository; the host's own lock path is the default.
 
 Four behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review after the run and
 did not occur in it. The `bench/` code that was frozen and measured is unchanged since the freeze commit `2685da5` (only the analysis
-scripts and this protocol changed after it), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
+scripts, this protocol and one guard in `run-admitted.sh` changed after it: the cleanup of rows left by an
+interrupted attempt now stops with exit 7 if `grep` fails, instead of replacing the raw file with a partial copy;
+that failure did not occur in this run), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
 campaign:
 
 - The controller runs each part from `bench/` and keeps the caller's `RESULTS` and artifact paths as given, so
