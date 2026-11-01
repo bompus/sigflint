@@ -131,8 +131,10 @@ for (const [key, cell] of Object.entries(A.cells)) {
     Math.min(...controls.map((arm) => arm.min)) <= baseline.max &&
     Math.max(...controls.map((arm) => arm.max)) >= baseline.min;
   // The declared cap leaves overlapping ranges or a gap within twice the band inconclusive.
+  // fewer than two rounds behind the baseline or either control never support a clear verdict
+  const fewRounds = baseline.n < 2 || controls.some((arm) => arm.n < 2);
   const unsettled =
-    overlap || Math.abs(cell.pooled - frozen) <= (2 * cell.band * cell.pooled) / 100;
+    fewRounds || overlap || Math.abs(cell.pooled - frozen) <= (2 * cell.band * cell.pooled) / 100;
   const verdict = unsettled ? 'no clear change' : change > 0 ? 'slower' : 'faster';
   summary.regression.push({
     runtime,

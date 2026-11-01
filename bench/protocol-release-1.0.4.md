@@ -165,10 +165,33 @@ and a later run may resume the unfinished parts in the same result directory.
 
 ## Reproduction
 
-`npm ci` in the repository and in `bench/`, `bun bench/compat/build-clients.mjs`, Hyperfine 2 on
-`PATH`, then, from the repository root,
-`RESULTS=$PWD/bench/results/release-1.0.4 FREEZE=$PWD/bench/results/release-1.0.4-freeze.json WINDOW_S=0.5 WARMUP_MS=200 REPS=5 DEADLINE_S=14400 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4/artifacts 2`.
+`npm ci` in the repository and in `bench/`, `bun bench/compat/build-clients.mjs`, `npm run build` with Bun 1.4.4
+and Hyperfine 2 on `PATH`. Stage the built files in a fresh result directory, which must not be
+`bench/results/release-1.0.4` (that holds the recorded run and its `artifacts/` is untracked):
+`mkdir -p bench/results/release-1.0.4-repeat/artifacts && cp dist/node.js dist/bun.js bench/results/release-1.0.4-repeat/artifacts/ && (cd bench/results/release-1.0.4-repeat/artifacts && sha256sum node.js bun.js > SHA256SUMS)`;
+the two hashes must equal `results/release-1.0.4-artifacts.sha256`, which is also what the freeze
+record names. Then, from the repository root,
+`RESULTS=$PWD/bench/results/release-1.0.4-repeat FREEZE=$PWD/bench/results/release-1.0.4-freeze.json WINDOW_S=0.5 WARMUP_MS=200 REPS=5 DEADLINE_S=14400 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4-repeat/artifacts 2`.
 `RESULTS` must name a fresh directory: the default, `bench/results`, holds earlier releases' admission
 receipts. `analyze-more.mjs` reads `RESULTS`; the other analyzers read fixed paths under
 `bench/results`, so they run on copies of the files placed there after the run. The admission command
 and observer are in this repository; the host's own lock path is the default.
+
+## Limits of the harness that ran
+
+Three behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review after the run and
+did not occur in it. The committed `bench/` tree is the tree that was frozen and measured, so they
+are recorded here, not fixed, in this change, and are to be fixed in a later change before another
+campaign:
+
+- The controller runs each part from `bench/` and keeps the caller's `RESULTS` and artifact paths as given, so
+  they must be absolute; this run passed absolute paths.
+- `check-freeze.mjs` records the `bun` and `node` found on `PATH`; a campaign that selects other
+  executables through the driver's environment is not covered by the check. This run used the default
+  executables.
+- The campaign deadline is counted from the first `campaign-start`; a run resumed after it has
+  expired stops at once. To resume one on purpose, delete `campaign-start` (the controller then records
+  a new start). The extension run was resumed within the deadline.
+
+The committed admission receipts have the home directory replaced by `~` and the checkout
+directory by `<repo>`; no other field was edited.
