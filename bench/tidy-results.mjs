@@ -1,7 +1,7 @@
 // Drops raw rows whose unit has no admitted receipt: bun tidy-results.mjs <result dir>
 // An attempt interrupted between writing a unit's rows and recording its admission leaves rows no receipt vouches for. run-admitted.sh drops them
 // when the unit runs again; run-campaign.sh runs this at the end for units that never did, so the analyzers only see admitted units.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 
 const dir = process.argv[2];
 if (!dir) {
@@ -34,7 +34,9 @@ for (const name of [
     return unit === undefined || admitted.has(unit);
   });
   if (kept.length !== lines.length) {
-    writeFileSync(file, kept.join('\n') + '\n');
+    // write the whole copy first, then replace the raw file in one step, so an interrupted write cannot leave it truncated
+    writeFileSync(`${file}.tmp`, kept.join('\n') + '\n');
+    renameSync(`${file}.tmp`, file);
     console.log(
       `${name}: dropped ${lines.length - kept.length} rows of units without an admitted receipt`,
     );

@@ -187,7 +187,8 @@ Four behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review
 did not occur in it. The `bench/` code that was frozen and measured is unchanged since the freeze commit `2685da5` (only the analysis
 scripts, this protocol and one guard in `run-admitted.sh` changed after it: the cleanup of rows left by an
 interrupted attempt now stops with exit 7 if `grep` fails, instead of replacing the raw file with a partial copy;
-that failure did not occur in this run), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
+that failure did not occur in this run; `tidy-results.mjs` likewise writes a complete copy before replacing the raw
+file, and its tidy of the first pass and the extension ran to completion), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
 campaign:
 
 - The controller runs each part from `bench/` and keeps the caller's `RESULTS` and artifact paths as given, so
