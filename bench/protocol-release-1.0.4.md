@@ -1,18 +1,24 @@
-# Release 1.0.4 measurements: plan declared before the run (second plan)
+# Release 1.0.4 measurements: plan declared before the run (third plan)
 
 Declared 2026-11-01, before the first measured process of this plan. The frozen inputs are in
 `results/release-1.0.4-freeze.json`; the built files the phases run are copied from `dist/` (built
 by `npm run build` with Bun 1.4.4) into an untracked `results/release-1.0.4/artifacts/` with a
 `SHA256SUMS`, and their hashes are in `results/release-1.0.4-artifacts.sha256`.
 
-## The first plan was stopped
+## Two earlier plans were stopped
 
-A first plan (12 arms, 3 rounds, 99 units, 824 counted processes; commit `88737dd`) started on
-2026-10-31 and was stopped on 2026-11-01 after 13 of its 99 units, because it was larger than the
-question needs: most of the comparison's claims are gaps of 3 to 90 times against noise bands of 3 to 6%,
-and about a fifth of every unit was two fixed admission windows. Its admitted rows are kept in
-`results/release-1.0.4-stopped/` and are not used. This plan measures what changed, with fewer rounds
-and shorter windows, and extends only the comparisons that stay unsettled.
+A first plan (12 arms, 3 rounds, 99 units, 824 counted processes; commit `88737dd`) started on 2026-10-31
+and was stopped on 2026-11-01 after 13 of its 99 units, because it was larger than the question needs:
+most of the comparison's claims are gaps of 3 to 90 times against noise bands of 3 to 6%, and about a
+fifth of every unit was two fixed admission windows. A second plan (9 arms, 2 rounds; commit `5985686`)
+started the same night and was stopped after 3 units, when its independent review found that it carried
+three libraries forward behind two anchor arms, which contradicts the host rule that a move to another
+runner reruns every arm and left the decision open after the data, and that its two-round "median" was the
+larger of the two values, its reused admission check was timed after the bookkeeping, and several failure
+paths still counted as success. Their admitted rows are kept in `results/release-1.0.4-stopped/` and
+`results/release-1.0.4-stopped-2/` and are not used. This plan keeps the second plan's savings (two rounds,
+shorter windows, one admission window per unit, extension only for unsettled comparisons) and measures all
+twelve arms.
 
 ## Why measure again
 
@@ -32,46 +38,42 @@ there is nothing for them to detect.
 
 ## Question
 
-Do the speed, memory, import and size figures of the comparison hold for the libraries whose
-measurement is out of date, under the preferred runners, when no figure is kept unless the host
-was quiet right before and right after it was measured?
+Do the speed, memory, import and size figures of the comparison hold for all twelve arms, under the
+preferred runners on the current runtimes, when no figure is kept unless the host was quiet right before
+and right after it was measured?
 
-## What is measured, and what is carried forward
+## What is measured
 
-The published figures (1.0.2 and 1.0.3) were measured on 2026-10-29 with the hand-written timer on
-Node 26.12.1 and Bun 1.4.4. Out of date: the four new clients (never measured), `@smithy/signature-v4`
-(5.7.5 now), the Node patch version (26.13.0 now), and the timer. Not out of date: sigflint (byte
-identical), `aws-sig`, `@wdl-dev/aws-sigv4`, minio, `aws4`, `aws4fetch` (same versions, same corpora).
-
-Arms measured (9): sigflint-A and sigflint-B (the same build; the A/A control), `@smithy/signature-v4`,
-s3mini, tiny-oss, lean-s3, s3-lite-client, and two anchors, `aws4` and `aws4fetch`. The anchors decide
-the carry-forward: if, on both runtimes, every anchor workload's new median is within the reporting
-band of its published median (after the timer difference measured on 2026-10-31, a median 2.0%), the
-published figures of `aws-sig`, `@wdl-dev/aws-sigv4` and minio are carried forward and labelled with
-their date, runtime version and timer. If any anchor falls outside, those three are measured too with
-`ARMS_LIST="aws-sig wdl minio"` and the same parts and rounds. Runtimes: Node 26.13.0 and Bun 1.4.4.
-Library versions are those of `bench/package-lock.json` (hash in the freeze record). Workloads and
-corpora are unchanged.
+All twelve arms, because the timer, the Node patch version (26.13.0 now, 26.12.1 for the published
+figures), `@smithy/signature-v4` (5.7.5 now) and four clients changed: sigflint-A and sigflint-B (the
+same build; the A/A control), aws4fetch, aws4, `@smithy/signature-v4`, aws-sig, `@wdl-dev/aws-sigv4`,
+minio, s3mini, tiny-oss, lean-s3 and s3-lite-client. Nothing is carried forward from earlier releases.
+Runtimes: Node 26.13.0 and Bun 1.4.4. Library versions are those of `bench/package-lock.json` (hash in
+the freeze record). Workloads and corpora are unchanged.
 
 | Part | What | Runner | Rounds | Counted processes |
 |---|---|---|--:|--:|
-| A | S3 header speed, four workloads, 9 arms | Tinybench 6.2.2 | 2 | 36 |
-| B | other services and presigned URLs: final-1, final-2 (sigflint), aws4, aws4fetch, smithy | Tinybench | 2 | 20 |
-| C | memory: allocation, run (GC, CPU, growth, peak RSS), signing-key cache (sigflint arms), 9 arms | runtime counters (heap, GC, `process.cpuUsage`, RSS) | 2 | 80 |
-| D | import and first signature, 5 cold starts per arm and runtime, plus the no-library control | Hyperfine 2.0.0 | 2 | 200 |
+| A | S3 header speed, four workloads, 12 arms | Tinybench 6.2.2 | 2 | 48 |
+| B | other services and presigned URLs, 8 arms (final-1, final-2, aws4, aws4fetch, smithy, aws-sig, wdl, minio) | Tinybench | 2 | 32 |
+| C | memory: allocation, run (GC, CPU, growth, peak RSS), signing-key cache (sigflint arms), 12 arms | runtime counters (heap, GC, `process.cpuUsage`, RSS) | 2 | 104 |
+| D | import and first signature, 5 cold starts per arm and runtime, plus the no-library control | Hyperfine 2.0.0 | 2 | 260 |
 | | allocation calibration, outside the claim sample | runtime counters | 1 | 2 |
 
-Total: 338 counted processes in 48 units (A 18, B 10, C 18, D 2). Rounds three to five are added only
-for the arms in a comparison that is still unsettled after round two, by running those arms again with
-`ARMS_LIST` and `FROM_ROUND=3`; the cap is five. Size (`sizes.mjs`, `tiers.mjs`) is deterministic and is
+Total: 446 counted processes in 66 units (A 24, B 16, C 24, D 2), plus 52 uncounted Hyperfine warm-up runs. Rounds three to five are added only
+for the arms in a comparison that is still unsettled after round two. Extension runs go into a new
+result directory (`results/release-1.0.4-extension-N`) with `ARMS_LIST` naming those arms, `FROM_ROUND=3`
+and the rounds argument raised to the last round wanted, under the same freeze; a result directory's
+unit ids are complete once measured, so reusing a directory would skip them. The analysis pools the
+named directories. The cap is five rounds. Size (`sizes.mjs`, `tiers.mjs`) is deterministic and is
 measured once on the frozen build and the pinned libraries; the four clients' size is the signing code
 only (s3mini: the whole client class), labelled as in `sizes.mjs`.
 
 Timing windows (`WINDOW_S=0.5`, `WARMUP_MS=200`): each signing task runs at least 10 batches of 1,000
-calls in about half a second after a warm-up of at least 4 batches and 0.2 s. At one second the
-relative error of the median was 0.1 to 4% in the 2026-10-31 comparison (every cell records its
-`rmePct`), so half a second is enough for bands of 3% and more, and the recorded `rmePct` of each cell
-shows whether it was. A cold start is one fresh process timed by Hyperfine as the arm's command time
+calls in about half a second after a warm-up of at least 4 batches and 0.2 s. Every cell records
+`rmePct` (Tinybench's error of the mean) and `madPct` (the median absolute deviation of the batches
+around the median that is reported); at one second the 2026-10-31 comparison recorded `rmePct` of 0.1 to
+4%. The window is a choice for speed, not a measured sufficiency: the verdicts rest on the rounds' own
+ranges and the A/A controls, which also absorb any extra noise from the shorter window. A cold start is one fresh process timed by Hyperfine as the arm's command time
 (`REPS=5` timed runs per command); the start-up cost is its median minus the median of the no-library
 control in the same round and runtime. One warm-up run precedes each command's timed runs so the first
 arm in a round does not pay for cold file caches. Memory counters are
@@ -92,7 +94,7 @@ and rounds three to five follow that decision and nothing else.
 Native Linux, 24 logical CPUs, shared with other sessions. Each part runs through
 `run-admitted.sh`, which re-executes once inside one `systemd-run` scope with a 2 GiB memory cap,
 takes the host lock `~/.cache/setupLinuxHost/post-upgrade-bench.lock` without waiting, and holds it
-only inside a part's run. A 10 s native Linux admission window must pass before a part's first unit and after every unit; the window that ends one unit also starts the next when it is at most 20 s old (`REUSE_S`), as `protocol-rerun-3.md` has it, and the continuous observer covers the gap. Each window requires
+only inside a part's run. A 10 s native Linux admission window must pass before a part's first unit and after every unit; the window that ends one unit also starts the next when it is at most 10 s old when the next unit's observer is ready (`REUSE_S`, measured from the end of the window, not from the bookkeeping that follows; an older one makes the attempt a refusal that uses an attempt and gets a fresh check on the rerun), as `protocol-rerun-3.md` has it, and the continuous observer covers the gap. Each window requires
 (at most 4 busy cores, at least 8 GiB available, no swap-out, zswap-out or zswap writeback, memory
 full pressure at most 10 ms and I/O full pressure at most 100 ms in any second; page-ins are not a
 reason to refuse, and neither the admission command nor the observer records host page-ins, so no
@@ -127,10 +129,10 @@ discarded if either refuses.
 
 ## Expected duration, pilot and stop rule
 
-Unmeasured estimate: 48 units have a lower bound of about 9 minutes of admission windows (one per
-unit, plus the first of each part); with the timed work, about an hour when the host is quiet. The first
-plan's run admitted a part A unit about every 100 s including refusals, which on this shared host puts
-the elapsed time between one and four hours. The 2026-10-31 comparison of the old and new timers on this
+Unmeasured estimate: 66 units have a lower bound of about 12 minutes of admission windows (one per
+unit, plus the first of each part and the calibration); with the timed work, about an hour and a half
+when the host is quiet. The first plan's run admitted a part A unit about every 100 s including
+refusals, which on this shared host puts the elapsed time between one and four hours. The 2026-10-31 comparison of the old and new timers on this
 artifact (parts A and D under the same driver and tooling, not pooled with these results) and a pilot of
 one part B and one part C unit with the calibration are the pilots; their numbers are in
 `results/release-1.0.4-pilot.md`. `run-campaign.sh` stops the campaign, reported as incomplete with the
@@ -141,7 +143,7 @@ and a later run may resume the unfinished parts in the same result directory.
 ## Rules fixed in advance
 
 - A wrong-result row is retained and not timed; an unsupported workload is reported as such.
-- Raw rows, admission receipts and observer receipts are kept unedited in `results/release-1.0.4/`; the first plan's partial results stay in `results/release-1.0.4-stopped/` and are not used.
+- Raw rows, admission receipts and observer receipts are kept unedited in `results/release-1.0.4/`; the stopped plans' partial results stay in `results/release-1.0.4-stopped/` and `results/release-1.0.4-stopped-2/` and are not used.
 - Nothing from `results/` of earlier releases is pooled. No profile, reduced reproduction or upstream
   submission is part of this campaign.
 - Every part starts only if `check-freeze.mjs` (run by `run-admitted.sh` when `FREEZE` names the freeze
@@ -158,7 +160,7 @@ and a later run may resume the unfinished parts in the same result directory.
 
 `npm ci` in the repository and in `bench/`, `bun bench/compat/build-clients.mjs`, Hyperfine 2 on
 `PATH`, then, from the repository root,
-`RESULTS=$PWD/bench/results/release-1.0.4 FREEZE=$PWD/bench/results/release-1.0.4-freeze.json ARMS_LIST="sigflint-A sigflint-B smithy s3mini tiny-oss lean-s3 s3-lite-client aws4 aws4fetch" WINDOW_S=0.5 WARMUP_MS=200 REPS=5 DEADLINE_S=14400 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4/artifacts 2`.
+`RESULTS=$PWD/bench/results/release-1.0.4 FREEZE=$PWD/bench/results/release-1.0.4-freeze.json WINDOW_S=0.5 WARMUP_MS=200 REPS=5 DEADLINE_S=14400 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4/artifacts 2`.
 `RESULTS` must name a fresh directory: the default, `bench/results`, holds earlier releases' admission
 receipts. `analyze-more.mjs` reads `RESULTS`; the other analyzers read fixed paths under
 `bench/results`, so they run on copies of the files placed there after the run. The admission command

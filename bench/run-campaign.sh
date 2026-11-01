@@ -51,5 +51,8 @@ for part in $PARTS; do
     esac
   done
 done
-bun "$HERE/tidy-results.mjs" "$RESULTS" >>"$PROG" 2>&1
+bun "$HERE/tidy-results.mjs" "$RESULTS" >>"$PROG" 2>&1 || {
+  log "FAILED tidying the raw files; unadmitted rows may remain"
+  exit 11
+}
 log "DONE gaps: ${gaps[*]:-none}"

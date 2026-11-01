@@ -19,7 +19,13 @@ const load = (name) =>
 /** @param {number[]} values */
 const median = (values) => {
   const sorted = [...values].sort((a, b) => a - b);
-  return /** @type {number} */ (sorted[Math.floor(sorted.length / 2)]);
+  const mid = Math.floor(sorted.length / 2);
+  // the middle value, or the mean of the two middle ones for an even count (two rounds give their mean, not the larger)
+  return /** @type {number} */ (
+    sorted.length % 2
+      ? sorted[mid]
+      : (/** @type {number} */ (sorted[mid - 1]) + /** @type {number} */ (sorted[mid])) / 2
+  );
 };
 /** @param {{ runtime: string }} row */
 const runtimeOf = (row) => /** @type {string} */ (row.runtime.split(' ')[0]);

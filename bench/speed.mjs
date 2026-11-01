@@ -85,6 +85,7 @@ for (const id of workloads) {
       batches: t.batches,
       batchSize: t.batchSize,
       rmePct: t.rmePct,
+      madPct: t.madPct,
       sink: t.sink,
     }),
   );

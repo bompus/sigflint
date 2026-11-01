@@ -8,7 +8,7 @@ export const BATCH = 1000;
  * @param {() => string | Promise<string>} call one operation; it returns the signature, whose length is summed so the call cannot be dropped
  * @param {boolean} isSync
  * @param {number} secs timed seconds per task (at least 10 batches), after a warm-up of WARMUP_MS (default 300 ms, at least 4 batches)
- * @returns {Promise<{ nsPerOp: number, batches: number, batchSize: number, rmePct: number, sink: number }>}
+ * @returns {Promise<{ nsPerOp: number, batches: number, batchSize: number, rmePct: number, madPct: number, sink: number }>}
  */
 export async function timeOperation(call, isSync, secs) {
   let sink = 0;
@@ -44,7 +44,8 @@ export async function timeOperation(call, isSync, secs) {
     nsPerOp: Math.round((result.latency.p50 / BATCH) * 1e6),
     batches: result.latency.samplesCount,
     batchSize: BATCH,
-    rmePct: result.latency.rme,
+    rmePct: result.latency.rme, // the error of the MEAN, as Tinybench computes it
+    madPct: (100 * result.latency.mad) / result.latency.p50, // the spread of the batches around the median we report
     sink,
   };
 }

@@ -19,11 +19,16 @@ const git = (...a) => execFileSync('git', ['-C', repo, ...a], { encoding: 'utf8'
 /** @param {string} cmd @param {string[]} args */
 const out = (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8' }).trim();
 
+// Files that only read results (analysis, charts, doc filling) are not part of what measures, so they may be corrected while a campaign runs.
+const analysisFile =
+  /^bench\/(analyze[^/]*|make-[^/]*|fill-benchmarks-doc|pair-node-bun|admission-summary|comparison-order|check-benchmarked)\.mjs$/;
+/** @param {string} path */
+const measuring = (path) => !path.startsWith('bench/results/') && !analysisFile.test(path);
 const benchTree = createHash('sha256')
   .update(
     git('ls-tree', '-r', 'HEAD', 'bench')
       .split('\n')
-      .filter((l) => !l.includes('\tbench/results/'))
+      .filter((l) => measuring(l.split('\t')[1] ?? ''))
       .join('\n'),
   )
   .digest('hex');
@@ -59,7 +64,7 @@ same('compiled client bundles', freeze.compiledClientBundles, bundles);
 for (const dirty of git('status', '--porcelain', '--', 'src', 'bench', ':!bench/results')
   .split('\n')
   .filter(Boolean)) {
-  if (!dirty.startsWith('??')) {
+  if (!dirty.startsWith('??') && measuring(dirty.slice(3))) {
     bad.push(`uncommitted change: ${dirty}`);
   }
 }

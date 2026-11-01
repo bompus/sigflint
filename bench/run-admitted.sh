@@ -135,7 +135,8 @@ check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when a
   CHECK_SEQ=$SEQ
   state=$(admit_state "$out")
   [ "$state" = invalid ] && out="{\"reasons\":[\"no verdict\"],\"admit\":false}"
-  echo "{\"kind\":\"admit\",\"seq\":$SEQ,\"part\":\"$PART\",\"label\":\"$1\",\"at\":\"$(date -u +%FT%TZ)\",\"receipt\":$out}" >>"$REC"
+  echo "{\"kind\":\"admit\",\"seq\":$SEQ,\"part\":\"$PART\",\"label\":\"$1\",\"at\":\"$(date -u +%FT%TZ)\",\"receipt\":$out}" >>"$REC" || return 2 # a receipt that cannot be written is not an admission
+  CHECK_END=$(date +%s)                                                                                                                            # when the window ended, for the reuse rule
   [ "$state" = true ] && ((st == 0))
 } # admitted only when the command exited 0 and the top-level "admit" is the boolean true; anything else refuses
 unit_done() { grep -q "\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$1\",\"admitted\":true" "$REC" 2>/dev/null; }
@@ -431,8 +432,10 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     fi
     # The check that ends one unit is the check that starts the next when it is at most REUSE_S seconds old (protocol-rerun-3.md: "the check after a
     # unit is also the check before the next unit"); the continuous observer covers the gap. The first unit of a part always gets a fresh check.
-    if [ -n "${LAST_OK_SEQ:-}" ] && (($(date +%s) - LAST_OK_AT <= ${REUSE_S:-20})); then
+    REUSED=0
+    if [ -n "${LAST_OK_SEQ:-}" ] && (($(date +%s) - LAST_OK_AT <= ${REUSE_S:-10})); then
       PRE_SEQ=$LAST_OK_SEQ
+      REUSED=1
     else
       check "before $UNIT" || {
         echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
@@ -449,12 +452,15 @@ for round in $(seq "$FROM" "$ROUNDS"); do
     OBS_READY=0
     if observe_ready; then
       OBS_READY=1
-      if [ "$PART" = D ]; then run_import_round "$round"; else run_unit "$round" "$arm"; fi
+      if ((REUSED)) && (($(date +%s) - LAST_OK_AT > ${REUSE_S:-10})); then # the observer took too long to start: the reused window is no longer recent
+        echo "the reused admission check was stale when the observer was ready; $UNIT is not measured in this attempt"
+        OBS_READY=0
+      elif [ "$PART" = D ]; then run_import_round "$round"; else run_unit "$round" "$arm"; fi
     else
       echo "the observer gave no first sample for $UNIT; the unit is not measured"
     fi
     observe_stop
-    bad=$(grep -c '"status":"rejected-load"\|"status":"rejected-swap"\|"status":"error"' "$TMP" || true)
+    bad=$(grep -c '"status":"rejected-load"\|"status":"rejected-swap"\|"status":"error"\|"status":"too-few-chunks"' "$TMP" || true)
     # a unit with no rows of its own is not data, whatever the checks said
     if ! grep -q "\"unit\":\"$UNIT\"" "$TMP"; then bad=$((bad + 1)); fi
     errs=$(grep -c '"status":"error"' "$TMP" || true)
@@ -469,7 +475,7 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       }
       echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
       LAST_OK_SEQ=$CHECK_SEQ
-      LAST_OK_AT=$(date +%s)
+      LAST_OK_AT=$CHECK_END
       continue
     fi
     sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"
