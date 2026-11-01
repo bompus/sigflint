@@ -17,8 +17,8 @@ runner reruns every arm and left the decision open after the data, and that its 
 larger of the two values, its reused admission check was timed after the bookkeeping, and several failure
 paths still counted as success. Their admitted rows are kept in `results/release-1.0.4-stopped/` and
 `results/release-1.0.4-stopped-2/` and are not used. This plan keeps the second plan's savings (two rounds,
-shorter windows, one admission window per unit, extension only for unsettled comparisons) and measures all
-twelve arms.
+shorter timing windows, extension only for unsettled comparisons) and measures all twelve arms. Its
+admission-check reuse was dropped: the host rules require a fresh interval before each arm.
 
 ## Why measure again
 
@@ -94,7 +94,7 @@ and rounds three to five follow that decision and nothing else.
 Native Linux, 24 logical CPUs, shared with other sessions. Each part runs through
 `run-admitted.sh`, which re-executes once inside one `systemd-run` scope with a 2 GiB memory cap,
 takes the host lock `~/.cache/setupLinuxHost/post-upgrade-bench.lock` without waiting, and holds it
-only inside a part's run. A 10 s native Linux admission window must pass before a part's first unit and after every unit; the window that ends one unit also starts the next when it is at most 10 s old when the next unit's observer is ready (`REUSE_S`, measured from the end of the window, not from the bookkeeping that follows; an older one makes the attempt a refusal that uses an attempt and gets a fresh check on the rerun), as `protocol-rerun-3.md` has it, and the continuous observer covers the gap. Each window requires
+only inside a part's run. A 10 s native Linux admission window must pass before every unit and after every unit (the host rules take post-run observations as diagnostic and ask for a fresh settled interval before the next arm, so the window that ends one unit does not start the next). Each window requires
 (at most 4 busy cores, at least 8 GiB available, no swap-out, zswap-out or zswap writeback, memory
 full pressure at most 10 ms and I/O full pressure at most 100 ms in any second; page-ins are not a
 reason to refuse, and neither the admission command nor the observer records host page-ins, so no

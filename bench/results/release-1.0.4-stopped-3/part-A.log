@@ -1,0 +1,3 @@
+frozen inputs match
+lock held 2026-11-01T03:09:38Z
+A-r1-sigflint-A not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:10:10Z
