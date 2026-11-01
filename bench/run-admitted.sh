@@ -100,7 +100,18 @@ rtseq() {
 LOGDIR=$R/memory-logs
 mkdir -p "$LOGDIR"
 ARMS=(sigflint-A aws4fetch aws4 smithy aws-sig wdl minio s3mini tiny-oss lean-s3 s3-lite-client sigflint-B)
+WIN=${WINDOW_S:-1} # timed seconds per signing task in parts A and B (speed.mjs, speed-more.mjs)
+# ARMS_LIST="arm ..." runs only those arms (parts A, C, D, and the libraries of part B; the two sigflint controls of part B always run)
+if [ -n "${ARMS_LIST:-}" ]; then
+  read -ra ARMS <<<"$ARMS_LIST"
+fi
 declare -A CAND=(["sigflint-A"]=sigflint ["sigflint-B"]=sigflint [aws4fetch]=aws4fetch [aws4]=aws4 [smithy]=smithy ["aws-sig"]=aws-sig [wdl]=wdl [minio]=minio [s3mini]=s3mini ["tiny-oss"]=tiny-oss ["lean-s3"]=lean-s3 ["s3-lite-client"]=s3-lite-client [none]=none)
+for a in "${ARMS[@]}"; do
+  if [ -z "${CAND[$a]:-}" ]; then
+    echo "unknown arm $a in ARMS_LIST"
+    exit 2
+  fi
+done
 
 busy() {
   read -r _ u1 n1 s1 i1 w1 q1 sq1 st1 _ </proc/stat
@@ -230,17 +241,17 @@ run_unit() { # run_unit <round> <arm> : measures the unit under both runtimes in
   local RTS
   mapfile -t RTS < <(rtseq "$round")
   for rt in "${RTS[@]}"; do case $PART in
-    A) speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" 1 ;;
+    A) speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" "${CAND[$arm]}" "$NEW/$(rtart "$rt")" "$WIN" ;;
     R)
       local F
       F=$NEW/$(rtart "$rt")
       [ "$arm" = frozen ] && F=$BASE/$(rtart "$rt")
-      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" sigflint "$F" 1
+      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "$(rtbin "$rt")" "$HERE/speed.mjs" sigflint "$F" "$WIN"
       ;;
     B)
       local cand=$arm
       case $arm in final-*) cand=sigflint ;; esac
-      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "SRC=$NEW" "$(rtbin "$rt")" "$HERE/speed-more.mjs" "$cand" 1
+      speedproc "$arm" "$rt" "$round" env "ARM=$arm" "SRC=$NEW" "$(rtbin "$rt")" "$HERE/speed-more.mjs" "$cand" "$WIN"
       ;;
     C)
       memproc alloc "$arm" "$rt" "$round"
@@ -302,6 +313,11 @@ units_of() {
   B)
     order=(final-1 aws4 aws4fetch smithy aws-sig wdl minio final-2)
     ((round % 2 == 0)) && order=(final-2 minio wdl aws-sig smithy aws4fetch aws4 final-1)
+    if [ -n "${ARMS_LIST:-}" ]; then
+      local kept=() o
+      for o in "${order[@]}"; do [[ $o == final-* || " $ARMS_LIST " == *" $o "* ]] && kept+=("$o"); done
+      order=("${kept[@]}")
+    fi
     ;;
   D) order=(round) ;; *) ((round % 2 == 0)) && mapfile -t order < <(printf '%s\n' "${ARMS[@]}" | tac) ;; esac
   printf '%s\n' "${order[@]}"
@@ -413,11 +429,17 @@ for round in $(seq "$FROM" "$ROUNDS"); do
       mv "$OUT.tmp" "$OUT"
       echo "dropped the rows of $UNIT left by an interrupted attempt"
     fi
-    check "before $UNIT" || {
-      echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
-      exit 6
-    }
-    PRE_SEQ=$CHECK_SEQ
+    # The check that ends one unit is the check that starts the next when it is at most REUSE_S seconds old (protocol-rerun-3.md: "the check after a
+    # unit is also the check before the next unit"); the continuous observer covers the gap. The first unit of a part always gets a fresh check.
+    if [ -n "${LAST_OK_SEQ:-}" ] && (($(date +%s) - LAST_OK_AT <= ${REUSE_S:-20})); then
+      PRE_SEQ=$LAST_OK_SEQ
+    else
+      check "before $UNIT" || {
+        echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
+        exit 6
+      }
+      PRE_SEQ=$CHECK_SEQ
+    fi
     echo "{\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\",\"attempt\":$attempt,\"at\":\"$(date -u +%FT%TZ)\"}" >>"$REC" || {
       echo "could not record the start of $UNIT in $REC; not measuring without a counted attempt"
       exit 7
@@ -446,6 +468,8 @@ for round in $(seq "$FROM" "$ROUNDS"); do
         exit 7
       }
       echo "$UNIT admitted (attempt $attempt) $(date -u +%FT%TZ)"
+      LAST_OK_SEQ=$CHECK_SEQ
+      LAST_OK_AT=$(date +%s)
       continue
     fi
     sed "s/^{/{\"notAdmitted\":\"$UNIT\",\"attempt\":$attempt,/" "$TMP" >>"$NOTADM"

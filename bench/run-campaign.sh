@@ -3,7 +3,7 @@
 # Usage: ADMIT=<host admission command> OBSERVER=<observer command> FREEZE=<freeze record> RESULTS=<fresh dir> run-campaign.sh <artifact dir> [rounds=3] [parts="A B C D"]
 # A refused part (exit 6) or a lock held by another session (exit 3) is run again after RETRY_S seconds (default 60), at most ATTEMPTS times
 # (default 30) per part; the controller holds no lock while it waits. Exit 9 (a part finished with units out of their four attempts) is a
-# recorded gap, and the next part goes on. Any other failure stops the campaign. DEADLINE_S (default 28800, eight hours) is counted from the
+# recorded gap, and the next part goes on. Any other failure stops the campaign. DEADLINE_S (default 28800, eight hours; release 1.0.4 sets 14400) is counted from the
 # first attempt, kept in $RESULTS/campaign-start; past it no new attempt starts and the exit status is 10. Progress: $RESULTS/campaign-progress.log.
 ART=${1:?artifact dir}
 ROUNDS=${2:-3}

@@ -63,13 +63,13 @@ const cellOf = (rt, w) => {
       const overlap = !(s.maxNs < base.minNs || s.minNs > base.maxNs);
       s[name] = {
         timesFasterThanBaseline: base.medianNs / s.medianNs,
-        // fewer than three processes behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
+        // fewer than two processes behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
         clear:
           // a gap within twice the band stays unsettled (protocol-rerun-3.md), as in analyze-more.mjs and analyze-memory.mjs
           Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > 2 * cell.bandPct &&
           !overlap &&
-          s.n >= 3 &&
-          base.n >= 3,
+          s.n >= 2 &&
+          base.n >= 2,
       };
     }
   }

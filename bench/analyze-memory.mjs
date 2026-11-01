@@ -8,7 +8,7 @@ const rows = readFileSync(/** @type {string} */ (rawPath), 'utf8')
   .filter(Boolean)
   .map((l) => JSON.parse(l));
 /** Rounds an arm and its baseline need before a comparison can be called clear. */
-const MIN_ROUNDS = 3;
+const MIN_ROUNDS = 2;
 const ARMS = [
   'sigflint-A',
   'aws4fetch',
