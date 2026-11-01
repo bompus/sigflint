@@ -1,24 +1,13 @@
 # Changelog
 
-## Unreleased
+## 1.0.4 - 2026-11-01
 
-- Documentation only: speed, memory, import and size were measured again for all twelve comparison arms on Node 26.13.0 and Bun 1.4.4, with Tinybench for signing speed and Hyperfine for cold starts instead of hand-written timers. The code is unchanged since 1.0.2. Speed and other-service figures use two rounds, a count chosen before the run; memory and import used five rounds because two left most comparisons unsettled. The Deno table keeps its earlier timer. Figures from different timers are not comparable.
+Documentation only: the code is unchanged since 1.0.2 (`src/` is the same tree and the built files are byte-identical).
 
-- Documentation only, correction: the comparison's `@wdl-dev/aws-sigv4` header-signing adapter for other services passed a string body, which makes the library add and sign a Content-Type; it now passes bytes. Matches go from 826 to 906 of 1,622 (223 unsupported).
-- Documentation only: the comparison against other libraries now runs the 316 requests with a session token for every library, not only sigflint, giving each the token as it takes one (a credentials option, else the `x-amz-security-token` header). They are counted with the edge cases: sigflint 1,838 / 1,838; aws4fetch 790; aws4 424; @smithy/signature-v4 333; @wdl-dev/aws-sigv4 234; aws-sig 65; minio 40.
-- Documentation only, correction: the comparison's `aws-sig` and `@wdl-dev/aws-sigv4` adapters dropped the body of GET and HEAD requests, which understated both. Ordinary matches are now 379 / 1,520 for `aws-sig` (was 226) and 1,174 / 1,520 for `@wdl-dev/aws-sigv4` (was 666).
-- Documentation only: the comparison against other libraries now includes the 127 presigned URLs for services other than S3 where the caller opts out of payload signing, which an earlier version left out. `@smithy/signature-v4` and `aws4` match all 127 once their options for leaving the opt-out header unsigned are used; `aws4fetch` signs that header too and differs on all 127; `aws-sig` has no opt-out and is counted as unsupported.
-- Update the benchmark comparison to Smithy signature-v4 5.7.5 and the local Workers probe to Wrangler 4.156.0. Refresh correctness and runtime evidence for the pinned dependencies.
-
-- Complete the four S3 signing-core comparisons for edge cases, session credentials and supported presign APIs. Exercise tiny-oss signed-payload and other-service header options; keep unsupported capabilities and input methods explicit.
-
-- Complete the signing-path runtime grid for all comparison libraries on Node, Bun, Deno and local Workers; show current-version benchmark figures without historical release comparisons.
-
-- Integrate the four S3 clients into the comparison tables and correctness/runtime graphics, distinguishing decoded-key inputs, unsupported requests and missing measurements. Use sigflint first and alphabetical alternatives consistently across tables and charts. Existing benchmark figures are unchanged.
-
-- Compare the signing cores of s3mini, tiny-oss, lean-s3 and s3-lite-client against the botocore corpus, with supported subsets and a shared-request comparison. This adds correctness evidence only.
-
-- Documentation only: Cloudflare R2 agrees with signing a raw `+` in an S3 path as a space. Four read-only `GET` requests: R2 accepted the signature for `+` signed as `%20` and rejected the same URL signed as `%2B`. Which object it then names was not tested. `docs/guide.md` and the README say so.
+- Speed, memory, import and size were measured again for all twelve comparison arms on Node 26.13.0 and Bun 1.4.4, with Tinybench for signing speed and Hyperfine for cold starts instead of hand-written timers. Speed and other-service figures use two rounds, a count chosen before the run; memory and import use five, because two left most comparisons unsettled. The Deno table keeps its earlier timer. Figures from different timers are not comparable.
+- The comparison now includes the signing cores of four S3 clients (s3mini, tiny-oss, lean-s3, s3-lite-client): correctness against the botocore corpus with edge cases, session credentials and supported presign APIs, and the runtime grid on Node, Bun, Deno and local Workers. Unsupported requests and missing measurements are shown as such. Every library now gets the 316 requests with a session token, as it takes one, and the 127 presigned URLs for other services that opt out of payload signing. The comparison runs against `@smithy/signature-v4` 5.7.5 and Wrangler 4.156.0.
+- Correction to the 1.0.3 comparison, which understated two libraries: its `aws-sig` and `@wdl-dev/aws-sigv4` adapters dropped the body of GET and HEAD requests (ordinary matches are now 379 and 1,174 of 1,520, were 226 and 666), and the `@wdl-dev/aws-sigv4` header adapter for other services passed a string body, so the library added and signed a Content-Type (906 of the 1,399 requests it supports match, was 826).
+- Cloudflare R2 agrees with signing a raw `+` in an S3 path as a space. Four read-only `GET` requests: R2 accepted the signature for `+` signed as `%20` and rejected the same URL signed as `%2B`. Which object it then names was not tested. `docs/guide.md` and the README say so.
 
 ## 1.0.3 - 2026-10-29
 

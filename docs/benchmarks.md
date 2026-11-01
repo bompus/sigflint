@@ -2,7 +2,7 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md). Library comparisons put sigflint first as the reference, then alternatives alphabetically by displayed name. Correctness rows stay grouped by input method.
 
-The figures below describe the sigflint code of versions 1.0.2 and 1.0.3, whose source trees are identical. Speed, memory, import and size were measured again on 2026-11-01 on Node.js 26.13.0 and Bun 1.4.4, with Tinybench and Hyperfine, which replaced the hand-written timers used for earlier releases, so these figures are not comparable with those of earlier releases. The current unminified Node and Bun builds match the measured artifact hashes byte for byte. Builds, checks and publishing use Bun 1.4.4.
+The figures below describe the sigflint code of versions 1.0.2, 1.0.3 and 1.0.4, whose source trees are identical. Speed, memory, import and size were measured again on 2026-11-01 on Node.js 26.13.0 and Bun 1.4.4, with Tinybench and Hyperfine, which replaced the hand-written timers used for earlier releases, so these figures are not comparable with those of earlier releases. The current unminified Node and Bun builds match the measured artifact hashes byte for byte. Builds, checks and publishing use Bun 1.4.4.
 
 The speed matrices use two fresh processes per library and runtime; memory and import use five rounds (four for the one `s3-lite-client` round that was out of attempts). A/A controls and reporting bands accompany the results. Raw evidence and reproducible protocols are linked under Methodology and limits.
 
@@ -47,14 +47,14 @@ Matches against botocore with the same key and clock. Compare libraries within a
 
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
-| **sigflint** | Serialized URL | 1.0.3 | 1,520 / 1,520 | 0 | 1,838 / 1,838 | Not applicable |
+| **sigflint** | Serialized URL | 1.0.4 | 1,520 / 1,520 | 0 | 1,838 / 1,838 | Not applicable |
 | aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 424 / 1,838 | Not applicable |
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 790 / 1,838 | Not applicable |
 | aws-sig | Serialized URL | 2.1.0 | 379 / 1,520 | 0 | 65 / 1,838 | Not applicable |
 | minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 40 / 1,838 | Not applicable |
 | @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 333 / 1,838 | Not applicable |
 | @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 1,174 / 1,520 | 0 | 234 / 1,838 | Not applicable |
-| **sigflint** | Decoded key | 1.0.3 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
+| **sigflint** | Decoded key | 1.0.4 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | 1,013 / 1,252 (588 unsupported) | 458 / 578 |
 | s3-lite-client | Decoded key | 1.0.1 | 1,519 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | s3mini | Decoded key | 1.0.3 | 494 / 578 | 942 | 567 / 645 (1,195 unsupported) | 494 / 578 |
@@ -73,7 +73,7 @@ The table and chart above include both input methods and the decoded-key edge sc
 URL parsing as well as signing. The decoded-key screen ran on Bun 1.4.4 on
 2026-10-31 with `bun bench/compat-clients.mjs` (run `bun bench/compat/build-clients.mjs` first, which compiles the pinned lean-s3 and tiny-oss source cores and s3mini's key escaper). It uses decoded keys and query
 pairs from normalized canonical requests, so it does not test arbitrary URL
-parsing or complete client operations. Both screens use sigflint 1.0.3. These
+parsing or complete client operations. Both screens use sigflint 1.0.4. These
 are distinct input methods, not directly comparable rankings.
 
 s3mini cannot express the other 942 ordinary requests because its signing path
