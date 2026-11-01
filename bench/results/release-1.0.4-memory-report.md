@@ -1,5 +1,7 @@
 Rows 2659, accepted 2288, rejected or error 0
 
+ncc = no clear change: the ratio is the ratio of medians only (the gap is within twice the reporting band, the ranges overlap, or fewer than two rounds support it).
+
 ### heap bytes allocated per call
 
 node: median over rounds (n per cell in the JSON); verdict vs sigflint-A, band = max(6%, 2 x A/A range), absolute floor 64 B

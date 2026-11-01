@@ -17,13 +17,13 @@ mkdirSync(outDir, { recursive: true });
 /** @type {{ cells: Cell[] }} */
 const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
 /**
- * The rounds behind a metric: one number, or a range when workloads differ.
- * @param {...string} metrics
+ * The rounds behind the cells shown: one number, or a range when they differ.
+ * @param {...[string, string]} shown pairs of metric and workload
  */
-const roundsOf = (...metrics) => {
+const roundsOf = (...shown) => {
   const n = summary.cells
-    .filter((c) => metrics.includes(c.metric))
-    .map((c) => /** @type {ArmStats} */ (c.arms['sigflint-A']).n);
+    .filter((c) => shown.some(([m, w]) => c.metric === m && c.workload === w))
+    .flatMap((c) => Object.values(c.arms).map((a) => /** @type {ArmStats} */ (a).n));
   return Math.min(...n) === Math.max(...n) ? `${n[0]}` : `${Math.min(...n)} to ${Math.max(...n)}`;
 };
 const THEMES = {
@@ -229,7 +229,7 @@ for (const ch of CHARTS) {
     body += text(
       20,
       y,
-      `Bars: median of ${roundsOf(ch.metric)} rounds; whisker: lowest to highest round; (N×): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.`,
+      `Bars: median of ${roundsOf([ch.metric, ch.workload])} rounds; whisker: lowest to highest round; (N×): times sigflint, or no clear change when inside the noise band. Each round is a fresh process.`,
       { size: 11, fill: t.muted },
     );
     y += 20;
@@ -350,7 +350,7 @@ const block = `<picture>
   <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="memory-gc-light.svg">
 </picture>
 ${md}
-Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} rounds, one fresh process per library, runtime and round (for import, each round is the median of 5 timed fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band, the ranges over the rounds overlap, or the gap is within twice the band (a comparison still unsettled at the cap is shown this way even where its median gap is outside the band, as with most retained-heap comparisons). In the ${ratios.length} allocation comparisons with a clear increase, the libraries that sign the workload correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint${allocUnclear.length ? `; ${allocUnclear.length} measured comparison${allocUnclear.length === 1 ? '' : 's'} without a clear increase ${allocUnclear.length === 1 ? 'is' : 'are'} left out of that range: ${allocUnclear.join(', ')}` : ''}. Peak memory of the process is the peak across every workload that library signs correctly, which are not the same four for every library (one that signs a workload wrongly, or cannot, skips it), so it is not a plain-GET figure. s3mini cannot sign the plain GET, so it has no heap, collection or pause cell, and its import-plus-first-signature cell comes from signing a part upload instead. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is more than twice its band, with ranges that do not overlap.`;
+Median of ${roundsOf(['allocBytes', 'bench-download'], ['gcCount', 'bench-download'], ['gcMs', 'bench-download'], ['maxRss', '-'], ['firstMs', '-'])} rounds, one fresh process per library, runtime and round (for import, each round is the median of 5 timed fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band, the ranges over the rounds overlap, or the gap is within twice the band (a comparison still unsettled at the cap is shown this way even where its median gap is outside the band, as with most retained-heap comparisons). In the ${ratios.length} allocation comparisons with a clear increase, the libraries that sign the workload correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint${allocUnclear.length ? `; ${allocUnclear.length} measured comparison${allocUnclear.length === 1 ? '' : 's'} without a clear increase ${allocUnclear.length === 1 ? 'is' : 'are'} left out of that range: ${allocUnclear.join(', ')}` : ''}. Peak memory of the process is the peak across every workload that library signs correctly, which are not the same four for every library (one that signs a workload wrongly, or cannot, skips it), so it is not a plain-GET figure. s3mini cannot sign the plain GET, so it has no heap, collection or pause cell, and its import-plus-first-signature cell comes from signing a part upload instead. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. A multiplier followed by “no clear change” is the ratio of medians only; every other multiplier is more than twice its band, with ranges that do not overlap.`;
 const readmePath = `${here}../docs/benchmarks.md`;
 const readme = readFileSync(readmePath, 'utf8');
 if (!readme.includes('<!-- BEGIN memory -->')) {

@@ -283,7 +283,10 @@ const fmt = (v, unit) =>
         ? `${(v / 1024).toFixed(1)} KiB`
         : `${Math.round(v)} B`
     : `${Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)} ${unit}`.trim();
-const md = [`Rows ${rows.length}, accepted ${ok.length}, rejected or error ${rejected.length}`];
+const md = [
+  `Rows ${rows.length}, accepted ${ok.length}, rejected or error ${rejected.length}`,
+  '\nncc = no clear change: the ratio is the ratio of medians only (the gap is within twice the reporting band, the ranges overlap, or fewer than two rounds support it).',
+];
 for (const m of Object.keys(METRICS)) {
   const cs = cells.filter((c) => c.metric === m);
   if (!cs.length) {
