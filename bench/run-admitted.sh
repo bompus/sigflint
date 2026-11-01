@@ -16,7 +16,7 @@
 #   D  import and first signature, REPS fresh processes per arm and runtime (default 7) -> results/memory-raw.jsonl
 # RUNTIMES="node bun143 bun144" measures every unit under each listed runtime label (default "node bun"), in this order in odd rounds and the reverse in even rounds;
 #   a label is node, or starts with bun. RT_BIN_<label>=<path> names its executable (characters of the label outside A-Za-z0-9_ become _ in the variable name; default: node or bun from PATH); its dist file is node.js or bun.js. Rows carry the label in "rt".
-# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock held, 4 hashes, 6 host not quiet (run again), 7 a unit has errors or its results could not be written, or the part ended with units out of their four attempts (named in the output), 8 the allocation calibration is incomplete.
+# RESULTS=<dir> writes the results elsewhere (a trial run). Receipts of every admission check: results/rerun-3-admission.jsonl. Exit: 0 finished, 3 lock held, 4 hashes, 6 host not quiet (run again), 7 a unit has errors or its results could not be written or the part finished with a unit missing its admitted rows, 9 the part finished with units out of their four attempts (named in the output; every other unit was run), 8 the allocation calibration is incomplete.
 set -u
 PART=${1:?part}
 NEW=${2:?dir}
@@ -41,11 +41,22 @@ case $PART in A) OUT=$R/speed-raw.jsonl ;; R) OUT=$R/speed-regression.jsonl ;; B
   exit 2
   ;;
 esac
+if ((FROM > ROUNDS)); then
+  echo "FROM_ROUND $FROM is past the $ROUNDS rounds asked for; nothing to run"
+  exit 2
+fi
 BASE=${BASE:-$HERE/frozen}
 (cd "$NEW" && sha256sum -c --quiet SHA256SUMS && cd "$BASE" && sha256sum -c --quiet SHA256SUMS) || {
   echo "artifact hashes differ; refusing to run"
   exit 4
 }
+# FREEZE=<freeze record>: the harness files, compiled client bundles and artifacts must be the frozen ones (check-freeze.mjs)
+if [ -n "${FREEZE:-}" ]; then
+  bun "$HERE/check-freeze.mjs" "$FREEZE" "$NEW" || {
+    echo "frozen inputs differ; refusing to run"
+    exit 4
+  }
+fi
 LOCK=${BENCH_LOCK:-$HOME/.cache/setupLinuxHost/post-upgrade-bench.lock}
 mkdir -p "$(dirname "$LOCK")"
 exec 9>"$LOCK"
@@ -117,6 +128,8 @@ check() { # check <label>: one admission check; sets CHECK_SEQ, returns 0 when a
   [ "$state" = true ] && ((st == 0))
 } # admitted only when the command exited 0 and the top-level "admit" is the boolean true; anything else refuses
 unit_done() { grep -q "\"kind\":\"unit\",\"part\":\"$PART\",\"id\":\"$1\",\"admitted\":true" "$REC" 2>/dev/null; }
+# A unit is complete when it has an admitted receipt and its rows are in the raw file; a receipt without rows (or rows without a receipt, below) is measured again.
+unit_complete() { unit_done "$1" && grep -q "\"unit\":\"$1\"" "$OUT" 2>/dev/null; }
 
 # gate: one fresh sample of whole-machine Linux CPU busy, at most 20%; sets PRE and LOAD; returns 1 when the machine is not quiet. It never waits or retries.
 gate() {
@@ -269,7 +282,7 @@ run_import_round() { # part D: one unit is a whole round; Hyperfine times REPS c
     if (($((sw1 - sw0)) < -65536)); then # memory-protocol.md: free swap fell by more than 64 MiB while the processes ran
       echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"rejected-swap\",\"swapFreeDeltaKb\":$((sw1 - sw0))}" >>"$TMP"
     elif ((hrc == 0)) && [ -s "$hf" ]; then
-      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
+      bun "$HERE/hyperfine-rows.mjs" "$hf" "$round" "$rt" "$UNIT" >>"$TMP" || echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine rows unreadable\"}" >>"$TMP"
     else
       echo "{\"round\":$round,\"kind\":\"import\",\"armTag\":\"group\",\"rt\":\"$rt\",\"status\":\"error\",\"msg\":\"hyperfine failed\"}" >>"$TMP"
     fi
@@ -293,6 +306,10 @@ units_of() {
 
 if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl" ]; then # allocation calibration on every runtime, kept apart from the counted rows (memory-protocol.md); each row is tagged with its runtime label
   CAL=$R/memory-calibration-final.jsonl
+  check "before calibration" || {
+    echo "host not quiet at $(date -u +%FT%TZ); calibration not run, nothing waited for"
+    exit 6
+  }
   CT=$(mktemp "$R/.calibration.XXXXXX")
   NNODE=0
   NBUN=0
@@ -309,6 +326,11 @@ if [ "$PART" = C ] && ((FROM == 1)) && [ ! -s "$R/memory-calibration-final.jsonl
       } | sed "s/}\$/,\"rt\":\"$rt\"}/" >>"$CT"
     fi
   done
+  check "after calibration" || {
+    rm -f "$CT"
+    echo "host not quiet after calibration at $(date -u +%FT%TZ); calibration discarded"
+    exit 6
+  }
   # complete when every Node runtime has both workloads and every Bun runtime has all four regions (real and control, two workloads)
   if (($(grep -c '"mode":"alloc","workload":"calib-[0-9]*".*"heapBytesPerCall"' "$CT") == 2 * NNODE && $(grep -c '"region":"alloc-real"' "$CT") == 2 * NBUN && $(grep -c '"region":"alloc-control"' "$CT") == 2 * NBUN)); then
     mv "$CT" "$CAL"
@@ -373,13 +395,18 @@ for round in $(seq "$FROM" "$ROUNDS"); do
   for arm in $(units_of "$round"); do
     [ -n "${ONLY:-}" ] && [ "$PART" != D ] && [[ " $ONLY " != *" $arm "* ]] && continue # ONLY="arm ..." limits a trial run to some units
     UNIT="$PART-r$round-$arm"
-    unit_done "$UNIT" && continue
+    unit_complete "$UNIT" && continue
     prior=$(grep -c "\"kind\":\"unit-start\",\"part\":\"$PART\",\"id\":\"$UNIT\"" "$REC" 2>/dev/null || true)
     attempt=$((${prior:-0} + 1)) # every start counts, an interrupted attempt included
     if ((attempt > 4)); then
       echo "$UNIT has used its 4 attempts; not measuring it again, the rest of the part continues"
       OUT_OF_ATTEMPTS+=("$UNIT")
       continue
+    fi
+    if [ -s "$OUT" ] && grep -q "\"unit\":\"$UNIT\"" "$OUT"; then # rows left by an attempt that was interrupted between writing them and recording the admission
+      grep -v "\"unit\":\"$UNIT\"" "$OUT" >"$OUT.tmp" || true
+      mv "$OUT.tmp" "$OUT"
+      echo "dropped the rows of $UNIT left by an interrupted attempt"
     fi
     check "before $UNIT" || {
       echo "host not quiet at $(date -u +%FT%TZ); giving up the lock, nothing waited for"
@@ -423,7 +450,21 @@ for round in $(seq "$FROM" "$ROUNDS"); do
   echo "part $PART round $round/$ROUNDS done $(date -u +%FT%TZ)"
 done
 echo "part $PART finished $(date -u +%FT%TZ)"
+# the matrix must be whole: every unit of the rounds asked for is complete or named as out of attempts (a trial limited by ONLY is not checked)
+if [ -z "${ONLY:-}" ]; then
+  MISSING=()
+  for round in $(seq "$FROM" "$ROUNDS"); do
+    for arm in $(units_of "$round"); do
+      u="$PART-r$round-$arm"
+      unit_complete "$u" || [[ " ${OUT_OF_ATTEMPTS[*]} " == *" $u "* ]] || MISSING+=("$u")
+    done
+  done
+  if ((${#MISSING[@]})); then
+    echo "units neither complete nor out of attempts: ${MISSING[*]}"
+    exit 7
+  fi
+fi
 if ((${#OUT_OF_ATTEMPTS[@]})); then
   echo "units left unmeasured after four attempts: ${OUT_OF_ATTEMPTS[*]}"
-  exit 7
+  exit 9
 fi

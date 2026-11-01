@@ -83,15 +83,24 @@
     "aws4": "wrong-result",
     "aws4fetch": {
      "ns": 32354,
-     "times": 24.7
+     "times": 24.7,
+     "rounds": 3,
+     "rangePct": 3.8,
+     "settled": true
     },
     "smithy": {
      "ns": 10357,
-     "times": 7.9
+     "times": 7.9,
+     "rounds": 3,
+     "rangePct": 2.1,
+     "settled": true
     },
     "aws-sig": {
      "ns": 48641,
-     "times": 37.2
+     "times": 37.2,
+     "rounds": 3,
+     "rangePct": 0.4,
+     "settled": true
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -105,20 +114,32 @@
    "libraries": {
     "aws4": {
      "ns": 4448,
-     "times": 3.8
+     "times": 3.8,
+     "rounds": 3,
+     "rangePct": 2.1,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 30126,
-     "times": 26.1
+     "times": 26.1,
+     "rounds": 3,
+     "rangePct": 4.4,
+     "settled": true
     },
     "smithy": {
      "ns": 8737,
-     "times": 7.6
+     "times": 7.6,
+     "rounds": 3,
+     "rangePct": 4.2,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": {
      "ns": 74120,
-     "times": 64.1
+     "times": 64.1,
+     "rounds": 3,
+     "rangePct": 4.8,
+     "settled": true
     },
     "minio": "wrong-result"
    }
@@ -131,23 +152,38 @@
    "libraries": {
     "aws4": {
      "ns": 5736,
-     "times": 4
+     "times": 4,
+     "rounds": 3,
+     "rangePct": 0.9,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 30444,
-     "times": 21.3
+     "times": 21.3,
+     "rounds": 3,
+     "rangePct": 5.2,
+     "settled": true
     },
     "smithy": {
      "ns": 9942,
-     "times": 7
+     "times": 7,
+     "rounds": 3,
+     "rangePct": 5.3,
+     "settled": true
     },
     "aws-sig": {
      "ns": 49814,
-     "times": 34.9
+     "times": 34.9,
+     "rounds": 3,
+     "rangePct": 2,
+     "settled": true
     },
     "wdl": {
      "ns": 73976,
-     "times": 51.9
+     "times": 51.9,
+     "rounds": 3,
+     "rangePct": 9.8,
+     "settled": true
     },
     "minio": "wrong-result"
    }
@@ -160,15 +196,24 @@
    "libraries": {
     "aws4": {
      "ns": 9919,
-     "times": 3.3
+     "times": 3.3,
+     "rounds": 3,
+     "rangePct": 0.4,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 43872,
-     "times": 14.7
+     "times": 14.7,
+     "rounds": 3,
+     "rangePct": 23.5,
+     "settled": true
     },
     "smithy": {
      "ns": 10523,
-     "times": 3.5
+     "times": 3.5,
+     "rounds": 3,
+     "rangePct": 5.7,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
@@ -183,21 +228,33 @@
    "libraries": {
     "aws4": {
      "ns": 10210,
-     "times": 3.2
+     "times": 3.2,
+     "rounds": 3,
+     "rangePct": 1.1,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 35531,
-     "times": 11.1
+     "times": 11.1,
+     "rounds": 3,
+     "rangePct": 22.4,
+     "settled": true
     },
     "smithy": {
      "ns": 11099,
-     "times": 3.5
+     "times": 3.5,
+     "rounds": 3,
+     "rangePct": 2,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
      "ns": 12550,
-     "times": 3.9
+     "times": 3.9,
+     "rounds": 3,
+     "rangePct": 3.9,
+     "settled": true
     }
    }
   },
@@ -210,15 +267,24 @@
     "aws4": "wrong-result",
     "aws4fetch": {
      "ns": 17452,
-     "times": 19.6
+     "times": 19.6,
+     "rounds": 3,
+     "rangePct": 13.9,
+     "settled": true
     },
     "smithy": {
      "ns": 6356,
-     "times": 7.1
+     "times": 7.1,
+     "rounds": 3,
+     "rangePct": 1.1,
+     "settled": true
     },
     "aws-sig": {
      "ns": 30199,
-     "times": 33.9
+     "times": 33.9,
+     "rounds": 3,
+     "rangePct": 0.5,
+     "settled": true
     },
     "wdl": "wrong-result",
     "minio": "wrong-result"
@@ -232,20 +298,32 @@
    "libraries": {
     "aws4": {
      "ns": 2767,
-     "times": 3.6
+     "times": 3.6,
+     "rounds": 3,
+     "rangePct": 0.3,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 18032,
-     "times": 23.3
+     "times": 23.3,
+     "rounds": 3,
+     "rangePct": 8.6,
+     "settled": true
     },
     "smithy": {
      "ns": 5834,
-     "times": 7.5
+     "times": 7.5,
+     "rounds": 3,
+     "rangePct": 4.1,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": {
      "ns": 53058,
-     "times": 68.5
+     "times": 68.5,
+     "rounds": 3,
+     "rangePct": 2.1,
+     "settled": true
     },
     "minio": "wrong-result"
    }
@@ -258,23 +336,38 @@
    "libraries": {
     "aws4": {
      "ns": 3867,
-     "times": 3.4
+     "times": 3.4,
+     "rounds": 3,
+     "rangePct": 1.7,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 19041,
-     "times": 16.5
+     "times": 16.5,
+     "rounds": 3,
+     "rangePct": 12.1,
+     "settled": true
     },
     "smithy": {
      "ns": 7227,
-     "times": 6.3
+     "times": 6.3,
+     "rounds": 3,
+     "rangePct": 5.8,
+     "settled": true
     },
     "aws-sig": {
      "ns": 31327,
-     "times": 27.2
+     "times": 27.2,
+     "rounds": 3,
+     "rangePct": 0.8,
+     "settled": true
     },
     "wdl": {
      "ns": 56862,
-     "times": 49.4
+     "times": 49.4,
+     "rounds": 3,
+     "rangePct": 20.4,
+     "settled": true
     },
     "minio": "wrong-result"
    }
@@ -287,15 +380,24 @@
    "libraries": {
     "aws4": {
      "ns": 8385,
-     "times": 3
+     "times": 3,
+     "rounds": 3,
+     "rangePct": 1.8,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 24701,
-     "times": 9
+     "times": 9,
+     "rounds": 3,
+     "rangePct": 8.5,
+     "settled": true
     },
     "smithy": {
      "ns": 9041,
-     "times": 3.3
+     "times": 3.3,
+     "rounds": 3,
+     "rangePct": 1.9,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
@@ -310,21 +412,33 @@
    "libraries": {
     "aws4": {
      "ns": 8421,
-     "times": 2.8
+     "times": 2.8,
+     "rounds": 3,
+     "rangePct": 0.8,
+     "settled": true
     },
     "aws4fetch": {
      "ns": 26046,
-     "times": 8.7
+     "times": 8.7,
+     "rounds": 3,
+     "rangePct": 8.1,
+     "settled": true
     },
     "smithy": {
      "ns": 9377,
-     "times": 3.1
+     "times": 3.1,
+     "rounds": 3,
+     "rangePct": 0.6,
+     "settled": true
     },
     "aws-sig": "wrong-result",
     "wdl": "wrong-result",
     "minio": {
      "ns": 5958,
-     "times": 2
+     "times": 2,
+     "rounds": 3,
+     "rangePct": 4.7,
+     "settled": true
     }
    }
   }

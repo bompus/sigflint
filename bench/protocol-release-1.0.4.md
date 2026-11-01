@@ -70,23 +70,31 @@ Native Linux, 24 logical CPUs, shared with other sessions. Each part runs throug
 takes the host lock `~/.cache/setupLinuxHost/post-upgrade-bench.lock` without waiting, and holds it
 only inside a part's run. Before and after every unit a 10 s native Linux admission window must pass
 (at most 4 busy cores, at least 8 GiB available, no swap-out, zswap-out or zswap writeback, memory
-full pressure at most 10 ms and I/O full pressure at most 100 ms in any second; zswap page-ins are
-recorded, not a reason to refuse). The continuous observer (`observe-unit.py`, the house-rules unit
+full pressure at most 10 ms and I/O full pressure at most 100 ms in any second; page-ins are not a
+reason to refuse, and neither the admission command nor the observer records host page-ins, so no
+page-in diagnostic exists for this campaign). The continuous observer (`observe-unit.py`, the house-rules unit
 observer, vendored from the commit named in its header) must report a clean unit: competing CPU
 (host busy cores minus the workload's own) at most 4, pressure within the same limits per interval,
 counters unchanged and monotonic, and its own cost within 0.05 cores and 128 MiB. Two more rules
 reject a unit: the whole machine more than 20% busy in the second before a process starts (once per
-runtime before part D's Hyperfine call), and free swap falling by more than 50 MB (parts A and B) or
-64 MiB (parts C and D) over a process; in part D the swap check wraps one runtime's Hyperfine
+runtime before part D's Hyperfine call), and free swap falling by more than 51,200 KiB (50 MiB; parts A and B) or
+65,536 KiB (64 MiB; parts C and D) over a process; in part D the swap check wraps one runtime's Hyperfine
 call for a round, not each cold start.
 
 A unit is a round of one arm, or a whole round for part D. A refused before-check (host not quiet)
-or a rejected unit makes `run-admitted.sh` exit 6 and give up the lock; the driver reruns the part
-after a minute and holds nothing while it waits. A refused before-check uses no attempt. A measured
-attempt writes a `unit-start` receipt, and a unit may start four times. After the fourth, the next
-invocation skips that unit, runs the others and exits 7 naming it: the unit stays missing and the
-arm's median uses the rounds it has. The number of rounds behind every figure is reported. The host
-is shared, so refusals are expected; they are retained in the admission receipts and are not edited.
+or a rejected unit makes `run-admitted.sh` exit 6 and give up the lock; `run-campaign.sh` reruns the
+part after a minute (at most 30 times per part) and holds nothing while it waits. A refused
+before-check uses no attempt. A measured attempt writes a `unit-start` receipt, and a unit may start
+four times. After the fourth, the next invocation skips that unit, runs the others and exits 9 naming
+it; the campaign records the gap and goes on. Exit 7 is a real failure (a write error, an errored
+unit, or a part that ended with a unit neither complete nor named as out of attempts) and stops the
+campaign. A unit is complete only with an admitted receipt and its rows in the raw file; rows left by
+an interrupted attempt are dropped before the unit runs again, so no sample is counted twice. A unit
+that stays missing leaves its arm's median on the rounds it has, and the number of rounds behind
+every figure is reported; a comparison from fewer than three rounds is not given a clear verdict.
+The host is shared, so refusals are expected; they are retained in the admission receipts and are not
+edited. The allocation calibration (part C, round one) runs between two admission checks and is
+discarded if either refuses.
 
 ## Expected duration, pilot and stop rule
 
@@ -95,9 +103,12 @@ admission windows; with the timed work, about two hours when the host is quiet. 
 comparison of the old and new timers on this artifact (parts A and D under the same driver and
 tooling, not pooled with these results) admitted about one part A unit in 30 seconds when quiet and
 about one in 2 to 4 minutes when the shared host was busy, so the elapsed time on this host can
-reach six to eight hours. That comparison is the pilot. The run is stopped, and reported as
-incomplete with the parts finished, if eight hours of wall-clock time pass from its first measured
-process without all four parts ending; a finished part stays valid and a later run may resume the
+reach six to eight hours. That comparison covered parts A and D (its numbers are in
+`results/release-1.0.4-pilot.md`); one unit each of parts B and C, with the calibration, were then run
+once through the same scripts into a scratch directory, to cover those kinds of case. The pilots are
+not pooled. `run-campaign.sh` stops the campaign, reported as incomplete with the parts finished, if
+eight hours of wall-clock time pass from its first attempt (kept in `campaign-start` in the result
+directory) without all four parts ending; a finished part stays valid and a later run may resume the
 unfinished parts in the same result directory.
 
 ## Rules fixed in advance
@@ -106,8 +117,12 @@ unfinished parts in the same result directory.
 - Raw rows, admission receipts and observer receipts are kept unedited in `results/release-1.0.4/`.
 - Nothing from `results/` of earlier releases is pooled. No profile, reduced reproduction or upstream
   submission is part of this campaign.
-- If `bench/` outside `bench/results` differs from the harness commit in the freeze record at the end of
-  the run, the run is reported with that difference.
+- Every part starts only if `check-freeze.mjs` (run by `run-admitted.sh` when `FREEZE` names the freeze
+  record) finds the source tree, the committed `bench/` tree outside `bench/results`, the compiled client
+  bundles, the built artifacts, the corpora and lock files, and the runtime and runner versions as
+  frozen, with no uncommitted change under `src/` or `bench/`; otherwise it exits 4. The compiled
+  bundles are rebuilt by `npm run check`, which changes their bytes, so the freeze is written with
+  `check-freeze.mjs --write` after the last such build and no check runs during the campaign.
 - The published figures, charts and tables are regenerated from these results only after the run
   ends, and the README, listing text and changelog are audited against them before the release is
   prepared.
@@ -115,9 +130,9 @@ unfinished parts in the same result directory.
 ## Reproduction
 
 `npm ci` in the repository and in `bench/`, `bun bench/compat/build-clients.mjs`, Hyperfine 2 on
-`PATH`, then, from the repository root, for each part
-`RESULTS=$PWD/bench/results/release-1.0.4 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-admitted.sh <A|B|C|D> $PWD/bench/results/release-1.0.4/artifacts 3`.
+`PATH`, then, from the repository root,
+`RESULTS=$PWD/bench/results/release-1.0.4 FREEZE=$PWD/bench/results/release-1.0.4-freeze.json ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4/artifacts 3`.
 `RESULTS` must name a fresh directory: the default, `bench/results`, holds earlier releases' admission
-receipts, and `run-admitted.sh` skips any unit that already has an admitted receipt. The analyzers
-read fixed paths under `bench/results`, so they run on copies of the files placed there after the run.
-The admission command and observer are in this repository; the host's own lock path is the default.
+receipts. `analyze-more.mjs` reads `RESULTS`; the other analyzers read fixed paths under
+`bench/results`, so they run on copies of the files placed there after the run. The admission command
+and observer are in this repository; the host's own lock path is the default.

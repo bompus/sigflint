@@ -1,11 +1,15 @@
 // node analyze-more.mjs : summarizes results/speed-regression.jsonl (part A) and results/speed-more.jsonl (part B) as protocol-more.md describes;
 // writes results/speed-more-summary.json and prints Markdown tables. RESULTS=<dir> reads and writes that directory instead; a directory with no
-// speed-more.jsonl gets part A only (protocol-minified.md).
+// speed-more.jsonl gets part A only (protocol-minified.md), and one with no speed-regression.jsonl gets part B only (release 1.0.4 runs no part A here).
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const here = new URL('.', import.meta.url).pathname;
 const dir = process.env.RESULTS ?? `${here}results`;
+const hasA = existsSync(`${dir}/speed-regression.jsonl`);
 const hasB = existsSync(`${dir}/speed-more.jsonl`);
+if (!hasA && !hasB) {
+  throw new Error(`${dir} has neither speed-regression.jsonl nor speed-more.jsonl`);
+}
 /** @param {string} name */
 const load = (name) =>
   readFileSync(`${dir}/${name}`, 'utf8')
@@ -81,7 +85,7 @@ function summarize(rows, controls) {
   };
 }
 
-const A = summarize(load('speed-regression.jsonl'), ['final-1', 'final-2']);
+const A = summarize(hasA ? load('speed-regression.jsonl') : [], ['final-1', 'final-2']);
 const B = summarize(hasB ? load('speed-more.jsonl') : [], ['final-1', 'final-2']);
 /**
  * @type {{ regression: Record<string, unknown>[], more: Record<string, unknown>[], versions: Record<string, string>, rejected: number, errors: number, maxBusy: number, alone?: Record<string, { nodeNs: number, bunNs: number }> }}
@@ -165,8 +169,23 @@ for (const runtime of ['node', 'bun']) {
           ? 'wrong signature'
           : 'not offered';
       }
-      row.libraries[lib] = { ns: timed.ns, times: +(timed.ns / mine).toFixed(1) };
-      return `${(timed.ns / 1000).toFixed(2)} (${(timed.ns / mine).toFixed(1)}x)`;
+      // as in part A: ranges that overlap, or a gap within twice the band, leave the comparison unsettled
+      const controls = ['final-1', 'final-2'].map(
+        (arm) => /** @type {SCell['arms'][string]} */ (cell.arms[arm]),
+      );
+      const overlap =
+        timed.min <= Math.max(...controls.map((arm) => arm.max)) &&
+        timed.max >= Math.min(...controls.map((arm) => arm.min));
+      const unsettled = overlap || Math.abs(timed.ns - mine) <= (2 * cell.band * mine) / 100;
+      const rangePct = (100 * (timed.max - timed.min)) / timed.ns;
+      row.libraries[lib] = {
+        ns: timed.ns,
+        times: +(timed.ns / mine).toFixed(1),
+        rounds: timed.n,
+        rangePct: +rangePct.toFixed(1),
+        settled: !unsettled,
+      };
+      return `${(timed.ns / 1000).toFixed(2)} (${(timed.ns / mine).toFixed(1)}x, n=${timed.n}, range ${rangePct.toFixed(0)}%${unsettled ? ', unsettled' : ''})`;
     });
     summary.more.push(row);
     console.log(
