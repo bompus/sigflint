@@ -7,6 +7,8 @@ const rows = readFileSync(/** @type {string} */ (rawPath), 'utf8')
   .split('\n')
   .filter(Boolean)
   .map((l) => JSON.parse(l));
+/** Rounds an arm and its baseline need before a comparison can be called clear. */
+const MIN_ROUNDS = 3;
 const ARMS = [
   'sigflint-A',
   'aws4fetch',
@@ -214,7 +216,9 @@ const cellOf = (m, rt, wl, byArm) => {
     const overlap = !(Math.min(...v) > Math.max(...a) || Math.max(...v) < Math.min(...a));
     const band = Math.max((Math.abs(mA) * bandPct) / 100, cfg.abs);
     // unsettled (protocol-rerun.md): the ranges overlap, or the median gap is at most twice the band; an unsettled comparison is reported as no clear change
-    const unsettled = arm !== BASE && (overlap || Math.abs(gap) <= 2 * band);
+    // fewer than MIN_ROUNDS rounds behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
+    const fewRounds = v.length < MIN_ROUNDS || a.length < MIN_ROUNDS;
+    const unsettled = arm !== BASE && (fewRounds || overlap || Math.abs(gap) <= 2 * band);
     const clear = arm !== BASE && Math.abs(gap) > band && !overlap && !unsettled;
     out.arms[arm] = {
       n: v.length,

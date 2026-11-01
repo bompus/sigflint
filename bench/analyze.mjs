@@ -63,8 +63,12 @@ const cellOf = (rt, w) => {
       const overlap = !(s.maxNs < base.minNs || s.minNs > base.maxNs);
       s[name] = {
         timesFasterThanBaseline: base.medianNs / s.medianNs,
+        // fewer than three processes behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
         clear:
-          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > cell.bandPct && !overlap,
+          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > cell.bandPct &&
+          !overlap &&
+          s.n >= 3 &&
+          base.n >= 3,
       };
     }
   }

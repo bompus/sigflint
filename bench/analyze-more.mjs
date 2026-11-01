@@ -176,7 +176,10 @@ for (const runtime of ['node', 'bun']) {
       const overlap =
         timed.min <= Math.max(...controls.map((arm) => arm.max)) &&
         timed.max >= Math.min(...controls.map((arm) => arm.min));
-      const unsettled = overlap || Math.abs(timed.ns - mine) <= (2 * cell.band * mine) / 100;
+      // fewer than three rounds behind the library or either control never support a clear verdict (protocol-release-1.0.4.md)
+      const fewRounds = timed.n < 3 || controls.some((arm) => arm.n < 3);
+      const unsettled =
+        fewRounds || overlap || Math.abs(timed.ns - mine) <= (2 * cell.band * mine) / 100;
       const rangePct = (100 * (timed.max - timed.min)) / timed.ns;
       row.libraries[lib] = {
         ns: timed.ns,
