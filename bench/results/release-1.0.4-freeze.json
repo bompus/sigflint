@@ -27,15 +27,14 @@
     "cpus": 24
   },
   "srcTree": "90a032d5d5296cca4471ac13dcacd154e5459ded",
-  "harnessCommit": "c662f0e615f4afa6388696073c043490e826e6da",
-  "harnessNote": "bench/ outside bench/results must equal this commit at the end of the run: git diff <harnessCommit> -- bench \":!bench/results\" is empty",
   "compiledClientBundles": {
-    "lean-s3.mjs": "137f148f1287f7d9fd6b8ee378d991d7bfcbab683e9166d08c31320721f72460",
+    "lean-s3.mjs": "e53670a152c2ebc36543b9cb8d34f15362d8149c8979e3ef67d84424ce81ca5b",
     "lean-source.mjs": "3bafd50f2507e29b85fc0da757fcf912d70fe38a0035d577a60b14c1058a4123",
-    "s3-lite-client.mjs": "27fa2f666dca91c877a954052a5815dce7e74992af1b26409badae4edb634aa8",
-    "s3mini-utils.mjs": "87d7afa33985613b6e1776a7d236b6c7acb0f88ca9afb7bab821a6b1dc5f29b7",
-    "tiny-oss.mjs": "37593c5001ffe2bf09ef3dd249085fd4b7bf67cb302970de2347e99cfc38d897"
+    "s3-lite-client.mjs": "8d049dc26e19b346512cd1f22fca4dfc4bfdfbc15a7b0005f73be62749254805",
+    "s3mini-utils.mjs": "f5c1a8619755b793876d1297f2c6dc81f9dc375a260670e1dfb254b7a9e4aac4",
+    "tiny-oss.mjs": "0ccb123192711941d61fc0b9fda6ed1e5ec0a0ac58d1c573e7900a39156adb57"
   },
   "observerCommit": "e2a593e",
-  "compiledClientBundlesNote": "Bun.build output for these bundles differs between builds of the same sources, so the hashes name the files this run used; they are checked again at the end of the run."
+  "compiledClientBundlesNote": "Bun.build output for these bundles differs between builds of the same sources, so the hashes name the files this run used; they are checked again at the end of the run.",
+  "benchTreeSha256": "ef0650938588d62dca6be7db388e4e87928846a7a4297e22b11de302a711b88f"
 }
