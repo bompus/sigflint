@@ -285,7 +285,7 @@ const fmt = (v, unit) =>
     : `${Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)} ${unit}`.trim();
 const md = [
   `Rows ${rows.length}, accepted ${ok.length}, rejected or error ${rejected.length}`,
-  '\nncc = no clear change: the ratio is the ratio of medians only (the gap is inside the band, the ranges overlap, or fewer than two rounds support it).',
+  '\nncc = no clear change: the ratio is the ratio of medians only (the gap is within twice the reporting band, the ranges overlap, or fewer than two rounds support it).',
 ];
 for (const m of Object.keys(METRICS)) {
   const cs = cells.filter((c) => c.metric === m);

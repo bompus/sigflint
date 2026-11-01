@@ -1,6 +1,6 @@
 Rows 2659, accepted 2288, rejected or error 0
 
-ncc = no clear change: the ratio is the ratio of medians only (the gap is inside the band, the ranges overlap, or fewer than two rounds support it).
+ncc = no clear change: the ratio is the ratio of medians only (the gap is within twice the reporting band, the ranges overlap, or fewer than two rounds support it).
 
 ### heap bytes allocated per call
 
