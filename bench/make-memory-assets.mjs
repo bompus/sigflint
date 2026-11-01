@@ -310,7 +310,7 @@ const allocUnclear = summary.cells
       .filter(
         ([a, x]) => a !== 'sigflint-A' && a !== 'sigflint-B' && x.verdict !== 'more than sigflint',
       )
-      .map(([a, x]) => `${a} on ${c.runtime} ${c.workload} (${x.ratio.toFixed(2)}×)`),
+      .map(([a, x]) => `${a} on ${c.runtime} ${c.workload} (${x.ratio?.toFixed(2) ?? 'n/a'}×)`),
   );
 // the spread of the allocation ratio over every workload the library signs correctly
 const ratios = /** @type {number[]} */ (
