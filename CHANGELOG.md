@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Documentation only: speed, memory, import and size were measured again for all twelve comparison arms on Node 26.13.0 and Bun 1.4.4, with Tinybench for signing speed and Hyperfine for cold starts instead of hand-written timers. The code is unchanged since 1.0.2. Speed and other-service figures use two rounds, a count chosen before the run; memory and import used five rounds because two left most comparisons unsettled. The Deno table keeps its earlier timer. Figures from different timers are not comparable.
+
 - Documentation only, correction: the comparison's `@wdl-dev/aws-sigv4` header-signing adapter for other services passed a string body, which makes the library add and sign a Content-Type; it now passes bytes. Matches go from 826 to 906 of 1,622 (223 unsupported).
 - Documentation only: the comparison against other libraries now runs the 316 requests with a session token for every library, not only sigflint, giving each the token as it takes one (a credentials option, else the `x-amz-security-token` header). They are counted with the edge cases: sigflint 1,838 / 1,838; aws4fetch 790; aws4 424; @smithy/signature-v4 333; @wdl-dev/aws-sigv4 234; aws-sig 65; minio 40.
 - Documentation only, correction: the comparison's `aws-sig` and `@wdl-dev/aws-sigv4` adapters dropped the body of GET and HEAD requests, which understated both. Ordinary matches are now 379 / 1,520 for `aws-sig` (was 226) and 1,174 / 1,520 for `@wdl-dev/aws-sigv4` (was 666).

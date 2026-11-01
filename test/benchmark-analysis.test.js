@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +16,9 @@ const skip = 'Deno' in globalThis ? 'The analysis child uses the Node/Bun CLI' :
 function analyze(raw, more) {
   const dir = mkdtempSync(join(tmpdir(), 'sigflint-analysis-'));
   try {
-    writeFileSync(`${dir}/speed-regression.jsonl`, raw);
+    if (raw !== '') {
+      writeFileSync(`${dir}/speed-regression.jsonl`, raw);
+    }
     if (more !== undefined) {
       writeFileSync(`${dir}/speed-more.jsonl`, more);
     }
@@ -61,7 +63,9 @@ test('each retained regression baseline regenerates its own saved summary', { sk
     'bench/results/release-1.0.2/published-regression/',
   ]) {
     const dir = new URL(relative, root);
-    const raw = readFileSync(new URL('speed-regression.jsonl', dir), 'utf8');
+    // release 1.0.4 ran no regression part, so its directory holds no such file
+    const regression = new URL('speed-regression.jsonl', dir);
+    const raw = existsSync(regression) ? readFileSync(regression, 'utf8') : '';
     const more = relative.endsWith('/published-regression/')
       ? undefined
       : readFileSync(new URL('speed-more.jsonl', dir), 'utf8');
