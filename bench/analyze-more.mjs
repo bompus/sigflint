@@ -121,7 +121,15 @@ console.log(
 );
 for (const [key, cell] of Object.entries(A.cells)) {
   const [runtime, workload] = key.split('|');
-  const baseline = /** @type {SCell['arms'][string]} */ (cell.arms.frozen);
+  const baseline = /** @type {SCell['arms'][string] | undefined} */ (cell.arms.frozen);
+  if (!baseline) {
+    // both baseline units ran out of attempts: nothing to compare with, and the rest of the summary still stands
+    summary.regression.push({ runtime, workload, verdict: 'no baseline measured' });
+    console.log(
+      `| ${runtime} | ${workload} | no frozen round was admitted | | | | no baseline measured |`,
+    );
+    continue;
+  }
   const frozen = baseline.ns;
   const change = (100 * (cell.pooled - frozen)) / frozen;
   const controls = ['final-1', 'final-2'].map(

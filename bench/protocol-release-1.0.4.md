@@ -172,6 +172,10 @@ and Hyperfine 2 on `PATH`. Stage the built files in a fresh result directory, wh
 the two hashes must equal `results/release-1.0.4-artifacts.sha256`, which is also what the freeze
 record names. Then, from the repository root,
 `RESULTS=$PWD/bench/results/release-1.0.4-repeat FREEZE=$PWD/bench/results/release-1.0.4-freeze.json WINDOW_S=0.5 WARMUP_MS=200 REPS=5 DEADLINE_S=14400 ADMIT="python3 $PWD/bench/admit-native-linux.py" OBSERVER="python3 $PWD/bench/observe-unit.py --workload-cgroup auto" bash bench/run-campaign.sh $PWD/bench/results/release-1.0.4-repeat/artifacts 2`.
+The client bundles `bench/compat/compiled` are ignored by git and their bytes differ between builds, so a repeat run
+fails the recorded freeze at the compiled-bundle hashes; write a new freeze file for the repeat
+(`bun bench/check-freeze.mjs <new freeze file> --write`, then pass it as `FREEZE`). Such a run repeats the
+measurement; it does not reproduce the frozen bundles.
 `RESULTS` must name a fresh directory: the default, `bench/results`, holds earlier releases' admission
 receipts. `analyze-more.mjs` reads `RESULTS`; the other analyzers read fixed paths under
 `bench/results`, so they run on copies of the files placed there after the run. The admission command
@@ -179,7 +183,7 @@ and observer are in this repository; the host's own lock path is the default.
 
 ## Limits of the harness that ran
 
-Three behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review after the run and
+Four behaviours of `run-campaign.sh` and `check-freeze.mjs` were found in review after the run and
 did not occur in it. The `bench/` code that was frozen and measured is unchanged since the freeze commit `2685da5` (only the analysis
 scripts and this protocol changed after it), so they are recorded here, not fixed, in this change, and are to be fixed in a later change before another
 campaign:
@@ -189,9 +193,13 @@ campaign:
 - `check-freeze.mjs` records the `bun` and `node` found on `PATH`; a campaign that selects other
   executables through the driver's environment is not covered by the check. This run used the default
   executables.
+- The deadline is checked before each invocation of the driver, not between its units, so a part that
+  starts before the deadline runs to its end; the 4-hour stop was not reached in this run (the first pass took
+  60 minutes, the extension about an hour including waits for the lock).
 - The campaign deadline is counted from the first `campaign-start`; a run resumed after it has
   expired stops at once. To resume one on purpose, delete `campaign-start` (the controller then records
   a new start). The extension run was resumed within the deadline.
 
 The committed admission receipts have the home directory replaced by `~` and the checkout
-directory by `<repo>`; no other field was edited.
+directory by `<repo>`, and the per-user cgroup paths in the observer receipts by `<cgroup>`; no other field
+was edited.
