@@ -297,11 +297,21 @@ const FULL = {
 };
 let md = '';
 for (const rt of ['node', 'bun']) {
-  md += `\n**${rt === 'node' ? 'Node 26.12.1' : 'Bun 1.4.4'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
+  md += `\n**${rt === 'node' ? 'Node 26.13.0' : 'Bun 1.4.4'}**, plain GET of one key:\n\n| Library | ${COLS.map((c) => c[0]).join(' | ')} |\n|---|${COLS.map(() => '--:').join('|')}|\n`;
   for (const arm of ORDER) {
     md += `| ${FULL[arm] ?? arm} | ${COLS.map(([, m, wl]) => fmtCell(cell(m, rt, wl), arm, cell(m, rt, wl)?.unit ?? '')).join(' | ')} |\n`;
   }
 }
+// allocation comparisons without a clear increase (listed beside the range so it is not read as covering them)
+const allocUnclear = summary.cells
+  .filter((c) => c.metric === 'allocBytes')
+  .flatMap((c) =>
+    Object.entries(c.arms)
+      .filter(
+        ([a, x]) => a !== 'sigflint-A' && a !== 'sigflint-B' && x.verdict !== 'more than sigflint',
+      )
+      .map(([a, x]) => `${a} on ${c.runtime} ${c.workload} (${x.ratio?.toFixed(2) ?? 'n/a'}×)`),
+  );
 // the spread of the allocation ratio over every workload the library signs correctly
 const ratios = /** @type {number[]} */ (
   summary.cells
@@ -340,7 +350,7 @@ const block = `<picture>
   <img alt="Bar chart: garbage-collection pause per 10,000 signatures on Node.js and Bun" src="memory-gc-light.svg">
 </picture>
 ${md}
-Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} rounds, one fresh process per library, runtime and round (for import, each round is the median of 7 fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band, the ranges over the rounds overlap, or the gap is within twice the band (a comparison still unsettled at the cap is shown this way even where its median gap is outside the band, as with most retained-heap comparisons). Across all four workloads, the libraries that sign them correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is more than twice its band, with ranges that do not overlap.`;
+Median of ${roundsOf('allocBytes', 'gcMs', 'maxRss')} rounds, one fresh process per library, runtime and round (for import, each round is the median of 5 timed fresh processes). “(×)” is the library's value divided by sigflint's; “no clear change” means the gap is inside the reporting band, the ranges over the rounds overlap, or the gap is within twice the band (a comparison still unsettled at the cap is shown this way even where its median gap is outside the band, as with most retained-heap comparisons). In the ${ratios.length} allocation comparisons with a clear increase, the libraries that sign the workload correctly allocate ${Math.min(...ratios).toFixed(1)} to ${Math.max(...ratios).toFixed(0)} times as much heap per call as sigflint${allocUnclear.length ? `; ${allocUnclear.length} measured comparison${allocUnclear.length === 1 ? '' : 's'} without a clear increase ${allocUnclear.length === 1 ? 'is' : 'are'} left out of that range: ${allocUnclear.join(', ')}` : ''}. Peak memory of the process is the peak across every workload that library signs correctly, which are not the same four for every library (one that signs a workload wrongly, or cannot, skips it), so it is not a plain-GET figure. s3mini cannot sign the plain GET, so it has no heap, collection or pause cell, and its import-plus-first-signature cell comes from signing a part upload instead. Reporting bands (the larger of the metric's floor and twice the larger spread of the two sigflint control arms): ${bands}. Every gap shown with a multiplier is more than twice its band, with ranges that do not overlap.`;
 const readmePath = `${here}../docs/benchmarks.md`;
 const readme = readFileSync(readmePath, 'utf8');
 if (!readme.includes('<!-- BEGIN memory -->')) {

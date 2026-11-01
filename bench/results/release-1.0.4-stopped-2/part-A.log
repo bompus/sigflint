@@ -1,0 +1,19 @@
+frozen inputs match
+lock held 2026-11-01T03:00:02Z
+A-r1-sigflint-A not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:00:34Z
+frozen inputs match
+lock held 2026-11-01T03:01:34Z
+A-r1-sigflint-A not admitted (attempt 2 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:02:06Z
+frozen inputs match
+lock held 2026-11-01T03:03:06Z
+host not quiet at 2026-11-01T03:03:16Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:04:16Z
+A-r1-sigflint-A admitted (attempt 3) 2026-11-01T03:04:48Z
+A-r1-sigflint-B not admitted (attempt 1 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:05:06Z
+frozen inputs match
+lock held 2026-11-01T03:06:06Z
+A-r1-sigflint-B admitted (attempt 2) 2026-11-01T03:06:38Z
+A-r1-smithy admitted (attempt 1) 2026-11-01T03:06:59Z
+Exception ignored while flushing sys.stdout:
+BrokenPipeError: [Errno 32] Broken pipe

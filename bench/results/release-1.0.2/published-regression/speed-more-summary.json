@@ -4,8 +4,8 @@
    "runtime": "node",
    "workload": "bench-download",
    "frozenNs": 977,
-   "finalNs": 987,
-   "changePct": 1,
+   "finalNs": 986,
+   "changePct": 0.9,
    "bandPct": 5.9,
    "verdict": "no clear change"
   },
@@ -22,8 +22,8 @@
    "runtime": "node",
    "workload": "bench-encode",
    "frozenNs": 1695,
-   "finalNs": 1701,
-   "changePct": 0.4,
+   "finalNs": 1700,
+   "changePct": 0.3,
    "bandPct": 4.9,
    "verdict": "no clear change"
   },
@@ -31,8 +31,8 @@
    "runtime": "node",
    "workload": "bench-body-1k",
    "frozenNs": 1672,
-   "finalNs": 1674,
-   "changePct": 0.1,
+   "finalNs": 1672,
+   "changePct": 0,
    "bandPct": 5.7,
    "verdict": "no clear change"
   },
@@ -40,8 +40,8 @@
    "runtime": "bun",
    "workload": "bench-download",
    "frozenNs": 651,
-   "finalNs": 656,
-   "changePct": 0.8,
+   "finalNs": 655,
+   "changePct": 0.6,
    "bandPct": 3,
    "verdict": "no clear change"
   },
@@ -50,7 +50,7 @@
    "workload": "bench-part-put",
    "frozenNs": 952,
    "finalNs": 946,
-   "changePct": -0.6,
+   "changePct": -0.7,
    "bandPct": 6.1,
    "verdict": "no clear change"
   },
@@ -58,8 +58,8 @@
    "runtime": "bun",
    "workload": "bench-encode",
    "frozenNs": 1506,
-   "finalNs": 1494,
-   "changePct": -0.8,
+   "finalNs": 1493,
+   "changePct": -0.9,
    "bandPct": 8.3,
    "verdict": "no clear change"
   },
@@ -67,9 +67,9 @@
    "runtime": "bun",
    "workload": "bench-body-1k",
    "frozenNs": 1251,
-   "finalNs": 1252,
-   "changePct": 0.1,
-   "bandPct": 10.5,
+   "finalNs": 1249,
+   "changePct": -0.2,
+   "bandPct": 10.6,
    "verdict": "no clear change"
   }
  ],

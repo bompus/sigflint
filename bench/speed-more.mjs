@@ -119,6 +119,7 @@ async function measure(id, fn, isSync) {
     batches: t.batches,
     batchSize: t.batchSize,
     rmePct: t.rmePct,
+    madPct: t.madPct,
     sink: t.sink,
   });
 }

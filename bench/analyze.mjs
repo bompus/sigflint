@@ -8,7 +8,13 @@ const rejected = rows.filter((r) => r.status === 'rejected-load' || r.status ===
 /** @param {number[]} a */
 const med = (a) => {
   const s = [...a].sort((x, y) => x - y);
-  return /** @type {number} */ (s[Math.floor(s.length / 2)]);
+  const mid = Math.floor(s.length / 2);
+  // the middle value, or the mean of the two middle ones for an even count (two rounds give their mean, not the larger)
+  return /** @type {number} */ (
+    s.length % 2
+      ? s[mid]
+      : (/** @type {number} */ (s[mid - 1]) + /** @type {number} */ (s[mid])) / 2
+  );
 };
 const workloads = ['bench-download', 'bench-part-put', 'bench-encode', 'bench-body-1k'];
 const runtimes = [...new Set(rows.map((r) => r.runtime).filter(Boolean))];
@@ -48,9 +54,12 @@ const cellOf = (rt, w) => {
   }
   const A = cell.arms['sigflint-A'],
     B = cell.arms['sigflint-B'];
-  cell.bandPct = Math.max(3, 2 * Math.max(A?.rangePct ?? 0, B?.rangePct ?? 0));
   cell.aaGapPct =
     A && B ? (100 * Math.abs(A.medianNs - B.medianNs)) / Math.min(A.medianNs, B.medianNs) : null;
+  // the band is twice the larger of the controls' run-to-run range and their median gap (as in analyze-more.mjs); without both controls
+  // measured in at least two rounds nothing is called clear
+  cell.bandPct = Math.max(3, 2 * Math.max(A?.rangePct ?? 0, B?.rangePct ?? 0, cell.aaGapPct ?? 0));
+  const controlsOk = A?.status === 'ok' && B?.status === 'ok' && A.n >= 2 && B.n >= 2;
   const ref = cell.arms['sigflint-A'];
   for (const [arm, s] of Object.entries(cell.arms)) {
     if (s.status !== 'ok') {
@@ -63,8 +72,14 @@ const cellOf = (rt, w) => {
       const overlap = !(s.maxNs < base.minNs || s.minNs > base.maxNs);
       s[name] = {
         timesFasterThanBaseline: base.medianNs / s.medianNs,
+        // fewer than two processes behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
         clear:
-          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > cell.bandPct && !overlap,
+          // a gap within twice the band stays unsettled (protocol-rerun-3.md), as in analyze-more.mjs and analyze-memory.mjs
+          Math.abs((100 * (s.medianNs - base.medianNs)) / base.medianNs) > 2 * cell.bandPct &&
+          !overlap &&
+          s.n >= 2 &&
+          base.n >= 2 &&
+          controlsOk,
       };
     }
   }

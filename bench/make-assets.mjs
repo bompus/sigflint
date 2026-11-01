@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { compareLibraries, sortComparisonTables } from './comparison-order.mjs';
 import { fillBenchmarksDoc } from './fill-benchmarks-doc.mjs';
+import { fillMoreTables } from './fill-more-tables.mjs';
 import {
   completeClientComparison,
   clientGroups,
@@ -777,7 +778,7 @@ out['compat-more'] = (t) => {
 // ---- other services and presigned URLs: speed (results/speed-more-summary.json) -------------------------------------------
 /** @typedef {{ ns: number, times: number }} MoreTiming */
 /** @typedef {{ runtime: string, workload: string, sigflintNs: number, bandPct: number, libraries: Record<string, MoreTiming | string> }} MoreRow */
-/** @type {{ versions: Record<string, string>, more: MoreRow[] }} */
+/** @type {{ versions: Record<string, string>, more: MoreRow[], alone: Record<string, { nodeNs: number, bunNs: number }> }} */
 const more = read('speed-more-summary.json');
 /** @type {[string, string][]} */
 const moreWorkloads = [
@@ -821,7 +822,7 @@ const moreRows = (r) => {
       rows.push({
         label: name(l),
         value: v.ns / 1000,
-        vl: `${(v.ns / 1000).toFixed(v.ns < 10000 ? 2 : v.ns < 100000 ? 1 : 0)} µs  (${times(v.times)}×${Math.abs(v.times - 1) * 100 > r.bandPct ? '' : ', no clear change'})`,
+        vl: `${(v.ns / 1000).toFixed(v.ns < 10000 ? 2 : v.ns < 100000 ? 1 : 0)} µs  (${times(v.times)}×${Math.abs(v.times - 1) * 100 > r.bandPct && /** @type {{ settled?: boolean }} */ (v).settled !== false ? '' : ', no clear change'})`,
       });
     }
   }
@@ -982,6 +983,7 @@ for (const [id, draw] of Object.entries(out)) {
 writeFileSync(`${docs}tables.md`, sortComparisonTables(tables.join('\n\n') + '\n'));
 
 fillBenchmarksDoc(`${here}../docs/benchmarks.md`, tables, moreTable);
+fillMoreTables(`${here}../docs/benchmarks.md`, more);
 console.log(
   'wrote',
   Object.keys(out)

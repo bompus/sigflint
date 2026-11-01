@@ -1,0 +1,15 @@
+{
+  "decidedAt": "2026-11-01T04:30Z",
+  "afterRounds": 2,
+  "A": { "extend": false, "reasons": [] },
+  "B": { "extend": false, "reasons": [] },
+  "C": {
+    "extend": true,
+    "reason": "Unsettled after round 2 (memory-summary.json, unsettled-memory.mjs): peak RSS 11 of 20 comparisons; GC count 4 of 62 and GC time 5 of 62 (all lean-s3); allocation and CPU 1 of 62 each (bun bench-encode lean-s3). Heap retained per 10,000 calls is 61 of 62 unsettled; at five rounds in release 1.0.2 it was 35 of 36, so it is reported as unsettled and is not the reason for the extension. All twelve arms run so the pooled sample has one shape. Rounds 3 to 5, cap 5."
+  },
+  "D": {
+    "extend": true,
+    "reason": "Import plus first signature unsettled in 11 of 20 comparisons after round 2. Rounds 3 to 5, cap 5. All arms run in each round."
+  },
+  "command": "ARMS_LIST unset, FROM_ROUND=3, PARTS=\"C D\", rounds 5, RESULTS=bench/results/release-1.0.4-extension-1, same freeze, RETRY_S=15, DEADLINE_S=14400"
+}

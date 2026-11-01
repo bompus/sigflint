@@ -1,0 +1,27 @@
+frozen inputs match
+lock held 2026-11-01T03:36:07Z
+B-r1-final-1 admitted (attempt 1) 2026-11-01T03:36:48Z
+B-r1-aws4 admitted (attempt 1) 2026-11-01T03:37:19Z
+B-r1-aws4fetch admitted (attempt 1) 2026-11-01T03:37:53Z
+B-r1-smithy not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:38:26Z
+frozen inputs match
+lock held 2026-11-01T03:38:41Z
+host not quiet at 2026-11-01T03:38:51Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:39:06Z
+B-r1-smithy admitted (attempt 2) 2026-11-01T03:39:40Z
+B-r1-aws-sig admitted (attempt 1) 2026-11-01T03:40:09Z
+B-r1-wdl admitted (attempt 1) 2026-11-01T03:40:39Z
+B-r1-minio admitted (attempt 1) 2026-11-01T03:41:06Z
+B-r1-final-2 admitted (attempt 1) 2026-11-01T03:41:47Z
+part B round 1/2 done 2026-11-01T03:41:47Z
+B-r2-final-2 admitted (attempt 1) 2026-11-01T03:42:28Z
+B-r2-minio admitted (attempt 1) 2026-11-01T03:42:55Z
+B-r2-wdl admitted (attempt 1) 2026-11-01T03:43:25Z
+B-r2-aws-sig admitted (attempt 1) 2026-11-01T03:43:55Z
+B-r2-smithy admitted (attempt 1) 2026-11-01T03:44:28Z
+B-r2-aws4fetch admitted (attempt 1) 2026-11-01T03:45:01Z
+B-r2-aws4 admitted (attempt 1) 2026-11-01T03:45:33Z
+B-r2-final-1 admitted (attempt 1) 2026-11-01T03:46:14Z
+part B round 2/2 done 2026-11-01T03:46:14Z
+part B finished 2026-11-01T03:46:14Z

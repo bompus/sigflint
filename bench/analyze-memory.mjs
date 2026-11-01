@@ -7,6 +7,8 @@ const rows = readFileSync(/** @type {string} */ (rawPath), 'utf8')
   .split('\n')
   .filter(Boolean)
   .map((l) => JSON.parse(l));
+/** Rounds an arm and its baseline need before a comparison can be called clear. */
+const MIN_ROUNDS = 2;
 const ARMS = [
   'sigflint-A',
   'aws4fetch',
@@ -55,7 +57,13 @@ const METRICS = {
 /** @param {number[]} a */
 const med = (a) => {
   const s = [...a].sort((x, y) => x - y);
-  return s.length ? /** @type {number} */ (s[Math.floor(s.length / 2)]) : NaN;
+  const mid = Math.floor(s.length / 2);
+  // the middle value, or the mean of the two middle ones for an even count (two rounds give their mean, not the larger)
+  return s.length
+    ? s.length % 2
+      ? /** @type {number} */ (s[mid])
+      : (/** @type {number} */ (s[mid - 1]) + /** @type {number} */ (s[mid])) / 2
+    : NaN;
 };
 /** @param {number[]} a */
 const range = (a) => Math.max(...a) - Math.min(...a);
@@ -188,8 +196,14 @@ const cellOf = (m, rt, wl, byArm) => {
     return null;
   }
   const mA = med(a);
+  // the controls' run-to-run ranges and the gap between their medians; without both controls in at least MIN_ROUNDS rounds nothing is clear
   const spread =
-    Math.max(range(a) / Math.abs(mA || 1), b.length ? range(b) / Math.abs(med(b) || 1) : 0) * 100;
+    Math.max(
+      range(a) / Math.abs(mA || 1),
+      b.length ? range(b) / Math.abs(med(b) || 1) : 0,
+      b.length ? Math.abs(med(b) - mA) / Math.abs(mA || 1) : 0,
+    ) * 100;
+  const controlsOk = a.length >= MIN_ROUNDS && b.length >= MIN_ROUNDS;
   const bandPct = Math.max(cfg.rel, 2 * spread);
   /** @type {Cell} */
   const out = {
@@ -214,7 +228,9 @@ const cellOf = (m, rt, wl, byArm) => {
     const overlap = !(Math.min(...v) > Math.max(...a) || Math.max(...v) < Math.min(...a));
     const band = Math.max((Math.abs(mA) * bandPct) / 100, cfg.abs);
     // unsettled (protocol-rerun.md): the ranges overlap, or the median gap is at most twice the band; an unsettled comparison is reported as no clear change
-    const unsettled = arm !== BASE && (overlap || Math.abs(gap) <= 2 * band);
+    // fewer than MIN_ROUNDS rounds behind the arm or the baseline never support a clear verdict (protocol-release-1.0.4.md)
+    const fewRounds = v.length < MIN_ROUNDS || !controlsOk;
+    const unsettled = arm !== BASE && (fewRounds || overlap || Math.abs(gap) <= 2 * band);
     const clear = arm !== BASE && Math.abs(gap) > band && !overlap && !unsettled;
     out.arms[arm] = {
       n: v.length,

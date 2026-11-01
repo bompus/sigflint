@@ -1,0 +1,78 @@
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:06:03Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:06:18Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:06:33Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:06:48Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:07:03Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:07:18Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:07:33Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:07:49Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:08:04Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:08:19Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:08:34Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:08:49Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:09:04Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T05:09:19Z
+frozen inputs match
+lock held 2026-11-01T05:09:34Z
+D-r3-round admitted (attempt 1) 2026-11-01T05:10:02Z
+part D round 3/5 done 2026-11-01T05:10:02Z
+host not quiet at 2026-11-01T05:10:12Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:10:27Z
+part D round 3/5 done 2026-11-01T05:10:27Z
+host not quiet at 2026-11-01T05:10:37Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:10:53Z
+part D round 3/5 done 2026-11-01T05:10:53Z
+host not quiet at 2026-11-01T05:11:03Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:11:18Z
+part D round 3/5 done 2026-11-01T05:11:18Z
+host not quiet at 2026-11-01T05:11:28Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:11:43Z
+part D round 3/5 done 2026-11-01T05:11:43Z
+host not quiet at 2026-11-01T05:11:53Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:12:08Z
+part D round 3/5 done 2026-11-01T05:12:08Z
+host not quiet at 2026-11-01T05:12:18Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:12:33Z
+part D round 3/5 done 2026-11-01T05:12:33Z
+host not quiet at 2026-11-01T05:12:43Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T05:12:58Z
+part D round 3/5 done 2026-11-01T05:12:58Z
+D-r4-round not admitted (attempt 1 of 4, 3 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T05:13:22Z
+frozen inputs match
+lock held 2026-11-01T05:13:37Z
+part D round 3/5 done 2026-11-01T05:13:37Z
+D-r4-round not admitted (attempt 2 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T05:14:03Z
+frozen inputs match
+lock held 2026-11-01T05:14:18Z
+part D round 3/5 done 2026-11-01T05:14:18Z
+D-r4-round admitted (attempt 3) 2026-11-01T05:14:46Z
+part D round 4/5 done 2026-11-01T05:14:46Z
+D-r5-round not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T05:15:14Z
+frozen inputs match
+lock held 2026-11-01T05:15:29Z
+part D round 3/5 done 2026-11-01T05:15:29Z
+part D round 4/5 done 2026-11-01T05:15:29Z
+D-r5-round admitted (attempt 2) 2026-11-01T05:15:57Z
+part D round 5/5 done 2026-11-01T05:15:57Z
+part D finished 2026-11-01T05:15:57Z

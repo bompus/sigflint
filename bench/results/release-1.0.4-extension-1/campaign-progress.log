@@ -1,0 +1,148 @@
+2026-11-01T04:13:47Z START part C attempt 1
+2026-11-01T04:14:30Z END part C attempt 1 exit 6
+2026-11-01T04:26:49Z START part C attempt 1
+2026-11-01T04:26:49Z END part C attempt 1 exit 4
+2026-11-01T04:26:49Z FAILED part C: exit 4
+2026-11-01T04:27:10Z START part C attempt 1
+2026-11-01T04:28:54Z END part C attempt 1 exit 6
+2026-11-01T04:29:09Z START part C attempt 2
+2026-11-01T04:32:10Z END part C attempt 2 exit 6
+2026-11-01T04:32:25Z START part C attempt 3
+2026-11-01T04:36:47Z END part C attempt 3 exit 6
+2026-11-01T04:37:02Z START part C attempt 4
+2026-11-01T04:37:46Z END part C attempt 4 exit 6
+2026-11-01T04:38:01Z START part C attempt 5
+2026-11-01T04:38:37Z END part C attempt 5 exit 6
+2026-11-01T04:38:52Z START part C attempt 6
+2026-11-01T04:39:02Z END part C attempt 6 exit 6
+2026-11-01T04:39:17Z START part C attempt 7
+2026-11-01T04:39:28Z END part C attempt 7 exit 6
+2026-11-01T04:39:43Z START part C attempt 8
+2026-11-01T04:39:53Z END part C attempt 8 exit 6
+2026-11-01T04:40:08Z START part C attempt 9
+2026-11-01T04:40:40Z END part C attempt 9 exit 6
+2026-11-01T04:40:55Z START part C attempt 10
+2026-11-01T04:41:05Z END part C attempt 10 exit 6
+2026-11-01T04:41:20Z START part C attempt 11
+2026-11-01T04:41:31Z END part C attempt 11 exit 6
+2026-11-01T04:41:46Z START part C attempt 12
+2026-11-01T04:41:56Z END part C attempt 12 exit 6
+2026-11-01T04:42:11Z START part C attempt 13
+2026-11-01T04:42:21Z END part C attempt 13 exit 6
+2026-11-01T04:42:36Z START part C attempt 14
+2026-11-01T04:42:46Z END part C attempt 14 exit 6
+2026-11-01T04:43:01Z START part C attempt 15
+2026-11-01T04:49:29Z END part C attempt 15 exit 6
+2026-11-01T04:49:44Z START part C attempt 16
+2026-11-01T04:49:44Z END part C attempt 16 exit 3
+2026-11-01T04:49:59Z START part C attempt 17
+2026-11-01T04:49:59Z END part C attempt 17 exit 3
+2026-11-01T04:50:14Z START part C attempt 18
+2026-11-01T04:50:14Z END part C attempt 18 exit 3
+2026-11-01T04:50:29Z START part C attempt 19
+2026-11-01T04:50:29Z END part C attempt 19 exit 3
+2026-11-01T04:50:44Z START part C attempt 20
+2026-11-01T04:50:44Z END part C attempt 20 exit 3
+2026-11-01T04:50:59Z START part C attempt 21
+2026-11-01T04:50:59Z END part C attempt 21 exit 3
+2026-11-01T04:51:14Z START part C attempt 22
+2026-11-01T04:51:14Z END part C attempt 22 exit 3
+2026-11-01T04:51:29Z START part C attempt 23
+2026-11-01T04:51:29Z END part C attempt 23 exit 3
+2026-11-01T04:51:44Z START part C attempt 24
+2026-11-01T04:51:44Z END part C attempt 24 exit 3
+2026-11-01T04:51:59Z START part C attempt 25
+2026-11-01T04:51:59Z END part C attempt 25 exit 3
+2026-11-01T04:52:14Z START part C attempt 26
+2026-11-01T04:52:14Z END part C attempt 26 exit 3
+2026-11-01T04:52:29Z START part C attempt 27
+2026-11-01T04:52:29Z END part C attempt 27 exit 3
+2026-11-01T04:52:44Z START part C attempt 28
+2026-11-01T04:52:44Z END part C attempt 28 exit 3
+2026-11-01T04:52:59Z START part C attempt 29
+2026-11-01T04:53:29Z END part C attempt 29 exit 6
+2026-11-01T04:53:44Z START part C attempt 30
+2026-11-01T04:55:26Z END part C attempt 30 exit 6
+2026-11-01T04:55:41Z FAILED part C: 30 attempts used
+2026-11-01T04:55:43Z START part C attempt 1
+2026-11-01T04:55:43Z END part C attempt 1 exit 3
+2026-11-01T04:55:58Z START part C attempt 2
+2026-11-01T04:55:58Z END part C attempt 2 exit 3
+2026-11-01T04:56:13Z START part C attempt 3
+2026-11-01T04:56:13Z END part C attempt 3 exit 3
+2026-11-01T04:56:28Z START part C attempt 4
+2026-11-01T04:56:28Z END part C attempt 4 exit 3
+2026-11-01T04:56:43Z START part C attempt 5
+2026-11-01T04:56:43Z END part C attempt 5 exit 3
+2026-11-01T04:56:58Z START part C attempt 6
+2026-11-01T04:56:58Z END part C attempt 6 exit 3
+2026-11-01T04:57:13Z START part C attempt 7
+2026-11-01T04:57:13Z END part C attempt 7 exit 3
+2026-11-01T04:57:28Z START part C attempt 8
+2026-11-01T04:57:29Z END part C attempt 8 exit 3
+2026-11-01T04:57:44Z START part C attempt 9
+2026-11-01T04:57:44Z END part C attempt 9 exit 3
+2026-11-01T04:57:59Z START part C attempt 10
+2026-11-01T04:57:59Z END part C attempt 10 exit 3
+2026-11-01T04:58:14Z START part C attempt 11
+2026-11-01T04:58:14Z END part C attempt 11 exit 3
+2026-11-01T04:58:29Z START part C attempt 12
+2026-11-01T04:58:29Z END part C attempt 12 exit 3
+2026-11-01T04:58:44Z START part C attempt 13
+2026-11-01T04:58:44Z END part C attempt 13 exit 3
+2026-11-01T04:58:59Z START part C attempt 14
+2026-11-01T05:04:28Z END part C attempt 14 exit 6
+2026-11-01T05:04:43Z START part C attempt 15
+2026-11-01T05:06:03Z END part C attempt 15 exit 9
+2026-11-01T05:06:03Z GAP part C: units left unmeasured after four attempts: C-r4-s3-lite-client
+2026-11-01T05:06:03Z START part D attempt 1
+2026-11-01T05:06:03Z END part D attempt 1 exit 3
+2026-11-01T05:06:18Z START part D attempt 2
+2026-11-01T05:06:18Z END part D attempt 2 exit 3
+2026-11-01T05:06:33Z START part D attempt 3
+2026-11-01T05:06:33Z END part D attempt 3 exit 3
+2026-11-01T05:06:48Z START part D attempt 4
+2026-11-01T05:06:48Z END part D attempt 4 exit 3
+2026-11-01T05:07:03Z START part D attempt 5
+2026-11-01T05:07:03Z END part D attempt 5 exit 3
+2026-11-01T05:07:18Z START part D attempt 6
+2026-11-01T05:07:18Z END part D attempt 6 exit 3
+2026-11-01T05:07:33Z START part D attempt 7
+2026-11-01T05:07:33Z END part D attempt 7 exit 3
+2026-11-01T05:07:48Z START part D attempt 8
+2026-11-01T05:07:49Z END part D attempt 8 exit 3
+2026-11-01T05:08:04Z START part D attempt 9
+2026-11-01T05:08:04Z END part D attempt 9 exit 3
+2026-11-01T05:08:19Z START part D attempt 10
+2026-11-01T05:08:19Z END part D attempt 10 exit 3
+2026-11-01T05:08:34Z START part D attempt 11
+2026-11-01T05:08:34Z END part D attempt 11 exit 3
+2026-11-01T05:08:49Z START part D attempt 12
+2026-11-01T05:08:49Z END part D attempt 12 exit 3
+2026-11-01T05:09:04Z START part D attempt 13
+2026-11-01T05:09:04Z END part D attempt 13 exit 3
+2026-11-01T05:09:19Z START part D attempt 14
+2026-11-01T05:09:19Z END part D attempt 14 exit 3
+2026-11-01T05:09:34Z START part D attempt 15
+2026-11-01T05:10:12Z END part D attempt 15 exit 6
+2026-11-01T05:10:27Z START part D attempt 16
+2026-11-01T05:10:37Z END part D attempt 16 exit 6
+2026-11-01T05:10:52Z START part D attempt 17
+2026-11-01T05:11:03Z END part D attempt 17 exit 6
+2026-11-01T05:11:18Z START part D attempt 18
+2026-11-01T05:11:28Z END part D attempt 18 exit 6
+2026-11-01T05:11:43Z START part D attempt 19
+2026-11-01T05:11:53Z END part D attempt 19 exit 6
+2026-11-01T05:12:08Z START part D attempt 20
+2026-11-01T05:12:18Z END part D attempt 20 exit 6
+2026-11-01T05:12:33Z START part D attempt 21
+2026-11-01T05:12:43Z END part D attempt 21 exit 6
+2026-11-01T05:12:58Z START part D attempt 22
+2026-11-01T05:13:22Z END part D attempt 22 exit 6
+2026-11-01T05:13:37Z START part D attempt 23
+2026-11-01T05:14:03Z END part D attempt 23 exit 6
+2026-11-01T05:14:18Z START part D attempt 24
+2026-11-01T05:15:14Z END part D attempt 24 exit 6
+2026-11-01T05:15:29Z START part D attempt 25
+2026-11-01T05:15:57Z END part D attempt 25 exit 0
+2026-11-01T05:15:57Z DONE gaps: C

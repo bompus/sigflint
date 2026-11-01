@@ -1,0 +1,40 @@
+{
+  "frozenAt": "2026-10-31T21:38:24Z",
+  "sourceCommit": "c662f0e615f4afa6388696073c043490e826e6da",
+  "sourceTree": "9ff074a5d427f3e6628317b71a4affa7cdb8ca87",
+  "artifacts": {
+    "node.js": "7153026dd6ac0cd8bd7875b665c23beca078aeb968aaefe9fd0fd2ae2d34c2ff",
+    "bun.js": "69009b478cae42d0d920df1b20aaa4f6b2a1e77230ea836dde3c7f790a2d62fd",
+    "note": "identical to the release 1.0.2 artifacts: src is unchanged since v1.0.3 apart from the version field"
+  },
+  "inputs": {
+    "test/corpus.json": "a4f907d61241c241f2bc13edf4cd81f71f7b8d93043cea891b0360191efb9cfe",
+    "test/corpus-presign.json": "b87350155d161c69312ea40b03b1ad98d6434afe1831377cd915c247718fac19",
+    "test/corpus-general.json": "014989b79e5499d1932fc822868f1de6d345e0e778a877a7b326b0aca4b60d7b",
+    "bench/package-lock.json": "d07ad4d0d6ac9702c7e05b93a4d0f0419b11e4249a4748612a8496c5a2436952",
+    "package-lock.json": "d6ef82ece4f687006cc6c79b884ebcab7ae5f49c62d18572f19c9812571088dc"
+  },
+  "runtimes": {
+    "node": "26.13.0",
+    "bun": "1.4.4"
+  },
+  "runners": {
+    "tinybench": "6.2.2",
+    "hyperfine": "2.0.0"
+  },
+  "host": {
+    "kernel": "7.2.12-x64v3-xanmod1",
+    "cpus": 24
+  },
+  "srcTree": "90a032d5d5296cca4471ac13dcacd154e5459ded",
+  "compiledClientBundles": {
+    "lean-s3.mjs": "e53670a152c2ebc36543b9cb8d34f15362d8149c8979e3ef67d84424ce81ca5b",
+    "lean-source.mjs": "3bafd50f2507e29b85fc0da757fcf912d70fe38a0035d577a60b14c1058a4123",
+    "s3-lite-client.mjs": "8d049dc26e19b346512cd1f22fca4dfc4bfdfbc15a7b0005f73be62749254805",
+    "s3mini-utils.mjs": "f5c1a8619755b793876d1297f2c6dc81f9dc375a260670e1dfb254b7a9e4aac4",
+    "tiny-oss.mjs": "0ccb123192711941d61fc0b9fda6ed1e5ec0a0ac58d1c573e7900a39156adb57"
+  },
+  "observerCommit": "e2a593e",
+  "compiledClientBundlesNote": "Bun.build output for these bundles differs between builds of the same sources, so the hashes name the files this run used; they are checked again at the end of the run.",
+  "benchTreeSha256": "5bda01c152217827893cac2dfe92bc8af16259d5b19b56b5fb04653a6cd2ef5b"
+}
