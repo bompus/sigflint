@@ -1,0 +1,183 @@
+frozen inputs match
+lock held 2026-11-01T04:13:47Z
+C-r3-sigflint-A admitted (attempt 1) 2026-11-01T04:14:20Z
+host not quiet at 2026-11-01T04:14:30Z; giving up the lock, nothing waited for
+run-admitted.sh: line 55: bun: command not found
+frozen inputs differ; refusing to run
+frozen inputs match
+lock held 2026-11-01T04:27:10Z
+C-r3-aws4fetch admitted (attempt 1) 2026-11-01T04:27:49Z
+C-r3-aws4 admitted (attempt 1) 2026-11-01T04:28:21Z
+C-r3-smithy not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T04:28:54Z
+frozen inputs match
+lock held 2026-11-01T04:29:09Z
+C-r3-smithy admitted (attempt 2) 2026-11-01T04:29:41Z
+C-r3-aws-sig admitted (attempt 1) 2026-11-01T04:30:18Z
+C-r3-wdl admitted (attempt 1) 2026-11-01T04:31:07Z
+C-r3-minio admitted (attempt 1) 2026-11-01T04:31:39Z
+C-r3-s3mini not admitted (attempt 1 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:32:10Z
+frozen inputs match
+lock held 2026-11-01T04:32:25Z
+C-r3-s3mini admitted (attempt 2) 2026-11-01T04:32:57Z
+C-r3-tiny-oss admitted (attempt 1) 2026-11-01T04:33:34Z
+C-r3-lean-s3 admitted (attempt 1) 2026-11-01T04:34:06Z
+C-r3-s3-lite-client admitted (attempt 1) 2026-11-01T04:34:52Z
+C-r3-sigflint-B admitted (attempt 1) 2026-11-01T04:35:25Z
+part C round 3/5 done 2026-11-01T04:35:25Z
+C-r4-sigflint-B admitted (attempt 1) 2026-11-01T04:35:59Z
+C-r4-s3-lite-client not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:36:47Z
+frozen inputs match
+lock held 2026-11-01T04:37:02Z
+part C round 3/5 done 2026-11-01T04:37:02Z
+C-r4-s3-lite-client not admitted (attempt 2 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:37:46Z
+frozen inputs match
+lock held 2026-11-01T04:38:01Z
+part C round 3/5 done 2026-11-01T04:38:01Z
+C-r4-s3-lite-client not admitted (attempt 3 of 4, 2 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:38:37Z
+frozen inputs match
+lock held 2026-11-01T04:38:52Z
+part C round 3/5 done 2026-11-01T04:38:52Z
+host not quiet at 2026-11-01T04:39:02Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:39:17Z
+part C round 3/5 done 2026-11-01T04:39:17Z
+host not quiet at 2026-11-01T04:39:28Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:39:43Z
+part C round 3/5 done 2026-11-01T04:39:43Z
+host not quiet at 2026-11-01T04:39:53Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:40:08Z
+part C round 3/5 done 2026-11-01T04:40:08Z
+C-r4-s3-lite-client not admitted (attempt 4 of 4, 3 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:40:40Z
+frozen inputs match
+lock held 2026-11-01T04:40:55Z
+part C round 3/5 done 2026-11-01T04:40:55Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+host not quiet at 2026-11-01T04:41:05Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:41:20Z
+part C round 3/5 done 2026-11-01T04:41:20Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+host not quiet at 2026-11-01T04:41:31Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:41:46Z
+part C round 3/5 done 2026-11-01T04:41:46Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+host not quiet at 2026-11-01T04:41:56Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:42:11Z
+part C round 3/5 done 2026-11-01T04:42:11Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+host not quiet at 2026-11-01T04:42:21Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:42:36Z
+part C round 3/5 done 2026-11-01T04:42:36Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+host not quiet at 2026-11-01T04:42:46Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:43:01Z
+part C round 3/5 done 2026-11-01T04:43:01Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+C-r4-lean-s3 admitted (attempt 1) 2026-11-01T04:43:32Z
+C-r4-tiny-oss admitted (attempt 1) 2026-11-01T04:44:10Z
+C-r4-s3mini admitted (attempt 1) 2026-11-01T04:44:42Z
+C-r4-minio admitted (attempt 1) 2026-11-01T04:45:14Z
+C-r4-wdl admitted (attempt 1) 2026-11-01T04:46:02Z
+C-r4-aws-sig admitted (attempt 1) 2026-11-01T04:46:39Z
+C-r4-smithy admitted (attempt 1) 2026-11-01T04:47:11Z
+C-r4-aws4 admitted (attempt 1) 2026-11-01T04:47:44Z
+C-r4-aws4fetch admitted (attempt 1) 2026-11-01T04:48:22Z
+C-r4-sigflint-A admitted (attempt 1) 2026-11-01T04:48:55Z
+part C round 4/5 done 2026-11-01T04:48:55Z
+C-r5-sigflint-A not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T04:49:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:49:44Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:49:59Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:50:14Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:50:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:50:44Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:50:59Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:51:14Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:51:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:51:44Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:51:59Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:52:14Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:52:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:52:44Z
+frozen inputs match
+lock held 2026-11-01T04:53:00Z
+part C round 3/5 done 2026-11-01T04:53:00Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+part C round 4/5 done 2026-11-01T04:53:00Z
+C-r5-sigflint-A not admitted (attempt 2 of 4, 4 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:53:29Z
+frozen inputs match
+lock held 2026-11-01T04:53:44Z
+part C round 3/5 done 2026-11-01T04:53:44Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+part C round 4/5 done 2026-11-01T04:53:44Z
+C-r5-sigflint-A admitted (attempt 3) 2026-11-01T04:54:17Z
+C-r5-aws4fetch admitted (attempt 1) 2026-11-01T04:54:56Z
+C-r5-aws4 not admitted (attempt 1 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T04:55:26Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:55:43Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:55:58Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:56:13Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:56:28Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:56:43Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:56:58Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:57:13Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:57:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:57:44Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:57:59Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:58:14Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:58:29Z
+frozen inputs match
+lock held by another phase; blocked, nothing waited for 2026-11-01T04:58:44Z
+frozen inputs match
+lock held 2026-11-01T04:58:59Z
+part C round 3/5 done 2026-11-01T04:58:59Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+part C round 4/5 done 2026-11-01T04:58:59Z
+C-r5-aws4 admitted (attempt 2) 2026-11-01T04:59:31Z
+C-r5-smithy admitted (attempt 1) 2026-11-01T05:00:03Z
+C-r5-aws-sig admitted (attempt 1) 2026-11-01T05:00:40Z
+C-r5-wdl admitted (attempt 1) 2026-11-01T05:01:28Z
+C-r5-minio admitted (attempt 1) 2026-11-01T05:02:00Z
+C-r5-s3mini admitted (attempt 1) 2026-11-01T05:02:32Z
+C-r5-tiny-oss admitted (attempt 1) 2026-11-01T05:03:09Z
+C-r5-lean-s3 admitted (attempt 1) 2026-11-01T05:03:41Z
+C-r5-s3-lite-client not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T05:04:28Z
+frozen inputs match
+lock held 2026-11-01T05:04:43Z
+part C round 3/5 done 2026-11-01T05:04:43Z
+C-r4-s3-lite-client has used its 4 attempts; not measuring it again, the rest of the part continues
+part C round 4/5 done 2026-11-01T05:04:43Z
+C-r5-s3-lite-client admitted (attempt 2) 2026-11-01T05:05:30Z
+C-r5-sigflint-B admitted (attempt 1) 2026-11-01T05:06:03Z
+part C round 5/5 done 2026-11-01T05:06:03Z
+part C finished 2026-11-01T05:06:03Z
+units left unmeasured after four attempts: C-r4-s3-lite-client

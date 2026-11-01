@@ -42,11 +42,11 @@
   "dependencyNames": []
  },
  "smithy": {
-  "bundledBytes": 301353,
-  "minifiedBytes": 140787,
-  "gzipBytes": 45963,
-  "brotliBytes": 39907,
-  "unpackedBytes": 106103,
+  "bundledBytes": 356911,
+  "minifiedBytes": 166314,
+  "gzipBytes": 53316,
+  "brotliBytes": 45657,
+  "unpackedBytes": 106908,
   "directDependencies": 3,
   "dependencyNames": [
    "@smithy/core",
@@ -94,5 +94,39 @@
    "through2",
    "xml2js"
   ]
+ },
+ "s3mini": {
+  "note": "the whole client class: its signer is not exported",
+  "bundledBytes": 59618,
+  "minifiedBytes": 32929,
+  "gzipBytes": 10281,
+  "brotliBytes": 9220,
+  "unpackedBytes": 276956,
+  "directDependencies": 0,
+  "dependencyNames": []
+ },
+ "tiny-oss": {
+  "note": "signing core from the pinned source, as compiled by compat/build-clients.mjs",
+  "bundledBytes": 12232,
+  "minifiedBytes": 6685,
+  "gzipBytes": 3042,
+  "brotliBytes": 2663
+ },
+ "lean-s3": {
+  "note": "signing core from the pinned source, as compiled by compat/build-clients.mjs",
+  "bundledBytes": 5313,
+  "minifiedBytes": 2366,
+  "gzipBytes": 1173,
+  "brotliBytes": 1061
+ },
+ "s3-lite-client": {
+  "note": "signing function only, as compiled by compat/build-clients.mjs",
+  "bundledBytes": 4758,
+  "minifiedBytes": 2442,
+  "gzipBytes": 1174,
+  "brotliBytes": 1046,
+  "unpackedBytes": 308520,
+  "directDependencies": 0,
+  "dependencyNames": []
  }
 }
