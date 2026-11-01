@@ -15,8 +15,10 @@ started the same night and was stopped after 3 units, when its independent revie
 three libraries forward behind two anchor arms, which contradicts the host rule that a move to another
 runner reruns every arm and left the decision open after the data, and that its two-round "median" was the
 larger of the two values, its reused admission check was timed after the bookkeeping, and several failure
-paths still counted as success. Their admitted rows are kept in `results/release-1.0.4-stopped/` and
-`results/release-1.0.4-stopped-2/` and are not used. This plan keeps the second plan's savings (two rounds,
+paths still counted as success. A third start was stopped after two minutes, when a review noted that the
+host rules ask for a fresh settled interval before every arm. Their admitted rows are kept in `results/release-1.0.4-stopped/` and
+`results/release-1.0.4-stopped-2/` and are not used (`results/release-1.0.4-stopped-3/` holds the third
+start, which admitted no unit). This plan keeps the second plan's savings (two rounds,
 shorter timing windows, extension only for unsettled comparisons) and measures all twelve arms. Its
 admission-check reuse was dropped: the host rules require a fresh interval before each arm.
 
@@ -58,6 +60,11 @@ the freeze record). Workloads and corpora are unchanged.
 | C | memory: allocation, run (GC, CPU, growth, peak RSS), signing-key cache (sigflint arms), 12 arms | runtime counters (heap, GC, `process.cpuUsage`, RSS) | 2 | 104 |
 | D | import and first signature, 5 cold starts per arm and runtime, plus the no-library control | Hyperfine 2.0.0 | 2 | 260 |
 | | allocation calibration, outside the claim sample | runtime counters | 1 | 2 |
+
+Two rounds per arm, not the skill's default of three, is a count declared before the first run on the
+owner's request of 2026-11-01 for shorter benchmarks; the extension to three to five rounds follows the
+skill's rule for gaps inside the variation criterion, and a comparison still unresolved at five is
+reported as inconclusive.
 
 Total: 446 counted processes in 66 units (A 24, B 16, C 24, D 2), plus 52 uncounted Hyperfine warm-up runs. Rounds three to five are added only
 for the arms in a comparison that is still unsettled after round two. Extension runs go into a new
@@ -129,9 +136,9 @@ discarded if either refuses.
 
 ## Expected duration, pilot and stop rule
 
-Unmeasured estimate: 66 units have a lower bound of about 12 minutes of admission windows (one per
-unit, plus the first of each part and the calibration); with the timed work, about an hour and a half
-when the host is quiet. The first plan's run admitted a part A unit about every 100 s including
+Unmeasured estimate: 66 units have a lower bound of about 22 minutes of admission windows (a
+before and an after window of 10 s for each unit); with the timed work, about two hours when the
+host is quiet. The first plan's run admitted a part A unit about every 100 s including
 refusals, which on this shared host puts the elapsed time between one and four hours. The 2026-10-31 comparison of the old and new timers on this
 artifact (parts A and D under the same driver and tooling, not pooled with these results) and a pilot of
 one part B and one part C unit with the calibration are the pilots; their numbers are in
@@ -143,7 +150,7 @@ and a later run may resume the unfinished parts in the same result directory.
 ## Rules fixed in advance
 
 - A wrong-result row is retained and not timed; an unsupported workload is reported as such.
-- Raw rows, admission receipts and observer receipts are kept unedited in `results/release-1.0.4/`; the stopped plans' partial results stay in `results/release-1.0.4-stopped/` and `results/release-1.0.4-stopped-2/` and are not used.
+- Raw rows, admission receipts and observer receipts are kept unedited in `results/release-1.0.4/`; the stopped plans' partial results stay in `results/release-1.0.4-stopped/`, `-stopped-2/` and `-stopped-3/` and are not used.
 - Nothing from `results/` of earlier releases is pooled. No profile, reduced reproduction or upstream
   submission is part of this campaign.
 - Every part starts only if `check-freeze.mjs` (run by `run-admitted.sh` when `FREEZE` names the freeze
