@@ -1,0 +1,61 @@
+frozen inputs match
+lock held 2026-11-01T03:46:14Z
+calibration done 2026-11-01T03:46:34Z
+C-r1-sigflint-A not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:47:07Z
+frozen inputs match
+lock held 2026-11-01T03:47:22Z
+C-r1-sigflint-A admitted (attempt 2) 2026-11-01T03:47:55Z
+C-r1-aws4fetch admitted (attempt 1) 2026-11-01T03:48:34Z
+C-r1-aws4 admitted (attempt 1) 2026-11-01T03:49:06Z
+C-r1-smithy admitted (attempt 1) 2026-11-01T03:49:39Z
+C-r1-aws-sig admitted (attempt 1) 2026-11-01T03:50:16Z
+C-r1-wdl admitted (attempt 1) 2026-11-01T03:51:05Z
+C-r1-minio admitted (attempt 1) 2026-11-01T03:51:37Z
+C-r1-s3mini admitted (attempt 1) 2026-11-01T03:52:09Z
+C-r1-tiny-oss admitted (attempt 1) 2026-11-01T03:52:46Z
+C-r1-lean-s3 admitted (attempt 1) 2026-11-01T03:53:17Z
+C-r1-s3-lite-client admitted (attempt 1) 2026-11-01T03:54:04Z
+C-r1-sigflint-B admitted (attempt 1) 2026-11-01T03:54:38Z
+part C round 1/2 done 2026-11-01T03:54:38Z
+C-r2-sigflint-B admitted (attempt 1) 2026-11-01T03:55:11Z
+C-r2-s3-lite-client admitted (attempt 1) 2026-11-01T03:55:57Z
+C-r2-lean-s3 not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:56:29Z
+frozen inputs match
+lock held 2026-11-01T03:56:44Z
+part C round 1/2 done 2026-11-01T03:56:44Z
+C-r2-lean-s3 admitted (attempt 2) 2026-11-01T03:57:15Z
+C-r2-tiny-oss admitted (attempt 1) 2026-11-01T03:57:52Z
+C-r2-s3mini admitted (attempt 1) 2026-11-01T03:58:24Z
+C-r2-minio admitted (attempt 1) 2026-11-01T03:58:56Z
+C-r2-wdl not admitted (attempt 1 of 4, 1 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:59:37Z
+frozen inputs match
+lock held 2026-11-01T03:59:52Z
+part C round 1/2 done 2026-11-01T03:59:52Z
+C-r2-wdl not admitted (attempt 2 of 4, 1 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T04:00:37Z
+frozen inputs match
+lock held 2026-11-01T04:00:52Z
+part C round 1/2 done 2026-11-01T04:00:52Z
+host not quiet at 2026-11-01T04:01:02Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:01:17Z
+part C round 1/2 done 2026-11-01T04:01:17Z
+host not quiet at 2026-11-01T04:01:27Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:01:43Z
+part C round 1/2 done 2026-11-01T04:01:43Z
+host not quiet at 2026-11-01T04:01:53Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T04:02:08Z
+part C round 1/2 done 2026-11-01T04:02:08Z
+C-r2-wdl not admitted (attempt 3 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T04:02:58Z
+frozen inputs match
+lock held 2026-11-01T04:03:13Z
+part C round 1/2 done 2026-11-01T04:03:13Z
+C-r2-wdl admitted (attempt 4) 2026-11-01T04:04:02Z
+C-r2-aws-sig admitted (attempt 1) 2026-11-01T04:04:39Z
+C-r2-smithy admitted (attempt 1) 2026-11-01T04:05:11Z
+C-r2-aws4 admitted (attempt 1) 2026-11-01T04:05:43Z
+C-r2-aws4fetch admitted (attempt 1) 2026-11-01T04:06:22Z
+C-r2-sigflint-A admitted (attempt 1) 2026-11-01T04:06:55Z
+part C round 2/2 done 2026-11-01T04:06:55Z
+part C finished 2026-11-01T04:06:55Z

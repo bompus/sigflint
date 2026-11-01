@@ -1,0 +1,79 @@
+frozen inputs match
+lock held 2026-11-01T03:11:43Z
+A-r1-sigflint-A not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:12:15Z
+frozen inputs match
+lock held 2026-11-01T03:13:15Z
+A-r1-sigflint-A not admitted (attempt 2 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:13:47Z
+frozen inputs match
+lock held 2026-11-01T03:14:47Z
+A-r1-sigflint-A admitted (attempt 3) 2026-11-01T03:15:19Z
+A-r1-aws4fetch admitted (attempt 1) 2026-11-01T03:15:51Z
+A-r1-aws4 admitted (attempt 1) 2026-11-01T03:16:23Z
+A-r1-smithy admitted (attempt 1) 2026-11-01T03:16:54Z
+A-r1-aws-sig admitted (attempt 1) 2026-11-01T03:17:23Z
+A-r1-wdl admitted (attempt 1) 2026-11-01T03:17:57Z
+A-r1-minio admitted (attempt 1) 2026-11-01T03:18:28Z
+A-r1-s3mini not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 1); giving up the lock, nothing retried 2026-11-01T03:18:55Z
+frozen inputs match
+lock held 2026-11-01T03:19:55Z
+host not quiet at 2026-11-01T03:20:05Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:21:05Z
+host not quiet at 2026-11-01T03:21:16Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:22:16Z
+A-r1-s3mini admitted (attempt 2) 2026-11-01T03:22:43Z
+host not quiet at 2026-11-01T03:22:53Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:23:13Z
+A-r1-tiny-oss admitted (attempt 1) 2026-11-01T03:23:44Z
+A-r1-lean-s3 admitted (attempt 1) 2026-11-01T03:24:14Z
+A-r1-s3-lite-client admitted (attempt 1) 2026-11-01T03:24:48Z
+A-r1-sigflint-B admitted (attempt 1) 2026-11-01T03:25:19Z
+part A round 1/2 done 2026-11-01T03:25:19Z
+A-r2-sigflint-B admitted (attempt 1) 2026-11-01T03:25:51Z
+A-r2-s3-lite-client admitted (attempt 1) 2026-11-01T03:26:24Z
+host not quiet at 2026-11-01T03:26:34Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:26:50Z
+part A round 1/2 done 2026-11-01T03:26:50Z
+A-r2-lean-s3 admitted (attempt 1) 2026-11-01T03:27:20Z
+A-r2-tiny-oss admitted (attempt 1) 2026-11-01T03:27:51Z
+A-r2-s3mini not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:28:19Z
+frozen inputs match
+lock held 2026-11-01T03:28:34Z
+part A round 1/2 done 2026-11-01T03:28:34Z
+host not quiet at 2026-11-01T03:28:44Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:28:59Z
+part A round 1/2 done 2026-11-01T03:28:59Z
+A-r2-s3mini not admitted (attempt 2 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:29:27Z
+frozen inputs match
+lock held 2026-11-01T03:29:42Z
+part A round 1/2 done 2026-11-01T03:29:42Z
+A-r2-s3mini admitted (attempt 3) 2026-11-01T03:30:09Z
+host not quiet at 2026-11-01T03:30:20Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:30:35Z
+part A round 1/2 done 2026-11-01T03:30:35Z
+A-r2-minio not admitted (attempt 1 of 4, 1 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:31:02Z
+frozen inputs match
+lock held 2026-11-01T03:31:17Z
+part A round 1/2 done 2026-11-01T03:31:17Z
+host not quiet at 2026-11-01T03:31:27Z; giving up the lock, nothing waited for
+frozen inputs match
+lock held 2026-11-01T03:31:42Z
+part A round 1/2 done 2026-11-01T03:31:42Z
+A-r2-minio admitted (attempt 2) 2026-11-01T03:32:13Z
+A-r2-wdl admitted (attempt 1) 2026-11-01T03:32:46Z
+A-r2-aws-sig not admitted (attempt 1 of 4, 0 bad rows, observer ready 1, clean 0); giving up the lock, nothing retried 2026-11-01T03:33:16Z
+frozen inputs match
+lock held 2026-11-01T03:33:31Z
+part A round 1/2 done 2026-11-01T03:33:31Z
+A-r2-aws-sig admitted (attempt 2) 2026-11-01T03:34:01Z
+A-r2-smithy admitted (attempt 1) 2026-11-01T03:34:31Z
+A-r2-aws4 admitted (attempt 1) 2026-11-01T03:35:03Z
+A-r2-aws4fetch admitted (attempt 1) 2026-11-01T03:35:35Z
+A-r2-sigflint-A admitted (attempt 1) 2026-11-01T03:36:07Z
+part A round 2/2 done 2026-11-01T03:36:07Z
+part A finished 2026-11-01T03:36:07Z

@@ -2,314 +2,411 @@
  "rejected": 0,
  "rejectedRows": [],
  "cells": {
-  "node 26.12.1|bench-download": {
+  "node 26.13.0|bench-download": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 967,
-     "minNs": 967,
-     "maxNs": 991,
-     "rangePct": 2.4819027921406414,
+     "n": 2,
+     "medianNs": 990,
+     "minNs": 983,
+     "maxNs": 997,
+     "rangePct": 1.4141414141414141,
      "values": [
-      991,
-      967,
-      967
+      997,
+      983
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 24667,
-     "minNs": 24367,
-     "maxNs": 27551,
-     "rangePct": 12.907933676571938,
+     "n": 2,
+     "medianNs": 26028.5,
+     "minNs": 24643,
+     "maxNs": 27414,
+     "rangePct": 10.646022629041243,
      "values": [
-      24667,
-      24367,
-      27551
+      27414,
+      24643
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.03920217294360887,
+      "timesFasterThanBaseline": 0.03803523061259773,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 5107,
-     "minNs": 5077,
-     "maxNs": 5128,
-     "rangePct": 0.9986293322890151,
+     "n": 2,
+     "medianNs": 4879,
+     "minNs": 4870,
+     "maxNs": 4888,
+     "rangePct": 0.36892805902848946,
      "values": [
-      5128,
-      5107,
-      5077
+      4888,
+      4870
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.18934795378891717,
+      "timesFasterThanBaseline": 0.2029104324656692,
       "clear": true
      }
     },
     "smithy": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 8792,
-     "minNs": 8604,
-     "maxNs": 8997,
-     "rangePct": 4.469972702456779,
+     "n": 2,
+     "medianNs": 8726.5,
+     "minNs": 8547,
+     "maxNs": 8906,
+     "rangePct": 4.113905918753223,
      "values": [
-      8604,
-      8792,
-      8997
+      8547,
+      8906
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.10998635122838944,
+      "timesFasterThanBaseline": 0.1134475448346989,
       "clear": true
      }
     },
     "aws-sig": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 47177,
-     "minNs": 47109,
-     "maxNs": 51129,
-     "rangePct": 8.521101384149055,
+     "n": 2,
+     "medianNs": 49271.5,
+     "minNs": 49038,
+     "maxNs": 49505,
+     "rangePct": 0.9478095856631116,
      "values": [
-      47177,
-      51129,
-      47109
+      49038,
+      49505
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.020497276215104818,
+      "timesFasterThanBaseline": 0.020092751387719068,
       "clear": true
      }
     },
     "wdl": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 72432,
-     "minNs": 61376,
-     "maxNs": 91088,
-     "rangePct": 41.020543406229294,
+     "n": 2,
+     "medianNs": 72982.5,
+     "minNs": 71261,
+     "maxNs": 74704,
+     "rangePct": 4.717569280306923,
      "values": [
-      91088,
-      72432,
-      61376
+      74704,
+      71261
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.013350452838524408,
+      "timesFasterThanBaseline": 0.013564895694173261,
       "clear": true
      }
     },
     "minio": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 10291,
-     "minNs": 10288,
-     "maxNs": 10373,
-     "rangePct": 0.8259644349431542,
+     "n": 2,
+     "medianNs": 10635.5,
+     "minNs": 10563,
+     "maxNs": 10708,
+     "rangePct": 1.3633585633021486,
      "values": [
-      10291,
-      10373,
-      10288
+      10563,
+      10708
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.09396560101059177,
+      "timesFasterThanBaseline": 0.09308448121856049,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 51773,
+     "minNs": 51521,
+     "maxNs": 52025,
+     "rangePct": 0.9734803855291368,
+     "values": [
+      52025,
+      51521
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.01912193614432233,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 3442.5,
+     "minNs": 3428,
+     "maxNs": 3457,
+     "rangePct": 0.8424110384894699,
+     "values": [
+      3428,
+      3457
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.2875816993464052,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 65813,
+     "minNs": 64238,
+     "maxNs": 67388,
+     "rangePct": 4.786288423259842,
+     "values": [
+      64238,
+      67388
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.015042620758816648,
       "clear": true
      }
     },
     "sigflint-B": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 970,
-     "minNs": 968,
-     "maxNs": 986,
-     "rangePct": 1.8556701030927836,
+     "n": 2,
+     "medianNs": 963,
+     "minNs": 958,
+     "maxNs": 968,
+     "rangePct": 1.0384215991692627,
      "values": [
-      970,
-      968,
-      986
+      958,
+      968
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.9969072164948454,
+      "timesFasterThanBaseline": 1.02803738317757,
       "clear": false
      }
     }
    },
-   "bandPct": 4.963805584281283,
-   "aaGapPct": 0.31023784901758017
+   "aaGapPct": 2.803738317757009,
+   "bandPct": 5.607476635514018
   },
-  "node 26.12.1|bench-part-put": {
+  "node 26.13.0|bench-part-put": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1255,
-     "minNs": 1254,
-     "maxNs": 1259,
-     "rangePct": 0.398406374501992,
+     "n": 2,
+     "medianNs": 1269,
+     "minNs": 1267,
+     "maxNs": 1271,
+     "rangePct": 0.31520882584712373,
      "values": [
-      1254,
-      1259,
-      1255
-     ]
-    },
-    "aws4fetch": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 27118,
-     "minNs": 24475,
-     "maxNs": 29912,
-     "rangePct": 20.049413673574747,
-     "values": [
-      27118,
-      24475,
-      29912
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.04627922413157313,
-      "clear": true
-     }
-    },
-    "aws4": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 6060,
-     "minNs": 6006,
-     "maxNs": 6096,
-     "rangePct": 1.4851485148514851,
-     "values": [
-      6096,
-      6006,
-      6060
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.2070957095709571,
-      "clear": true
-     }
-    },
-    "smithy": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 9097,
-     "minNs": 9027,
-     "maxNs": 9168,
-     "rangePct": 1.5499615257777288,
-     "values": [
-      9168,
-      9097,
-      9027
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.13795756842915247,
-      "clear": true
-     }
-    },
-    "aws-sig": {
-     "status": "wrong-result"
-    },
-    "wdl": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 65973,
-     "minNs": 60506,
-     "maxNs": 67580,
-     "rangePct": 10.72256832340503,
-     "values": [
-      67580,
-      65973,
-      60506
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.01902293362436148,
-      "clear": true
-     }
-    },
-    "minio": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 10052,
-     "minNs": 10024,
-     "maxNs": 10424,
-     "rangePct": 3.979307600477517,
-     "values": [
-      10052,
-      10424,
-      10024
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.12485077596498209,
-      "clear": true
-     }
-    },
-    "sigflint-B": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 1271,
-     "minNs": 1252,
-     "maxNs": 1286,
-     "rangePct": 2.675059008654603,
-     "values": [
-      1252,
-      1286,
+      1267,
       1271
-     ],
-     "vsSigflint": {
-      "timesFasterThanBaseline": 0.987411487018096,
-      "clear": false
-     }
-    }
-   },
-   "bandPct": 5.350118017309206,
-   "aaGapPct": 1.2749003984063745
-  },
-  "node 26.12.1|bench-encode": {
-   "arms": {
-    "sigflint-A": {
-     "status": "ok",
-     "n": 3,
-     "medianNs": 1686,
-     "minNs": 1676,
-     "maxNs": 1705,
-     "rangePct": 1.7200474495848161,
-     "values": [
-      1705,
-      1676,
-      1686
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 26943,
-     "minNs": 26315,
-     "maxNs": 27636,
-     "rangePct": 4.902943250566009,
+     "n": 2,
+     "medianNs": 27486.5,
+     "minNs": 25736,
+     "maxNs": 29237,
+     "rangePct": 12.737161879468102,
      "values": [
-      26315,
-      26943,
-      27636
+      29237,
+      25736
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.06257655049549048,
+      "timesFasterThanBaseline": 0.04616811889473014,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 7277,
-     "minNs": 7239,
-     "maxNs": 7318,
-     "rangePct": 1.0856122028308368,
+     "n": 2,
+     "medianNs": 5802,
+     "minNs": 5775,
+     "maxNs": 5829,
+     "rangePct": 0.9307135470527405,
      "values": [
-      7318,
-      7239,
-      7277
+      5829,
+      5775
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.23168888278136596,
+      "timesFasterThanBaseline": 0.21871768355739402,
+      "clear": true
+     }
+    },
+    "smithy": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 8882,
+     "minNs": 8837,
+     "maxNs": 8927,
+     "rangePct": 1.013285296104481,
+     "values": [
+      8837,
+      8927
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.14287322675073183,
+      "clear": true
+     }
+    },
+    "aws-sig": {
+     "status": "wrong-result"
+    },
+    "wdl": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 64143,
+     "minNs": 62673,
+     "maxNs": 65613,
+     "rangePct": 4.583508722697722,
+     "values": [
+      65613,
+      62673
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.01978392030307282,
+      "clear": true
+     }
+    },
+    "minio": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 10004.5,
+     "minNs": 9844,
+     "maxNs": 10165,
+     "rangePct": 3.2085561497326203,
+     "values": [
+      9844,
+      10165
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.12684292068569145,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 26925.5,
+     "minNs": 23215,
+     "maxNs": 30636,
+     "rangePct": 27.561233774674566,
+     "values": [
+      30636,
+      23215
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.047130044010324786,
+      "clear": true
+     }
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 46715,
+     "minNs": 46298,
+     "maxNs": 47132,
+     "rangePct": 1.7852938028470513,
+     "values": [
+      46298,
+      47132
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.027164722251953335,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 3320,
+     "minNs": 3262,
+     "maxNs": 3378,
+     "rangePct": 3.4939759036144578,
+     "values": [
+      3262,
+      3378
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.3822289156626506,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 67060.5,
+     "minNs": 65491,
+     "maxNs": 68630,
+     "rangePct": 4.680847891083425,
+     "values": [
+      68630,
+      65491
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.01892321113024806,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 1271,
+     "minNs": 1265,
+     "maxNs": 1277,
+     "rangePct": 0.9441384736428009,
+     "values": [
+      1265,
+      1277
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.998426435877262,
+      "clear": false
+     }
+    }
+   },
+   "aaGapPct": 0.15760441292356187,
+   "bandPct": 3
+  },
+  "node 26.13.0|bench-encode": {
+   "arms": {
+    "sigflint-A": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 1710,
+     "minNs": 1706,
+     "maxNs": 1714,
+     "rangePct": 0.4678362573099415,
+     "values": [
+      1706,
+      1714
+     ]
+    },
+    "aws4fetch": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 26687,
+     "minNs": 26263,
+     "maxNs": 27111,
+     "rangePct": 3.1775770974631845,
+     "values": [
+      26263,
+      27111
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.0640761419417694,
+      "clear": true
+     }
+    },
+    "aws4": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 7076.5,
+     "minNs": 7039,
+     "maxNs": 7114,
+     "rangePct": 1.0598459690524977,
+     "values": [
+      7114,
+      7039
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.24164488094396946,
       "clear": true
      }
     },
@@ -321,356 +418,489 @@
     },
     "wdl": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 72843,
-     "minNs": 71127,
-     "maxNs": 76232,
-     "rangePct": 7.008223164888871,
+     "n": 2,
+     "medianNs": 81838.5,
+     "minNs": 71442,
+     "maxNs": 92235,
+     "rangePct": 25.407357172968712,
      "values": [
-      76232,
-      72843,
-      71127
+      92235,
+      71442
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.023145669453482145,
+      "timesFasterThanBaseline": 0.02089481112190473,
       "clear": true
      }
     },
     "minio": {
      "status": "wrong-result"
     },
-    "sigflint-B": {
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "wrong-result"
+    },
+    "lean-s3": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1717,
-     "minNs": 1683,
-     "maxNs": 1736,
-     "rangePct": 3.0867792661619102,
+     "n": 2,
+     "medianNs": 4441,
+     "minNs": 4415,
+     "maxNs": 4467,
+     "rangePct": 1.170907453276289,
      "values": [
-      1683,
-      1736,
-      1717
+      4415,
+      4467
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.9819452533488643,
+      "timesFasterThanBaseline": 0.3850484125197028,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 73561,
+     "minNs": 64391,
+     "maxNs": 82731,
+     "rangePct": 24.93168934625685,
+     "values": [
+      64391,
+      82731
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.02324601351259499,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 1706.5,
+     "minNs": 1687,
+     "maxNs": 1726,
+     "rangePct": 2.285379431585116,
+     "values": [
+      1687,
+      1726
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 1.0020509815411662,
       "clear": false
      }
     }
    },
-   "bandPct": 6.1735585323238205,
-   "aaGapPct": 1.8386714116251484
+   "aaGapPct": 0.20509815411661295,
+   "bandPct": 4.570758863170232
   },
-  "node 26.12.1|bench-body-1k": {
+  "node 26.13.0|bench-body-1k": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1661,
-     "minNs": 1659,
-     "maxNs": 1661,
-     "rangePct": 0.12040939193257075,
+     "n": 2,
+     "medianNs": 1677.5,
+     "minNs": 1669,
+     "maxNs": 1686,
+     "rangePct": 1.0134128166915053,
      "values": [
-      1661,
-      1661,
-      1659
+      1686,
+      1669
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 26943,
-     "minNs": 24086,
-     "maxNs": 27429,
-     "rangePct": 12.407675463014511,
+     "n": 2,
+     "medianNs": 27281,
+     "minNs": 25268,
+     "maxNs": 29294,
+     "rangePct": 14.757523551189472,
      "values": [
-      24086,
-      27429,
-      26943
+      29294,
+      25268
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.06164866570166648,
+      "timesFasterThanBaseline": 0.06148968146328947,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 5375,
-     "minNs": 5358,
-     "maxNs": 5385,
-     "rangePct": 0.5023255813953489,
+     "n": 2,
+     "medianNs": 5192.5,
+     "minNs": 5156,
+     "maxNs": 5229,
+     "rangePct": 1.4058738565238325,
      "values": [
-      5385,
-      5375,
-      5358
+      5229,
+      5156
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.3090232558139535,
+      "timesFasterThanBaseline": 0.3230621088107848,
       "clear": true
      }
     },
     "smithy": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 9802,
-     "minNs": 9730,
-     "maxNs": 10026,
-     "rangePct": 3.019791879208325,
+     "n": 2,
+     "medianNs": 9220.5,
+     "minNs": 9062,
+     "maxNs": 9379,
+     "rangePct": 3.437991432134917,
      "values": [
-      9802,
-      9730,
-      10026
+      9062,
+      9379
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.16945521322179147,
+      "timesFasterThanBaseline": 0.1819315655333225,
       "clear": true
      }
     },
     "aws-sig": {
-     "status": "wrong-result"
+     "status": "ok",
+     "n": 2,
+     "medianNs": 58055,
+     "minNs": 57673,
+     "maxNs": 58437,
+     "rangePct": 1.315993454482818,
+     "values": [
+      57673,
+      58437
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.028895013349410043,
+      "clear": true
+     }
     },
     "wdl": {
-     "status": "wrong-result"
+     "status": "ok",
+     "n": 2,
+     "medianNs": 73951.5,
+     "minNs": 70354,
+     "maxNs": 77549,
+     "rangePct": 9.729349641318972,
+     "values": [
+      77549,
+      70354
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.02268378599487502,
+      "clear": true
+     }
     },
     "minio": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 11306,
-     "minNs": 11226,
-     "maxNs": 11389,
-     "rangePct": 1.4417123651158676,
+     "n": 2,
+     "medianNs": 11060,
+     "minNs": 10967,
+     "maxNs": 11153,
+     "rangePct": 1.681735985533454,
      "values": [
-      11306,
-      11389,
-      11226
+      11153,
+      10967
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.14691314346364762,
+      "timesFasterThanBaseline": 0.15167269439421338,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 49778,
+     "minNs": 49651,
+     "maxNs": 49905,
+     "rangePct": 0.5102655791715216,
+     "values": [
+      49905,
+      49651
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.03369962634095384,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "wrong-result"
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 63249,
+     "minNs": 59617,
+     "maxNs": 66881,
+     "rangePct": 11.484766557574034,
+     "values": [
+      66881,
+      59617
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.026522158453098073,
       "clear": true
      }
     },
     "sigflint-B": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1660,
-     "minNs": 1658,
-     "maxNs": 1708,
-     "rangePct": 3.0120481927710845,
+     "n": 2,
+     "medianNs": 1673.5,
+     "minNs": 1670,
+     "maxNs": 1677,
+     "rangePct": 0.41828503137137735,
      "values": [
-      1658,
-      1708,
-      1660
+      1677,
+      1670
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 1.0006024096385542,
+      "timesFasterThanBaseline": 1.002390200179265,
       "clear": false
      }
     }
    },
-   "bandPct": 6.024096385542169,
-   "aaGapPct": 0.060240963855421686
+   "aaGapPct": 0.23902001792650135,
+   "bandPct": 3
   },
   "bun 1.4.4|bench-download": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 656,
-     "minNs": 651,
-     "maxNs": 659,
-     "rangePct": 1.2195121951219512,
+     "n": 2,
+     "medianNs": 649,
+     "minNs": 644,
+     "maxNs": 654,
+     "rangePct": 1.5408320493066257,
      "values": [
-      659,
-      651,
-      656
+      654,
+      644
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 19132,
-     "minNs": 17471,
-     "maxNs": 19162,
-     "rangePct": 8.838595024043487,
+     "n": 2,
+     "medianNs": 17179,
+     "minNs": 16408,
+     "maxNs": 17950,
+     "rangePct": 8.97607544094534,
      "values": [
-      17471,
-      19132,
-      19162
+      17950,
+      16408
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.034288103700606316,
+      "timesFasterThanBaseline": 0.037778683276092906,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 3392,
-     "minNs": 3363,
-     "maxNs": 3513,
-     "rangePct": 4.422169811320755,
+     "n": 2,
+     "medianNs": 3428,
+     "minNs": 3369,
+     "maxNs": 3487,
+     "rangePct": 3.442240373395566,
      "values": [
-      3513,
-      3392,
-      3363
+      3487,
+      3369
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.19339622641509435,
+      "timesFasterThanBaseline": 0.18932322053675613,
       "clear": true
      }
     },
     "smithy": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 5053,
-     "minNs": 5049,
-     "maxNs": 5075,
-     "rangePct": 0.5145458143677023,
+     "n": 2,
+     "medianNs": 5166,
+     "minNs": 5124,
+     "maxNs": 5208,
+     "rangePct": 1.6260162601626016,
      "values": [
-      5049,
-      5075,
-      5053
+      5208,
+      5124
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.1298238670096972,
+      "timesFasterThanBaseline": 0.1256291134339915,
       "clear": true
      }
     },
     "aws-sig": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 30207,
-     "minNs": 30068,
-     "maxNs": 30351,
-     "rangePct": 0.9368689376634555,
+     "n": 2,
+     "medianNs": 30220,
+     "minNs": 30058,
+     "maxNs": 30382,
+     "rangePct": 1.072137657180675,
      "values": [
-      30207,
-      30351,
-      30068
+      30382,
+      30058
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.021716820604495646,
+      "timesFasterThanBaseline": 0.021475843812045002,
       "clear": true
      }
     },
     "wdl": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 45778,
-     "minNs": 44295,
-     "maxNs": 56025,
-     "rangePct": 25.62366202105815,
+     "n": 2,
+     "medianNs": 56409.5,
+     "minNs": 51409,
+     "maxNs": 61410,
+     "rangePct": 17.729283188115478,
      "values": [
-      44295,
-      56025,
-      45778
+      51409,
+      61410
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.014330027524138233,
+      "timesFasterThanBaseline": 0.01150515427365958,
       "clear": true
      }
     },
     "minio": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 3506,
-     "minNs": 3486,
-     "maxNs": 3672,
-     "rangePct": 5.3051911009697665,
+     "n": 2,
+     "medianNs": 3622,
+     "minNs": 3621,
+     "maxNs": 3623,
+     "rangePct": 0.05521811154058531,
      "values": [
-      3672,
-      3486,
-      3506
+      3623,
+      3621
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.18710781517398745,
+      "timesFasterThanBaseline": 0.17918277194919935,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 22930,
+     "minNs": 22673,
+     "maxNs": 23187,
+     "rangePct": 2.2416048844308767,
+     "values": [
+      22673,
+      23187
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.02830353249018753,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 1916.5,
+     "minNs": 1916,
+     "maxNs": 1917,
+     "rangePct": 0.05217845030002609,
+     "values": [
+      1916,
+      1917
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.33863814244716933,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 50281,
+     "minNs": 50083,
+     "maxNs": 50479,
+     "rangePct": 0.7875738350470357,
+     "values": [
+      50083,
+      50479
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.012907460074381974,
       "clear": true
      }
     },
     "sigflint-B": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 652,
-     "minNs": 651,
-     "maxNs": 657,
-     "rangePct": 0.9202453987730062,
+     "n": 2,
+     "medianNs": 650,
+     "minNs": 642,
+     "maxNs": 658,
+     "rangePct": 2.4615384615384617,
      "values": [
-      651,
-      657,
-      652
+      658,
+      642
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 1.0061349693251533,
+      "timesFasterThanBaseline": 0.9984615384615385,
       "clear": false
      }
     }
    },
-   "bandPct": 3,
-   "aaGapPct": 0.6134969325153374
+   "aaGapPct": 0.15408320493066255,
+   "bandPct": 4.923076923076923
   },
   "bun 1.4.4|bench-part-put": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 965,
-     "minNs": 962,
-     "maxNs": 968,
-     "rangePct": 0.6217616580310881,
+     "n": 2,
+     "medianNs": 920.5,
+     "minNs": 908,
+     "maxNs": 933,
+     "rangePct": 2.7159152634437804,
      "values": [
-      962,
-      968,
-      965
+      933,
+      908
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 19273,
-     "minNs": 18948,
-     "maxNs": 19877,
-     "rangePct": 4.820214808281015,
+     "n": 2,
+     "medianNs": 18742.5,
+     "minNs": 17236,
+     "maxNs": 20249,
+     "rangePct": 16.07576363878885,
      "values": [
-      19877,
-      18948,
-      19273
+      20249,
+      17236
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.050070046178591815,
+      "timesFasterThanBaseline": 0.04911297852474323,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 4279,
-     "minNs": 4267,
-     "maxNs": 4633,
-     "rangePct": 8.553400327179247,
+     "n": 2,
+     "medianNs": 4307.5,
+     "minNs": 4299,
+     "maxNs": 4316,
+     "rangePct": 0.3946604759141033,
      "values": [
-      4633,
-      4267,
-      4279
+      4316,
+      4299
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.225519981304043,
+      "timesFasterThanBaseline": 0.21369704004643064,
       "clear": true
      }
     },
     "smithy": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 6006,
-     "minNs": 5977,
-     "maxNs": 6088,
-     "rangePct": 1.8481518481518482,
+     "n": 2,
+     "medianNs": 6087,
+     "minNs": 6065,
+     "maxNs": 6109,
+     "rangePct": 0.722851979628717,
      "values": [
-      5977,
-      6088,
-      6006
+      6109,
+      6065
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.16067266067266067,
+      "timesFasterThanBaseline": 0.15122391982914407,
       "clear": true
      }
     },
@@ -679,105 +909,163 @@
     },
     "wdl": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 49801,
-     "minNs": 45148,
-     "maxNs": 54085,
-     "rangePct": 17.945422782675045,
+     "n": 2,
+     "medianNs": 58553.5,
+     "minNs": 57178,
+     "maxNs": 59929,
+     "rangePct": 4.6982673964835575,
      "values": [
-      49801,
-      54085,
-      45148
+      59929,
+      57178
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.01937712094134656,
+      "timesFasterThanBaseline": 0.015720665715969157,
       "clear": true
      }
     },
     "minio": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 3799,
-     "minNs": 3771,
-     "maxNs": 3904,
-     "rangePct": 3.500921295077652,
+     "n": 2,
+     "medianNs": 3739,
+     "minNs": 3729,
+     "maxNs": 3749,
+     "rangePct": 0.5349023803155925,
      "values": [
-      3904,
-      3799,
-      3771
+      3749,
+      3729
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.25401421426691234,
+      "timesFasterThanBaseline": 0.2461888205402514,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 19136,
+     "minNs": 19120,
+     "maxNs": 19152,
+     "rangePct": 0.16722408026755853,
+     "values": [
+      19152,
+      19120
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.04810305183946488,
+      "clear": true
+     }
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 22080.5,
+     "minNs": 21814,
+     "maxNs": 22347,
+     "rangePct": 2.41389461289373,
+     "values": [
+      22347,
+      21814
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.04168836756414031,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 2044.5,
+     "minNs": 2043,
+     "maxNs": 2046,
+     "rangePct": 0.1467351430667645,
+     "values": [
+      2046,
+      2043
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.45023233064318907,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 54338,
+     "minNs": 53125,
+     "maxNs": 55551,
+     "rangePct": 4.464647208215245,
+     "values": [
+      55551,
+      53125
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.016940262799514154,
       "clear": true
      }
     },
     "sigflint-B": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 951,
-     "minNs": 949,
-     "maxNs": 964,
-     "rangePct": 1.5772870662460567,
+     "n": 2,
+     "medianNs": 921,
+     "minNs": 908,
+     "maxNs": 934,
+     "rangePct": 2.823018458197611,
      "values": [
-      964,
-      949,
-      951
+      934,
+      908
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 1.0147213459516298,
+      "timesFasterThanBaseline": 0.999457111834962,
       "clear": false
      }
     }
    },
-   "bandPct": 3.1545741324921135,
-   "aaGapPct": 1.4721345951629863
+   "aaGapPct": 0.054318305268875614,
+   "bandPct": 5.646036916395222
   },
   "bun 1.4.4|bench-encode": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1512,
-     "minNs": 1504,
-     "maxNs": 1520,
-     "rangePct": 1.0582010582010581,
+     "n": 2,
+     "medianNs": 1511,
+     "minNs": 1508,
+     "maxNs": 1514,
+     "rangePct": 0.3970880211780278,
      "values": [
-      1512,
-      1520,
-      1504
+      1508,
+      1514
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 20860,
-     "minNs": 18310,
-     "maxNs": 22554,
-     "rangePct": 20.345158197507192,
+     "n": 2,
+     "medianNs": 19522,
+     "minNs": 18409,
+     "maxNs": 20635,
+     "rangePct": 11.402520233582624,
      "values": [
-      18310,
-      22554,
-      20860
+      20635,
+      18409
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.07248322147651007,
+      "timesFasterThanBaseline": 0.07739985657207253,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 5509,
-     "minNs": 5474,
-     "maxNs": 6025,
-     "rangePct": 10.001815211472136,
+     "n": 2,
+     "medianNs": 5425,
+     "minNs": 5413,
+     "maxNs": 5437,
+     "rangePct": 0.4423963133640553,
      "values": [
-      6025,
-      5474,
-      5509
+      5437,
+      5413
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.2744599745870394,
+      "timesFasterThanBaseline": 0.27852534562211984,
       "clear": true
      }
     },
@@ -789,154 +1077,248 @@
     },
     "wdl": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 55574,
-     "minNs": 45679,
-     "maxNs": 55581,
-     "rangePct": 17.81768452873646,
+     "n": 2,
+     "medianNs": 60831,
+     "minNs": 60462,
+     "maxNs": 61200,
+     "rangePct": 1.2131972185234503,
      "values": [
-      55581,
-      55574,
-      45679
+      61200,
+      60462
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.027206967286860763,
+      "timesFasterThanBaseline": 0.024839308904999097,
       "clear": true
      }
     },
     "minio": {
      "status": "wrong-result"
     },
-    "sigflint-B": {
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "wrong-result"
+    },
+    "lean-s3": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1528,
-     "minNs": 1526,
-     "maxNs": 1574,
-     "rangePct": 3.141361256544503,
+     "n": 2,
+     "medianNs": 2982,
+     "minNs": 2978,
+     "maxNs": 2986,
+     "rangePct": 0.2682763246143528,
      "values": [
-      1528,
-      1526,
-      1574
+      2978,
+      2986
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.9895287958115183,
+      "timesFasterThanBaseline": 0.5067069081153588,
+      "clear": true
+     }
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 55739.5,
+     "minNs": 54040,
+     "maxNs": 57439,
+     "rangePct": 6.0980094905767,
+     "values": [
+      57439,
+      54040
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.027108244602122373,
+      "clear": true
+     }
+    },
+    "sigflint-B": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 1571,
+     "minNs": 1559,
+     "maxNs": 1583,
+     "rangePct": 1.5276893698281349,
+     "values": [
+      1583,
+      1559
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.9618077657542966,
       "clear": false
      }
     }
    },
-   "bandPct": 6.282722513089006,
-   "aaGapPct": 1.0582010582010581
+   "aaGapPct": 3.970880211780278,
+   "bandPct": 7.941760423560556
   },
   "bun 1.4.4|bench-body-1k": {
    "arms": {
     "sigflint-A": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1247,
-     "minNs": 1247,
-     "maxNs": 1253,
-     "rangePct": 0.48115477145148355,
+     "n": 2,
+     "medianNs": 1325.5,
+     "minNs": 1299,
+     "maxNs": 1352,
+     "rangePct": 3.998491135420596,
      "values": [
-      1247,
-      1247,
-      1253
+      1352,
+      1299
      ]
     },
     "aws4fetch": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 20039,
-     "minNs": 17613,
-     "maxNs": 21975,
-     "rangePct": 21.767553271121315,
+     "n": 2,
+     "medianNs": 19381.5,
+     "minNs": 17431,
+     "maxNs": 21332,
+     "rangePct": 20.127441116528647,
      "values": [
-      17613,
-      21975,
-      20039
+      21332,
+      17431
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.06222865412445731,
+      "timesFasterThanBaseline": 0.06838995949745892,
       "clear": true
      }
     },
     "aws4": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 3708,
-     "minNs": 3693,
-     "maxNs": 3993,
-     "rangePct": 8.090614886731391,
+     "n": 2,
+     "medianNs": 3678.5,
+     "minNs": 3635,
+     "maxNs": 3722,
+     "rangePct": 2.3650944678537447,
      "values": [
-      3993,
-      3693,
-      3708
+      3722,
+      3635
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.33629989212513484,
+      "timesFasterThanBaseline": 0.36033709392415386,
       "clear": true
      }
     },
     "smithy": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 6111,
-     "minNs": 6097,
-     "maxNs": 6334,
-     "rangePct": 3.8782523318605793,
+     "n": 2,
+     "medianNs": 6243,
+     "minNs": 6130,
+     "maxNs": 6356,
+     "rangePct": 3.620054460996316,
      "values": [
-      6097,
-      6111,
-      6334
+      6356,
+      6130
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.20405825560464735,
+      "timesFasterThanBaseline": 0.2123177959314432,
       "clear": true
      }
     },
     "aws-sig": {
-     "status": "wrong-result"
+     "status": "ok",
+     "n": 2,
+     "medianNs": 42066,
+     "minNs": 41685,
+     "maxNs": 42447,
+     "rangePct": 1.8114391670232493,
+     "values": [
+      41685,
+      42447
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.03151000808253696,
+      "clear": true
+     }
     },
     "wdl": {
-     "status": "wrong-result"
+     "status": "ok",
+     "n": 2,
+     "medianNs": 65383.5,
+     "minNs": 62894,
+     "maxNs": 67873,
+     "rangePct": 7.6150710806243165,
+     "values": [
+      62894,
+      67873
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.020272698769567245,
+      "clear": true
+     }
     },
     "minio": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 4143,
-     "minNs": 4137,
-     "maxNs": 4164,
-     "rangePct": 0.6517016654598118,
+     "n": 2,
+     "medianNs": 4350.5,
+     "minNs": 4271,
+     "maxNs": 4430,
+     "rangePct": 3.654752327318699,
      "values": [
-      4137,
-      4164,
-      4143
+      4430,
+      4271
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.30098962104755006,
+      "timesFasterThanBaseline": 0.30467762326169406,
+      "clear": true
+     }
+    },
+    "s3mini": {
+     "status": "unsupported"
+    },
+    "tiny-oss": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 22939.5,
+     "minNs": 22483,
+     "maxNs": 23396,
+     "rangePct": 3.9800344384140893,
+     "values": [
+      23396,
+      22483
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.05778242769022864,
+      "clear": true
+     }
+    },
+    "lean-s3": {
+     "status": "wrong-result"
+    },
+    "s3-lite-client": {
+     "status": "ok",
+     "n": 2,
+     "medianNs": 54297.5,
+     "minNs": 53357,
+     "maxNs": 55238,
+     "rangePct": 3.4642478935494267,
+     "values": [
+      55238,
+      53357
+     ],
+     "vsSigflint": {
+      "timesFasterThanBaseline": 0.024411805331737188,
       "clear": true
      }
     },
     "sigflint-B": {
      "status": "ok",
-     "n": 3,
-     "medianNs": 1274,
-     "minNs": 1250,
-     "maxNs": 1334,
-     "rangePct": 6.593406593406593,
+     "n": 2,
+     "medianNs": 1255,
+     "minNs": 1246,
+     "maxNs": 1264,
+     "rangePct": 1.4342629482071714,
      "values": [
-      1334,
-      1274,
-      1250
+      1264,
+      1246
      ],
      "vsSigflint": {
-      "timesFasterThanBaseline": 0.978806907378336,
+      "timesFasterThanBaseline": 1.0561752988047808,
       "clear": false
      }
     }
    },
-   "bandPct": 13.186813186813186,
-   "aaGapPct": 2.165196471531676
+   "aaGapPct": 5.617529880478088,
+   "bandPct": 11.235059760956176
   }
  }
 }
