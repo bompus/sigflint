@@ -28,5 +28,14 @@
   },
   "srcTree": "90a032d5d5296cca4471ac13dcacd154e5459ded",
   "harnessCommit": "c662f0e615f4afa6388696073c043490e826e6da",
-  "harnessNote": "bench/ outside bench/results must equal this commit at the end of the run: git diff <harnessCommit> -- bench \":!bench/results\" is empty"
+  "harnessNote": "bench/ outside bench/results must equal this commit at the end of the run: git diff <harnessCommit> -- bench \":!bench/results\" is empty",
+  "compiledClientBundles": {
+    "lean-s3.mjs": "137f148f1287f7d9fd6b8ee378d991d7bfcbab683e9166d08c31320721f72460",
+    "lean-source.mjs": "3bafd50f2507e29b85fc0da757fcf912d70fe38a0035d577a60b14c1058a4123",
+    "s3-lite-client.mjs": "27fa2f666dca91c877a954052a5815dce7e74992af1b26409badae4edb634aa8",
+    "s3mini-utils.mjs": "87d7afa33985613b6e1776a7d236b6c7acb0f88ca9afb7bab821a6b1dc5f29b7",
+    "tiny-oss.mjs": "37593c5001ffe2bf09ef3dd249085fd4b7bf67cb302970de2347e99cfc38d897"
+  },
+  "observerCommit": "e2a593e",
+  "compiledClientBundlesNote": "Bun.build output for these bundles differs between builds of the same sources, so the hashes name the files this run used; they are checked again at the end of the run."
 }
