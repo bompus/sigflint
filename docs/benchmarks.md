@@ -271,7 +271,7 @@ Other-service and presigned-URL signing use the same fresh-process method and A/
 <!-- BEGIN speed-more-notes -->
 “Wrong signature” means the result differed from botocore's for that request, so it was not timed; for `aws4` that is the headers it adds and signs itself (see above), and `minio` signs S3 only. Reporting bands: Node 3.0% to 5.7%, Bun 4.2% to 13.4%. All measured library comparisons are outside their bands and have non-overlapping ranges.
 
-Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads and event streams, which were not timed here). Microseconds per call, Node / Bun: SigV4a headers 16.84 / 15.06, SigV4a presigned URL 18.48 / 17.16, one 64 KiB chunk 36.93 / 17.83, the last chunk with a trailer 2.13 / 0.83, a 4 KiB event 8.83 / 8.14. SigV4a is dominated by the ECDSA signature.
+  Only sigflint offers SigV4a (`@smithy/signature-v4` also offers chunked uploads and event streams, which were not timed here). Microseconds per call, Node / Bun: SigV4a headers 16.84 / 15.06, SigV4a presigned URL 18.48 / 17.16, one 64 KiB chunk 36.93 / 17.83, the last chunk with a trailer 2.13 / 0.83, a 4 KiB event 8.83 / 8.14. SigV4a is dominated by the ECDSA signature.
 <!-- END speed-more-notes -->
 
 ## Memory
