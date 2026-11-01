@@ -175,7 +175,10 @@ record names. Then, from the repository root,
 The client bundles `bench/compat/compiled` are ignored by git and their bytes differ between builds, so a repeat run
 fails the recorded freeze at the compiled-bundle hashes; write a new freeze file for the repeat
 (`bun bench/check-freeze.mjs <new freeze file> --write`, then pass it as `FREEZE`). Such a run repeats the
-measurement; it does not reproduce the frozen bundles.
+measurement; it does not reproduce the frozen bundles. The root `package-lock.json` carries the package
+version, so its recorded hash (`d6ef82ec`, the 1.0.3 lockfile) no longer matches a later checkout; in the new
+freeze file set `inputs["package-lock.json"]` to the output of `sha256sum package-lock.json` as well. The
+recorded freeze is left as it was, and verifies against `git show v1.0.3:package-lock.json`.
 `RESULTS` must name a fresh directory: the default, `bench/results`, holds earlier releases' admission
 receipts. `analyze-more.mjs` reads `RESULTS`; the other analyzers read fixed paths under
 `bench/results`, so they run on copies of the files placed there after the run. The admission command
