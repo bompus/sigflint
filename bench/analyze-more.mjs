@@ -52,7 +52,12 @@ function summarize(rows, controls) {
   /** @type {Record<string, SCell>} */
   const cells = {};
   for (const [key, arms] of Object.entries(groups)) {
-    const [a, b] = /** @type {[number[], number[]]} */ (controls.map((arm) => arms[arm]));
+    const [a, b] = /** @type {[number[] | undefined, number[] | undefined]} */ (
+      controls.map((arm) => arms[arm])
+    );
+    if (!a || !b) {
+      throw new Error(`${key}: a control arm is missing (need ${controls.join(' and ')})`);
+    }
     const pooled = median([...a, ...b]);
     const spread = Math.max(
       Math.max(...a) - Math.min(...a),
