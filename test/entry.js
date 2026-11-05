@@ -1,5 +1,5 @@
 // The entry under test: Bun's entry on Bun, the node:crypto entry everywhere else (Node, Deno). `dist` is the one-file build of the same entry that the
-// package exports give to Node, Bun and Deno (npm run build; npm test builds it first).
+// package exports give to Node, Bun and Deno (bun run build; bun run test builds it first).
 const file = typeof Bun === 'undefined' ? 'node.js' : 'bun.js';
 /** @typedef {typeof import('../src/node.js')} Entry the Node and Bun entries and their builds share these signatures */
 export const { getAuthHeaders, presign, getAuthHeadersV4a, presignV4a, chunkSigner, eventSigner } =

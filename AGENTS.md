@@ -1,7 +1,7 @@
 # sigflint repository guidance
 
 This file adds to your own rules for work on this repository. The checks are
-in CONTRIBUTING.md; run `npm run check` before landing.
+in CONTRIBUTING.md; run `bun run check` before landing.
 
 ## Landing
 

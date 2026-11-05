@@ -28,14 +28,13 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node }}
-          cache: npm
-      # npm run build bundles dist/ with bun build, pinned so every build makes the same dist/
+      # bun run build bundles dist/ with bun build, pinned so every build makes the same dist/
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
-      - run: npm ci
-      - run: npm test
-      - run: npm run types
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bun run types
 
   bun:
     name: Bun
@@ -48,12 +47,11 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '26'
-          cache: npm
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
-      - run: npm ci
-      - run: npm run build
+      - run: bun install --frozen-lockfile
+      - run: bun run build
       - run: bun test test/
 
   deno:
@@ -67,13 +65,12 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '26'
-          cache: npm
-      # npm run build bundles dist/ with bun build, pinned so every build makes the same dist/
+      # bun run build bundles dist/ with bun build, pinned so every build makes the same dist/
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
-      - run: npm ci
-      - run: npm run build
+      - run: bun install --frozen-lockfile
+      - run: bun run build
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.x
@@ -90,13 +87,12 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '26'
-          cache: npm
-      # npm run build bundles dist/ with bun build, pinned so every build makes the same dist/
+      # bun run build bundles dist/ with bun build, pinned so every build makes the same dist/
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
-      - run: npm ci
-      - run: npm run check:package
+      - run: bun install --frozen-lockfile
+      - run: bun run check:package
       - run: npm pack --dry-run
 
   lint:
@@ -112,14 +108,13 @@ jobs:
           node-version: '26'
           cache: npm
           cache-dependency-path: |
-            package-lock.json
             conformance/streams/package-lock.json
             bench/package-lock.json
       # the type checks run on bun check
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.4
-      - run: npm ci
+      - run: bun install --frozen-lockfile
       # the same pinned ruff, ShellCheck and shfmt releases as CONTRIBUTING.md names, checked against GitHub's digests
       - name: Install ruff, ShellCheck and shfmt
         run: |
@@ -137,6 +132,6 @@ jobs:
           echo "76e77641faa025814b77f153b29796b8e6fa2fca03e0c76a691608b86c7ea7bf  $bin/shfmt" | sha256sum -c
           chmod +x "$bin/shfmt"
           echo "$bin" >> "$GITHUB_PATH"
-      - run: npm run check:style
-      - run: npm run types:streams
-      - run: npm run types:bench
+      - run: bun run check:style
+      - run: bun run types:streams
+      - run: bun run types:bench

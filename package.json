@@ -56,9 +56,9 @@
   },
   "scripts": {
     "build": "bun build src/node.js --target=node --outfile=dist/node.js && bun build src/bun.js --target=bun --outfile=dist/bun.js",
-    "pretest": "npm run build",
+    "pretest": "bun run build",
     "test": "node --test \"test/*.test.js\"",
-    "pretest:bun": "npm run build",
+    "pretest:bun": "bun run build",
     "test:bun": "bun test test/",
     "types": "tsc -p tsconfig.build.json && bun --check --tsconfig-override tsconfig.json && bun --check --tsconfig-override test/types/tsconfig.json",
     "pretypes:streams": "npm ci --prefix conformance/streams",
@@ -66,15 +66,15 @@
     "pretypes:bench": "npm ci --prefix bench",
     "types:bench": "bun bench/compat/build-clients.mjs && bun --check --tsconfig-override bench/tsconfig.json",
     "conformance": "node conformance/build.mjs && node conformance/build-more.mjs",
-    "prepack": "tsc -p tsconfig.build.json && npm run build",
+    "prepack": "tsc -p tsconfig.build.json && bun run build",
     "lint": "tsc -p tsconfig.build.json && oxlint --deny-warnings",
     "format": "bun fmt --no-script && ruff format . && git ls-files -z '*.sh' | xargs -0 shfmt -w",
-    "check:style": "bun fmt --no-script --check && npm run lint && npm run check:py && npm run check:sh",
-    "check": "npm run check:style && npm run types && npm run types:streams && npm run types:bench && npm test && npm run check:package",
+    "check:style": "bun fmt --no-script --check && bun run lint && bun run check:py && bun run check:sh",
+    "check": "bun run check:style && bun run types && bun run types:streams && bun run types:bench && bun run test && bun run check:package",
     "check:benchmarked": "node bench/check-benchmarked.mjs",
     "check:py": "ruff format --check . && ruff check .",
     "check:sh": "git ls-files -z '*.sh' | xargs -0 shellcheck && git ls-files -z '*.sh' | xargs -0 shfmt -d -i 2 -bn -ci",
-    "check:package": "tsc -p tsconfig.build.json && npm run build && publint && attw --pack . --profile esm-only"
+    "check:package": "tsc -p tsconfig.build.json && bun run build && publint && attw --pack . --profile esm-only"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

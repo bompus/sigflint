@@ -1,4 +1,4 @@
-// Compiled (not run) by `npm run types`: checks that the published declarations accept the documented calls and reject wrong ones.
+// Compiled (not run) by `bun run types`: checks that the published declarations accept the documented calls and reject wrong ones.
 import {
   getAuthHeaders,
   presign,
