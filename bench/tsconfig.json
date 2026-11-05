@@ -1,5 +1,5 @@
 {
-  // The benchmarks import the libraries they compare, installed only here (npm ci in this folder), so bench/ is type-checked on its own.
+  // The benchmarks import the libraries they compare, installed only here (bun install in this folder), so bench/ is type-checked on its own.
   "extends": "../tsconfig.json",
   "include": ["."],
   "exclude": ["frozen", "results", "node_modules", "compat/workers", "compat/compiled"]

@@ -1,5 +1,5 @@
 {
-  // The stream generator imports the AWS SDK's signer, installed only here (npm ci in this folder), so it is type-checked on its own.
+  // The stream generator imports the AWS SDK's signer, installed only here (bun install in this folder), so it is type-checked on its own.
   "extends": "../../tsconfig.json",
   "include": ["."],
   "exclude": ["node_modules"]

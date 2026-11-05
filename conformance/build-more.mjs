@@ -3,7 +3,7 @@
 //   presign  presigned URLs, signed by botocore's SigV4QueryAuth and S3SigV4QueryAuth
 //   v4a      SigV4a requests and presigned URLs, signed by the AWS CRT (ECDSA is randomised, so this file differs on every run; the tests verify the signatures)
 //   stream   chains of aws-chunked and event-stream signatures from the AWS SDK's smithy signer
-// Needs python3 with the packages in requirements.txt (PYTHON=/path/to/python) and `npm ci` in conformance/streams.
+// Needs python3 with the packages in requirements.txt (PYTHON=/path/to/python) and `bun install --frozen-lockfile` in conformance/streams.
 // Usage: node conformance/build-more.mjs [general] [presign] [v4a] [stream]   (no argument builds all four, in that order)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from 'node:fs';

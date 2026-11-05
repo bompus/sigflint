@@ -26,7 +26,20 @@ const { presign, getAuthHeaders } = await import('../src/bun.js');
 const generalCases = JSON.parse(
   readFileSync(new URL('../test/corpus-general.json', import.meta.url), 'utf8'),
 );
-const lock = JSON.parse(readFileSync(new URL('package-lock.json', import.meta.url), 'utf8'));
+const lockText = readFileSync(new URL('bun.lock', import.meta.url), 'utf8');
+/**
+ * Where bench/bun.lock says a package comes from: the tarball URL of a package taken from a git host, else the registry
+ * tarball URL npm's lock used to record as `resolved`. bun.lock is JSON with trailing commas.
+ * @param {string} name
+ */
+function sourceOf(name) {
+  const lock = JSON.parse(lockText.replace(/,(\s*[}\]])/g, '$1'));
+  const id = /** @type {string} */ (lock.packages[name][0]);
+  const rest = id.slice(name.length + 1);
+  return rest.startsWith('https://')
+    ? rest
+    : `https://registry.npmjs.org/${name}/-/${name.split('/').at(-1)}-${rest}.tgz`;
+}
 const restore = freezeClock();
 try {
   const edgeBaseline = { total: edgeCases.length, tested: 0, pass: 0 };
@@ -66,10 +79,9 @@ try {
       id: adapter.id,
       label: adapter.label,
       version: adapter.version,
-      source:
-        lock.packages[
-          `node_modules/${adapter.id === 's3-lite-client' ? '@bradenmacdonald/s3-lite-client' : adapter.id}`
-        ].resolved,
+      source: sourceOf(
+        adapter.id === 's3-lite-client' ? '@bradenmacdonald/s3-lite-client' : adapter.id,
+      ),
       tested: 0,
       pass: 0,
       fail: 0,
@@ -252,9 +264,7 @@ try {
         generalCorpusSha256: createHash('sha256')
           .update(readFileSync(new URL('../test/corpus-general.json', import.meta.url)))
           .digest('hex'),
-        dependencyLockSha256: createHash('sha256')
-          .update(readFileSync(new URL('package-lock.json', import.meta.url)))
-          .digest('hex'),
+        dependencyLockSha256: createHash('sha256').update(lockText).digest('hex'),
         corpusCases: corpus.length,
         ordinaryCases: cases.length,
         edgeBaseline,

@@ -18,7 +18,6 @@ for (const [path, expected] of [
   ['../test/corpus.json', clientScreen.corpusSha256],
   ['../test/corpus-presign.json', clientScreen.presignCorpusSha256],
   ['../test/corpus-general.json', clientScreen.generalCorpusSha256],
-  ['package-lock.json', clientScreen.dependencyLockSha256],
 ]) {
   const hash = createHash('sha256')
     .update(readFileSync(new URL(/** @type {string} */ (path), import.meta.url)))
@@ -26,6 +25,22 @@ for (const [path, expected] of [
   if (hash !== expected) {
     throw new Error(`Re-run client correctness: stale ${path}`);
   }
+}
+
+// The dependency lock. A screen recorded with bench/bun.lock hashes it. The 1.0.4 screen was recorded with
+// bench/package-lock.json (sha256 below), which npm used until the move to bun.lock; bench/results/lockfile-change-20261105.md
+// shows that the bun.lock with the second digest below pins the same packages, so that record stays valid for exactly
+// that file. Any later change to bench/bun.lock makes it stale. Drop the two digests when the screen is next re-run.
+const NPM_LOCK_SHA256 = 'd07ad4d0d6ac9702c7e05b93a4d0f0419b11e4249a4748612a8496c5a2436952';
+const CONVERTED_LOCK_SHA256 = '565dc9f1128fd55ca868e8254c0fdc3d14b2a5c7c84d0f673608316db07dde24';
+const lockSha256 = createHash('sha256')
+  .update(readFileSync(new URL('bun.lock', import.meta.url)))
+  .digest('hex');
+if (
+  clientScreen.dependencyLockSha256 !== lockSha256 &&
+  !(clientScreen.dependencyLockSha256 === NPM_LOCK_SHA256 && lockSha256 === CONVERTED_LOCK_SHA256)
+) {
+  throw new Error('Re-run client correctness: stale bun.lock');
 }
 clientScreen.candidates.sort((a, b) => compareLibraries(a.id, b.id));
 if (
