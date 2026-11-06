@@ -280,6 +280,11 @@ const signWith = async (key, text) => toHex(await subtle.sign('HMAC', key, utf8.
  */
 const copyOf = (data) => Uint8Array.prototype.slice.call(data);
 
+/** @param {unknown} data */
+const isBytes = (data) =>
+  ArrayBuffer.isView(data) && /** @type {any} */ (data).BYTES_PER_ELEMENT === 1; // a Uint8Array of any realm or a Node Buffer; not a DataView or a wider array
+const blankSignature = '0'.repeat(64); // a signature is 64 hex digits
+
 /**
  * Runs the signing steps of a stream one after the other. A step that throws rejects its own call only: the next one still runs, as on the
  * synchronous entries, where a refused call throws and the signer stays usable. A step moves the chain only once it has succeeded.
@@ -326,8 +331,17 @@ export function chunkSigner(authHeaders, credentials) {
       if (data.length === 0) {
         return data;
       }
-      const own = copyOf(data); // the signature and the frame are made when the chunk's turn comes; the caller may reuse its buffer once this returns
-      return frameChunk(await sign(own), own);
+      // The one copy of the bytes is the frame itself, made now, so the caller may reuse its buffer once this returns. The data is hashed where it sits in the
+      // frame and the signature is written into the blank the frame has for it, when the chunk's turn comes.
+      if (!isBytes(data)) {
+        throw new TypeError('data must be a Uint8Array');
+      }
+      const frame = frameChunk(blankSignature, data);
+      const body = frame.length - 2 - data.length; // the data ends the frame, followed by CR LF; the signature ends the line before it
+      const at = body - 2 - blankSignature.length;
+      const signature = await sign(frame.subarray(body, frame.length - 2));
+      utf8.encodeInto(signature, frame.subarray(at, at + signature.length));
+      return frame;
     },
     async end(trailers) {
       const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was

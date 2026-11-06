@@ -233,6 +233,30 @@ for (const [
     assert.deepEqual(await pending, expected);
   });
 
+  test(`${name}: a chunk that is a view into a larger buffer is signed as its own bytes`, async () => {
+    const whole = new Uint8Array(40).map((_, i) => i);
+    const part = whole.subarray(10, 30);
+    const expected = await chunkSigner(await chunkedHeaders(), credentials).chunk(part.slice());
+    assert.deepEqual(await chunkSigner(await chunkedHeaders(), credentials).chunk(part), expected);
+    assert.deepEqual(
+      await chunkSigner(await chunkedHeaders(), credentials).chunk(Buffer.from(part)),
+      expected,
+    );
+  });
+
+  // the synchronous entries hash whatever node:crypto or Bun accepts (a string, a wider typed array); only the WebCrypto entry checks the type before framing
+  test(
+    `${name}: a chunk that is not bytes is refused, even one that claims to be a Uint8Array`,
+    { skip: name !== 'web' },
+    async () => {
+      const claims = { [Symbol.toStringTag]: 'Uint8Array', length: 3 };
+      const signer = chunkSigner(await chunkedHeaders(), credentials);
+      for (const data of [claims, new DataView(new ArrayBuffer(3)), new Uint16Array(3), 'abc']) {
+        await rejects(() => signer.chunk(/** @type {any} */ (data)), TypeError, /./);
+      }
+    },
+  );
+
   test(`${name}: an event is signed as the caller passed it, even if the buffer is reused straight away`, async () => {
     const buffer = new Uint8Array([1, 2, 3]);
     const seed = () => getAuthHeaders({ ...request, service: 'transcribe' }, credentials);
