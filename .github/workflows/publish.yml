@@ -29,6 +29,15 @@ jobs:
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - name: Tag commit is on main
         run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      # CHANGELOG.md ships in the package, so its newest entry must be this version, not a leftover Unreleased heading.
+      - name: Changelog's newest entry is this version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          first=$(grep -m1 '^## ' CHANGELOG.md || true)
+          case "$first" in
+            "## $version - "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) echo "ok: $first" ;;
+            *) echo "::error::first CHANGELOG.md heading is '$first', expected '## $version - YYYY-MM-DD'"; exit 1 ;;
+          esac
       - name: Benchmarks were re-run on this code
         run: node bench/check-benchmarked.mjs
       # bun run build bundles dist/ with bun build, pinned so every build makes the same dist/
