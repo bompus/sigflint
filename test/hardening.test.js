@@ -186,6 +186,62 @@ for (const [
     assert.deepEqual(await signer.chunk(new Uint8Array([1, 2, 3])), reference);
   });
 
+  test(`${name}: a refused chunk leaves the chunk signer usable and the chain where it was`, async () => {
+    const part = new Uint8Array([1, 2, 3]);
+    const fresh = await chunkSigner(await chunkedHeaders(), credentials).chunk(part);
+    const signer = chunkSigner(await chunkedHeaders(), credentials);
+    const refused = /** @type {Uint8Array} */ (/** @type {unknown} */ ({ length: 3 }));
+    await rejects(() => signer.chunk(refused), TypeError, /./);
+    assert.deepEqual(await signer.chunk(part), fresh);
+    // a call made straight after a refused one, without waiting for it, is not refused with it
+    const second = chunkSigner(await chunkedHeaders(), credentials);
+    const [first, next] = await Promise.allSettled([
+      Promise.resolve().then(() => second.chunk(refused)),
+      Promise.resolve().then(() => second.chunk(part)),
+    ]);
+    assert.equal(first.status, 'rejected');
+    assert.deepEqual(next.status === 'fulfilled' && next.value, fresh);
+  });
+
+  test(`${name}: a refused event leaves the event signer usable and the chain where it was`, async () => {
+    const message = new Uint8Array([1, 2, 3]);
+    const seed = () => getAuthHeaders({ ...request, service: 'transcribe' }, credentials);
+    const fresh = await eventSigner(await seed(), credentials).sign(message, now);
+    for (const [refusedMessage, at] of /** @type {[Uint8Array, number][]} */ ([
+      [message, NaN],
+      [/** @type {Uint8Array} */ (/** @type {unknown} */ (null)), now],
+    ])) {
+      const signer = eventSigner(await seed(), credentials);
+      await rejects(() => signer.sign(refusedMessage, at), Error, /./);
+      assert.deepEqual(await signer.sign(message, now), fresh);
+    }
+    // a refused event takes its turn in the queue: the call made straight after it, without waiting, is not refused with it
+    const signer = eventSigner(await seed(), credentials);
+    const [first, next] = await Promise.allSettled([
+      Promise.resolve().then(() => signer.sign(message, NaN)),
+      Promise.resolve().then(() => signer.sign(message, now)),
+    ]);
+    assert.equal(first.status, 'rejected');
+    assert.deepEqual(next.status === 'fulfilled' && next.value, fresh);
+  });
+
+  test(`${name}: a chunk is signed as the caller passed it, even if the buffer is reused straight away`, async () => {
+    const buffer = new Uint8Array([1, 2, 3]);
+    const expected = await chunkSigner(await chunkedHeaders(), credentials).chunk(buffer.slice());
+    const pending = chunkSigner(await chunkedHeaders(), credentials).chunk(buffer);
+    buffer.fill(9);
+    assert.deepEqual(await pending, expected);
+  });
+
+  test(`${name}: an event is signed as the caller passed it, even if the buffer is reused straight away`, async () => {
+    const buffer = new Uint8Array([1, 2, 3]);
+    const seed = () => getAuthHeaders({ ...request, service: 'transcribe' }, credentials);
+    const expected = await eventSigner(await seed(), credentials).sign(buffer.slice(), now);
+    const pending = eventSigner(await seed(), credentials).sign(buffer, now);
+    buffer.fill(9);
+    assert.deepEqual(await pending, expected);
+  });
+
   test(`${name}: an event signed at a fractional millisecond time is the same as at the whole millisecond`, async () => {
     const message = new Uint8Array([1, 2, 3]);
     const a = await eventSigner(

@@ -274,6 +274,28 @@ export async function presignV4a(request, credentials) {
 const signWith = async (key, text) => toHex(await subtle.sign('HMAC', key, utf8.encode(text)));
 
 /**
+ * A copy of the bytes as they are now. TypedArray's slice copies even for a Node Buffer, whose own slice returns a view, and it throws for
+ * anything that is not a typed array, as hashing it would.
+ * @param {Uint8Array} data
+ */
+const copyOf = (data) => Uint8Array.prototype.slice.call(data);
+
+/**
+ * Runs the signing steps of a stream one after the other. A step that throws rejects its own call only: the next one still runs, as on the
+ * synchronous entries, where a refused call throws and the signer stays usable. A step moves the chain only once it has succeeded.
+ * @returns {<T>(step: () => Promise<T>) => Promise<T>}
+ */
+function inOrder() {
+  /** @type {Promise<unknown>} */
+  let turn = Promise.resolve();
+  return (step) => {
+    const result = turn.then(step);
+    turn = result.catch(() => {});
+    return result;
+  };
+}
+
+/**
  * Signs an aws-chunked upload chunk by chunk; the same shape as the other entries, with promises.
  * @param {import('./base.js').AuthHeaders} authHeaders - the headers getAuthHeaders returned for the request
  * @param {import('./base.js').Credentials} credentials
@@ -289,19 +311,24 @@ export function chunkSigner(authHeaders, credentials) {
     seed.service,
   );
   // chunks are signed one after the other: a call waits for the one before it
-  /** @type {Promise<any>} */
-  let turn = Promise.resolve();
+  const inTurn = inOrder();
   /** @param {Uint8Array} data */
   const sign = (data) =>
-    (turn = turn.then(
+    inTurn(
       async () =>
         (previous = await signWith(
           await keyPromise,
           chunkStringToSign(seed.datetime, seed.scope, previous, await hexHash(data)),
         )),
-    ));
+    );
   return {
-    chunk: async (data) => (data.length === 0 ? data : frameChunk(await sign(data), data)),
+    async chunk(data) {
+      if (data.length === 0) {
+        return data;
+      }
+      const own = copyOf(data); // the signature and the frame are made when the chunk's turn comes; the caller may reuse its buffer once this returns
+      return frameChunk(await sign(own), own);
+    },
     async end(trailers) {
       const text = trailers === undefined ? undefined : canonicalTrailers(trailers); // before sign(), so a refused trailer leaves the chain where it was
       const signature = await sign(new Uint8Array(0));
@@ -329,24 +356,19 @@ export function chunkSigner(authHeaders, credentials) {
 export function eventSigner(authHeaders, credentials) {
   const seed = seedOf(authHeaders);
   let previous = seed.signature;
-  /** @type {Promise<any>} */
-  let turn = Promise.resolve();
+  const inTurn = inOrder();
   return {
-    sign: (message, now = Date.now()) =>
-      (turn = turn.then(async () => {
+    async sign(message, now = Date.now()) {
+      const own = copyOf(message); // the caller may reuse its buffer once this returns, as on the synchronous entries
+      return inTurn(async () => {
         const { datetime, scope, date } = eventScope(now, seed.region, seed.service);
         const header = dateHeader(now);
         previous = await signWith(
           await getSigningKey(credentials.secretAccessKey, date, seed.region, seed.service),
-          eventStringToSign(
-            datetime,
-            scope,
-            previous,
-            await hexHash(header),
-            await hexHash(message),
-          ),
+          eventStringToSign(datetime, scope, previous, await hexHash(header), await hexHash(own)),
         );
-        return frameEvent(header, previous, message);
-      })),
+        return frameEvent(header, previous, own);
+      });
+    },
   };
 }

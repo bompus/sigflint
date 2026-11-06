@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- In Cloudflare Workers and browsers (the WebCrypto entry), a refused `eventSigner` `sign` call, for example one with a `now` of `NaN` or a `null` message, no longer makes every later call on that signer reject. It now leaves the signer where it was, as the Node, Bun and Deno entries do.
+- On the same entry, `chunk(data)` and `sign(message)` now read the buffer when they are called, not when their turn in the queue comes. A caller that reused its buffer straight after the call got a signature for the new bytes; it now gets the one the other entries give.
+
 ## 1.0.4 - 2026-11-01
 
 Documentation only: the code is unchanged since 1.0.2 (`src/` is the same tree and the built files are byte-identical).
