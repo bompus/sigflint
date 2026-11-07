@@ -75,39 +75,39 @@
  },
  "web": {
   "headers": {
-   "minifiedBytes": 5235,
-   "gzipBytes": 2593,
-   "brotliBytes": 2391
+   "minifiedBytes": 5257,
+   "gzipBytes": 2605,
+   "brotliBytes": 2419
   },
   "headers + presign": {
-   "minifiedBytes": 6778,
-   "gzipBytes": 3160,
-   "brotliBytes": 2882
+   "minifiedBytes": 6800,
+   "gzipBytes": 3174,
+   "brotliBytes": 2891
   },
   "SigV4a headers": {
-   "minifiedBytes": 6387,
-   "gzipBytes": 3041,
-   "brotliBytes": 2813
+   "minifiedBytes": 6409,
+   "gzipBytes": 3057,
+   "brotliBytes": 2833
   },
   "SigV4a presign": {
-   "minifiedBytes": 6411,
-   "gzipBytes": 3086,
-   "brotliBytes": 2823
+   "minifiedBytes": 6433,
+   "gzipBytes": 3101,
+   "brotliBytes": 2837
   },
   "chunked uploads": {
-   "minifiedBytes": 2532,
-   "gzipBytes": 1329,
-   "brotliBytes": 1201
+   "minifiedBytes": 2863,
+   "gzipBytes": 1484,
+   "brotliBytes": 1345
   },
   "event streams": {
-   "minifiedBytes": 2719,
-   "gzipBytes": 1432,
-   "brotliBytes": 1304
+   "minifiedBytes": 2878,
+   "gzipBytes": 1506,
+   "brotliBytes": 1369
   },
   "everything": {
-   "minifiedBytes": 11816,
-   "gzipBytes": 4916,
-   "brotliBytes": 4478
+   "minifiedBytes": 12197,
+   "gzipBytes": 5094,
+   "brotliBytes": 4630
   }
  }
 }

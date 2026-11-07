@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0.5 - 2026-11-06
 
 - In Cloudflare Workers and browsers (the WebCrypto entry), a refused `eventSigner` `sign` call, for example one with a `now` of `NaN` or a `null` message, no longer makes every later call on that signer reject. It now leaves the signer where it was, as the Node, Bun and Deno entries do.
 - On the same entry, `chunk(data)` and `sign(message)` now read the buffer when they are called, not when their turn in the queue comes. A caller that reused its buffer straight after the call got a signature for the new bytes; it now gets the one the other entries give.
+- The built files that Node and Bun load are byte-identical to those of 1.0.2 to 1.0.4, so the speed, memory and import figures were not measured again. The WebCrypto entry grows (minified) by 22 bytes for `getAuthHeaders`, 331 for `chunkSigner` and 159 for `eventSigner`; `bench/results/release-1.0.5.md` has the new sizes.
 
 ## 1.0.4 - 2026-11-01
 

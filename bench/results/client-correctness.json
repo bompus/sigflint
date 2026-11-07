@@ -1,10 +1,10 @@
 {
   "runtime": "Bun 1.4.4",
-  "sigflintVersion": "1.0.4",
+  "sigflintVersion": "1.0.5",
   "corpusSha256": "a4f907d61241c241f2bc13edf4cd81f71f7b8d93043cea891b0360191efb9cfe",
   "presignCorpusSha256": "b87350155d161c69312ea40b03b1ad98d6434afe1831377cd915c247718fac19",
   "generalCorpusSha256": "014989b79e5499d1932fc822868f1de6d345e0e778a877a7b326b0aca4b60d7b",
-  "dependencyLockSha256": "d07ad4d0d6ac9702c7e05b93a4d0f0419b11e4249a4748612a8496c5a2436952",
+  "dependencyLockSha256": "565dc9f1128fd55ca868e8254c0fdc3d14b2a5c7c84d0f673608316db07dde24",
   "corpusCases": 3360,
   "ordinaryCases": 1520,
   "edgeBaseline": {

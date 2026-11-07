@@ -2,7 +2,7 @@
 
 How sigflint compares with the other libraries, and how it is checked. The summary is in the [README](../README.md). Library comparisons put sigflint first as the reference, then alternatives alphabetically by displayed name. Correctness rows stay grouped by input method.
 
-The figures below describe the sigflint code of versions 1.0.2, 1.0.3 and 1.0.4, whose source trees are identical. Speed, memory, import and size were measured again on 2026-11-01 on Node.js 26.13.0 and Bun 1.4.4, with Tinybench and Hyperfine, which replaced the hand-written timers used for earlier releases, so these figures are not comparable with those of earlier releases. The current unminified Node and Bun builds match the measured artifact hashes byte for byte. Builds, checks and publishing use Bun 1.4.4.
+The speed, memory and import figures below describe the unminified Node and Bun builds of sigflint 1.0.2 to 1.0.5, which are byte-identical: the source of 1.0.2 to 1.0.4 is one tree, and 1.0.5 changes only the WebCrypto entry (`src/web.js`), whose sizes were measured again for 1.0.5 ([release note](../bench/results/release-1.0.5.md)). Speed, memory, import and size were measured again on 2026-11-01 on Node.js 26.13.0 and Bun 1.4.4, with Tinybench and Hyperfine, which replaced the hand-written timers used for earlier releases, so these figures are not comparable with those of earlier releases. The current unminified Node and Bun builds match the measured artifact hashes byte for byte. Builds, checks and publishing use Bun 1.4.4.
 
 The speed matrices use two fresh processes per library and runtime; memory and import use five rounds (four for the one `s3-lite-client` round that was out of attempts). A/A controls and reporting bands accompany the results. Raw evidence and reproducible protocols are linked under Methodology and limits.
 
@@ -47,14 +47,14 @@ Matches against botocore with the same key and clock. Compare libraries within a
 
 | Library | Input method | Version | Ordinary matches / supported | Unsupported ordinary | Edge matches / tested | Common decoded-key matches / 578 |
 |---|---|---|--:|--:|--:|--:|
-| **sigflint** | Serialized URL | 1.0.4 | 1,520 / 1,520 | 0 | 1,838 / 1,838 | Not applicable |
+| **sigflint** | Serialized URL | 1.0.5 | 1,520 / 1,520 | 0 | 1,838 / 1,838 | Not applicable |
 | aws4 | Serialized URL | 1.13.2 | 1,264 / 1,520 | 0 | 424 / 1,838 | Not applicable |
 | aws4fetch | Serialized URL | 1.0.20 | 1,408 / 1,520 | 0 | 790 / 1,838 | Not applicable |
 | aws-sig | Serialized URL | 2.1.0 | 379 / 1,520 | 0 | 65 / 1,838 | Not applicable |
 | minio | Serialized URL | 8.0.7 | 526 / 1,520 | 0 | 40 / 1,838 | Not applicable |
 | @smithy/signature-v4 | Serialized URL | 5.7.5 | 904 / 1,520 | 0 | 333 / 1,838 | Not applicable |
 | @wdl-dev/aws-sigv4 | Serialized URL | 3.0.4 | 1,174 / 1,520 | 0 | 234 / 1,838 | Not applicable |
-| **sigflint** | Decoded key | 1.0.4 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
+| **sigflint** | Decoded key | 1.0.5 | 1,520 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | lean-s3 | Decoded key | 0.11.2 source | 1,293 / 1,520 | 0 | 1,013 / 1,252 (588 unsupported) | 458 / 578 |
 | s3-lite-client | Decoded key | 1.0.1 | 1,519 / 1,520 | 0 | 1,252 / 1,252 (588 unsupported) | 578 / 578 |
 | s3mini | Decoded key | 1.0.3 | 494 / 578 | 942 | 567 / 645 (1,195 unsupported) | 494 / 578 |
@@ -71,9 +71,9 @@ Some of the other libraries expect the caller to canonicalize the path and query
 
 The table and chart above include both input methods and the decoded-key edge screen. The serialized-URL screen tests
 URL parsing as well as signing. The decoded-key screen ran on Bun 1.4.4 on
-2026-10-31 with `bun bench/compat-clients.mjs` (run `bun bench/compat/build-clients.mjs` first, which compiles the pinned lean-s3 and tiny-oss source cores and s3mini's key escaper). It uses decoded keys and query
+2026-11-06 with `bun bench/compat-clients.mjs` (run `bun bench/compat/build-clients.mjs` first, which compiles the pinned lean-s3 and tiny-oss source cores and s3mini's key escaper). It uses decoded keys and query
 pairs from normalized canonical requests, so it does not test arbitrary URL
-parsing or complete client operations. Both screens use sigflint 1.0.4. These
+parsing or complete client operations. Both screens use sigflint 1.0.5. These
 are distinct input methods, not directly comparable rankings.
 
 s3mini cannot express the other 942 ordinary requests because its signing path
@@ -373,7 +373,7 @@ What a bundle contains depends on what it imports. Minified size of the `node` e
 | `eventSigner` | 3,125 | 1,601 |
 | all six | 12,263 | 5,118 |
 
-The Bun and web entries are 5,036 / 2,529 and 5,235 / 2,593 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules. The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
+The Bun and web entries are 5,036 / 2,529 and 5,257 / 2,605 bytes for `getAuthHeaders`. Node and Bun load one built file (`dist/`, made by `npm run build`) rather than six modules. The `workerd`, `worker` and `browser` conditions and bundlers that do not pick the `node` or `bun` condition get the per-signer modules in `src/`; a bundler that does pick `node` gets the built file and drops unused signers just as well. The package sets `"sideEffects": false`; nothing runs at import, and the lookup tables and the one-shot HMAC check are built on first use. Tree shaking was checked with `bun build` and `esbuild`; other bundlers were not.
 
 ## How it is tested
 
