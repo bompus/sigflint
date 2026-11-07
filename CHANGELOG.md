@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The WebCrypto entry no longer builds a 64-character constant when it is imported, so a bundle that imports only `getAuthHeaders` is 22 bytes smaller again: 5,235 bytes minified, as in 1.0.4 (1.0.5 was 5,257).
+
 ## 1.0.5 - 2026-11-06
 
 - In Cloudflare Workers and browsers (the WebCrypto entry), a refused `eventSigner` `sign` call, for example one with a `now` of `NaN` or a `null` message, no longer makes every later call on that signer reject. It now leaves the signer where it was, as the Node, Bun and Deno entries do.
