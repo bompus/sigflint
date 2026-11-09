@@ -80,8 +80,8 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@types/bun": "1.4.4",
     "@types/node": "^26.6.5",
-    "oxfmt": "0.77.0",
-    "oxlint": "1.92.0",
+    "oxfmt": "0.78.0",
+    "oxlint": "1.93.0",
     "oxlint-tsgolint": "7.0.2006",
     "publint": "^0.3.25",
     "typescript": "7.1.0-beta"
