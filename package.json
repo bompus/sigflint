@@ -80,7 +80,7 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@types/bun": "1.4.4",
     "@types/node": "^26.6.5",
-    "oxfmt": "0.78.0",
+    "oxfmt": "0.79.0",
     "oxlint": "1.94.0",
     "publint": "^0.3.25",
     "tsrs": "7.1.0-beta.tsrs2",
