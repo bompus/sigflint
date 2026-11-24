@@ -156,6 +156,13 @@
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "promise"],
   "overrides": [
     {
+      // The type tests write `void value;` to mark a binding used without running anything; tsrs 7.1.0-beta.tsrs5 reports that on non-call operands. The rule stays on for src/ and the other tests.
+      "files": ["test/types/**/*.ts"],
+      "rules": {
+        "typescript/no-meaningless-void-operator": "off"
+      }
+    },
+    {
       // The bench scripts are typed with JSDoc casts, which this rule reports as redundant although the compiler needs them. The rule stays on for src/ and the other JavaScript.
       "files": ["bench/**/*.{js,mjs,cjs}"],
       "rules": {

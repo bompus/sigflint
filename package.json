@@ -80,10 +80,10 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@types/bun": "1.4.5",
     "@types/node": "^26.6.5",
-    "oxfmt": "0.79.0",
-    "oxlint": "1.94.0",
+    "oxfmt": "0.80.0",
+    "oxlint": "1.95.0",
     "publint": "^0.3.25",
-    "tsrs": "7.1.0-beta.tsrs4",
+    "tsrs": "7.1.0-beta.tsrs5",
     "typescript": "7.1.0-beta"
   },
   "engines": {
